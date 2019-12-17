@@ -80,9 +80,7 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     e = np.random.normal(scale=np.sqrt(s2e), size=N)
     y = G + e
     
-    maternals = np.arange(0, N-1, 2)
-    paternals = np.arange(1, N, 2)
-    y_diploid = y[maternals] + y[paternals]
+    
     
     return {"M_cas":M_cas, "cass":cass, "Z_cas":Z_cas, "betas":betas, "y":y, "y_diploid":y_diploid}
 
@@ -125,8 +123,25 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     
     return {"hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
 
-
-
+def make_diploid(simulation):
+    genotype_matrix = simulation["hapdata"]["genotype_matrix"]
+    N = genotype_matrix.shape[1]
+    M = simulation["hapdata"]["M"]
+    
+    maternals_snp = np.arange(0, M * 2 - 1, 2)
+    paternals_snp = np.arange(1, M * 2, 2)
+    maternals_hap = np.arange(0, N - 1, 2)
+    paternals_hap = np.arange(1, N, 2)
+    
+    genotype_matrix_diploid = np.empty([M * 2, N // 2])
+    genotype_matrix_diploid[maternals_snp, :] = genotype_matrix[:, maternals_hap]
+    genotype_matrix_diploid[paternals_snp, :] = genotype_matrix[:, paternals_hap]
+    simulation["hapdata"]["genotype_matrix_diploid"] = genotype_matrix_diploid #好像还是有bug，出来的是是float
+    
+    y_diploid = y[maternals_hap] + y[paternals_hap]
+    simulation["phenotypes"]["y_diploid"] = y_diploid
+    
+    
     
 
     
