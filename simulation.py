@@ -4,7 +4,6 @@
 #import datetime
 import msprime
 #import tskit
-#import itertools
 import math
 import numpy as np
 #import pandas as pd
@@ -120,8 +119,6 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     observations = simulate_observations(hapdata)
     
     return {"hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
-
-
 
 
     
