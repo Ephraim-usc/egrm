@@ -58,6 +58,7 @@ def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = 
 
 def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha):
     genotype_matrix = hapdata["genotype_matrix"]
+    N = genotype_matrix.shape[1]
     M = hapdata["M"]
     MAFs = hapdata["MAFs"]
     
@@ -79,7 +80,11 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     e = np.random.normal(scale=np.sqrt(s2e), size=N)
     y = G + e
     
-    return {"M_cas":M_cas, "cass":cass, "Z_cas":Z_cas, "betas":betas, "y":y}
+    maternals = np.arange(0, N-1, 2)
+    paternals = np.arange(1, N, 2)
+    y_diploid = y[maternals] + y[paternals]
+    
+    return {"M_cas":M_cas, "cass":cass, "Z_cas":Z_cas, "betas":betas, "y":y, "y_diploid":y_diploid}
 
 def simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta):
     genotype_matrix = hapdata["genotype_matrix"]
@@ -119,26 +124,6 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     observations = simulate_observations(hapdata)
     
     return {"hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
-
-def to_diploid(simulation):
-    N = simulation["hapdata"]["genotype_matrix"].shape[1]
-    maternals = np.arange(0, N-1, 2)
-    paternals = np.arange(1, N, 2)
-    genotype_matrix = simulation["hapdata"]["genotype_matrix"]
-    cass = simulation["phenotypes"]["cass"]
-    obss = simulation["phenotypes"]["obss"]
-    y = simulation["phenotypes"]["y"]
-    
-    simulation_dip = simulation.copy()
-    simulation_dip["hapdata"]["genotype_matrix"] = genotype_matrix[:, maternals] + genotype_matrix[:, paternals]
-    simulation_dip["phenotypes"]["y"] = y[maternals] + y[paternals]
-    
-    Z_cas = genotype_matrix[cass, maternals] + genotype_matrix[cass, paternals]
-    
-    
-    simulation_dip["phenotypes"]["Z_cas"] = genotype_matrix[cass, maternals] + genotype_matrix[cass, paternals]
-    
-    
 
 
 
