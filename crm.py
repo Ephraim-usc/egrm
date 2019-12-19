@@ -1,6 +1,7 @@
 ### import packages
 import tskit
 import tqdm
+import numpy as np
 
 ### import trees
 def read_trees(file):
@@ -49,14 +50,22 @@ def getEK(tree):
   L = tree.total_branch_length
   return buffer/L
 
-def getEK_trees(trees):
+def getEK_trees(trees, flags):
+  if (flags == None):
+    flags = [True] * trees.num_trees
+  elif len(flags) != trees.num_trees:
+    print("incorrect flags length!")
+  idx_trees = np.where(flags)[0].tolist()
+  
   N = trees.num_samples
   EK = np.zeros([N, N])
   total_length = 0
-  pbar = tqdm.tqdm(total = trees.num_trees, 
+  pbar = tqdm.tqdm(total = len(idx_trees), 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
-                   miniters = trees.num_trees // 100)
-  for tree in trees.trees():
+                   miniters = len(idx_trees) // 100)
+  
+  for i in idx_trees:
+    tree = trees.at_index(i)
     interval = tree.interval
     length = interval[1] - interval[0]
     total_length += length
@@ -66,6 +75,12 @@ def getEK_trees(trees):
   pbar.close()
   return EK
 
-def filter_trees(trees, variants):
-  #needs codes here
+  
+def get_flags(trees, variants):
+    flags = [False] * trees.num_trees
+    for v in tqdm.tqdm(variants, bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                       miniters = len(variants) // 100):
+      flags[trees.at(v).index] = True
+    return flags
+
 
