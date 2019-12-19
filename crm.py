@@ -1,5 +1,6 @@
 ### import packages
 import tskit
+import tqdm
 
 ### import trees
 def read_trees(file):
@@ -11,7 +12,7 @@ def g(p):
   return 1/(p*(1-p))
 
 def relevant_nodes(tree):
-  N = tree.num_samples
+  N = tree.num_samples()
   rel_nodes = []
   for i in list(range(N)):
     c = i
@@ -24,7 +25,7 @@ def relevant_nodes(tree):
   return rel_nodes
 
 def zeta(tree, g):
-  N = tree.num_samples
+  N = tree.num_samples()
   rel_nodes = relevant_nodes(tree)
   zetas = np.zeros([N, N])
   for c in rel_nodes:
@@ -37,9 +38,10 @@ def zeta(tree, g):
   return zetas
 
 def epsilon(x):
+  N = x.shape[0]
   mean = x.mean()
   colmean = np.tile(x.mean(axis = 0), (N, 1))
-  rowmean = tmp2.T
+  rowmean = colmean.T
   return x + mean - colmean - rowmean
 
 def getEK(tree):
@@ -47,22 +49,23 @@ def getEK(tree):
   L = tree.total_branch_length
   return buffer/L
 
-def getEK_trees(trees): #scale的问题依然需要修改
+def getEK_trees(trees):
+  N = trees.num_samples
   EK = np.zeros([N, N])
-  cnt = 0
+  total_length = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100)
   for tree in trees.trees():
-    cnt += 1
-    if cnt % 100 == 0:
-      printf("tree " + str(cnt) + "/" + str(trees.num_trees))
-    
     interval = tree.interval
-    obs = False
-    for v in variants_obs:
-      if interval[0] < v < interval[1]:
-        obs = True
-    if obs == False:
-      continue
-    
     length = interval[1] - interval[0]
+    total_length += length
     EK += getEK(tree) * length
-  return(EK)
+    pbar.update(1)
+  EK /= total_length
+  pbar.close()
+  return EK
+
+def filter_trees(trees, variants):
+  #needs codes here
+
