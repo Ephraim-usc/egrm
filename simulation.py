@@ -115,7 +115,9 @@ def simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta):
 def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate,
             h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha,
             obs_ratio = obs_ratio, Beta = Beta):
-    hapdata = simulate_hapdata()
+    hapdata = simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate,
+                               h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha,
+                               obs_ratio = obs_ratio, Beta = Beta)
     phenotypes = simulate_phenotypes(hapdata)
     observations = simulate_observations(hapdata)
     
