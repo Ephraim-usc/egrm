@@ -31,7 +31,7 @@ os.system("mkdir " + out)
 os.chdir(out)
 del args['out']
 
-relate = args["relate"]
+run_relate = args["relate"]
 del args['relate']
 
 simulation = simulate(**args)
@@ -46,6 +46,6 @@ write_plink(simulation, cass, "causal")
 gcta64("observed")
 gcta64("causal")
 
-if relate:
-  write_relate("observed")
-  relate("observed")
+if run_relate:
+  write_relate(simulation, obss, "observed_relate")
+  relate("observed_relate")
