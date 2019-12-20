@@ -11,6 +11,7 @@ exec(open("crm/simulation.py").read())
 parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
+parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
@@ -30,6 +31,9 @@ os.system("mkdir " + out)
 os.chdir(out)
 del args['out']
 
+relate = args["relate"]
+del args['relate']
+
 simulation = simulate(**args)
 make_diploid(simulation)
 
@@ -41,3 +45,7 @@ write_plink(simulation, cass, "causal")
 
 gcta64("observed")
 gcta64("causal")
+
+if relate:
+  write_relate("observed")
+  relate("observed")
