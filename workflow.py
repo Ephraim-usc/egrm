@@ -12,7 +12,6 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
 parser.add_argument('--l', type = int, help='chromosome length')
-parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
 parser.add_argument('--recomb_rate', type = float, help='recombination rate')
@@ -26,9 +25,19 @@ args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 ### run workflow
-os.system("mkdir " + args["out"] + " && cd $_")
+out = args["out"]
+os.system("mkdir " + out)
+os.chdir(out)
+del args['out']
 
 simulation = simulate(**args)
+make_diploid(simulation)
 
+M = simulation["hapdata"]["M"]
+cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 write_plink(simulation, obss, "observed")
+write_plink(simulation, cass, "causal")
+
+gcta64("observed")
+gcta64("causal")
