@@ -50,7 +50,7 @@ def getEK(tree):
   L = tree.total_branch_length
   return buffer/L
 
-def getEK_trees(trees, flags):
+def getEK_trees(trees, flags = None):
   if (flags == None):
     flags = [True] * trees.num_trees
   elif len(flags) != trees.num_trees:
