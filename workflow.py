@@ -49,3 +49,37 @@ gcta64("causal")
 if run_relate:
   write_relate(simulation, obss, "observed_relate")
   relate("observed_relate")
+  trees_relate = tskit.load("observed_relate.trees")
+  K_relate = getEK_trees(trees_relate)
+
+### run BLUP
+Z_cas = simulation["phenotypes"]["Z_cas"]
+Z_obs = simulation["observations"]["Z_obs"]
+K_cas = np.dot(Z_cas, np.transpose(Z_cas)) / Z_cas.shape[1]
+K_obs = np.dot(Z_obs, np.transpose(Z_obs)) / Z_obs.shape[1]
+N = Z_cas.shape[0]
+y = simulation["phenotypes"]["y"]
+
+a = []
+b = []
+c = []
+for i in range(20):
+  tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
+  tests.sort()
+  trains = [i for i in range(N) if i not in tests]
+  y_train = y[trains]
+  y_test = y[tests]
+  
+  y_ = BLUP(K_cas, y_train, trains, tests, h2 = 0.9)
+  a.append(np.corrcoef(y_, y_test)[0, 1])
+  
+  y_ = BLUP(K_obs, y_train, trains, tests, h2 = 0.9)
+  b.append(np.corrcoef(y_, y_test)[0, 1])
+  
+  y_ = BLUP(K_relate, y_train, trains, tests, h2 = 0.9)
+  c.append(np.corrcoef(y_, y_test)[0, 1])
+
+a = np.array(a)
+b = np.array(b)
+c = np.array(c)
+
