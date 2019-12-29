@@ -1,6 +1,7 @@
 ### loading packages
 import argparse
 import os
+import pandas as pd
 
 ### loading files
 exec(open("crm/crm.py").read())
