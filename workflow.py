@@ -63,7 +63,7 @@ y = simulation["phenotypes"]["y"]
 a = []
 b = []
 c = []
-for i in range(20):
+for i in range(100):
   tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
   tests.sort()
   trains = [i for i in range(N) if i not in tests]
