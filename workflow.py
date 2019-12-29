@@ -11,6 +11,8 @@ exec(open("crm/simulation.py").read())
 parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
+parser.add_argument('--name', type = str, help='output file name')
+parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
@@ -25,31 +27,37 @@ parser.add_argument('--Beta', type = float, help='Beta -- observation probabilit
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
-### run workflow
 out = args["out"]
-os.system("mkdir " + out)
 os.chdir(out)
 del args['out']
+
+name = args["name"]
+del args['name']
+
+run_gcta = args["gcta"]
+del args['gcta']
 
 run_relate = args["relate"]
 del args['relate']
 
+### run workflow
 simulation = simulate(**args)
 make_diploid(simulation)
 
 M = simulation["hapdata"]["M"]
 cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
-write_plink(simulation, obss, "observed")
-write_plink(simulation, cass, "causal")
 
-gcta64("observed")
-gcta64("causal")
+if run_gcta:
+  write_plink(simulation, obss, name + "observed")
+  write_plink(simulation, cass, name + "causal")
+  gcta64(name + "observed")
+  gcta64(name + "causal")
 
 if run_relate:
-  write_relate(simulation, obss, "observed_relate")
-  relate("observed_relate")
-  trees_relate = tskit.load("observed_relate.trees")
+  write_relate(simulation, obss, name + "observed_relate")
+  relate(name + "observed_relate")
+  trees_relate = tskit.load(name + "observed_relate.trees")
   K_relate = getEK_trees(trees_relate)
 
 ### run BLUP
