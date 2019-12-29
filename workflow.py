@@ -6,6 +6,7 @@ import os
 exec(open("crm/crm.py").read())
 exec(open("crm/read_and_write.py").read())
 exec(open("crm/simulation.py").read())
+exec(open("crm/blup.py").read())
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -126,5 +127,5 @@ printf("relate inferred number of trees = " + str(trees_relate.num_trees))
 printf("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
 printf("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
 printf("Km BLUP: " + str(c.mean().round(3)) + " +- " + str(c.std().round(3)))
-printf("Km_relate BLUP: " + str(e.mean().round(3)) + " +- " + str(e.std().round(3)))
+printf("Km_relate BLUP: " + str(d.mean().round(3)) + " +- " + str(d.std().round(3)))
 
