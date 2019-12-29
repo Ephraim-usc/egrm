@@ -53,7 +53,7 @@ def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = 
     variants = np.array([v.position for v in tree_sequence.variants()])
     M = len(variants)
     
-    return {"tree_sequence":tree_sequence, "genotype_matrix":genotype_matrix, 
+    return {"N":N, "tree_sequence":tree_sequence, "genotype_matrix":genotype_matrix, 
             "MAFs":MAFs, "MACs":MACs, "variants":variants, "M":M}
 
 def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha):
