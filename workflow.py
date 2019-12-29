@@ -44,21 +44,34 @@ del args['relate']
 simulation = simulate(**args)
 make_diploid(simulation)
 
+trees = simulation["hapdata"]["tree_sequence"]
 M = simulation["hapdata"]["M"]
+M_cas = simulation["phenotypes"]["M_cas"]
+M_obs = simulation["observations"]["M_obs"]
+M_5 = simulation["observations"]["M_5"]
 cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
+flags_obs = get_flags(trees, obss)
+Km = getEK_trees(trees, flags_obs)
+
 if run_gcta:
-  write_plink(simulation, obss, name + "observed")
-  write_plink(simulation, cass, name + "causal")
-  gcta64(name + "observed")
-  gcta64(name + "causal")
+  os.mkdir(name + "_gcta")
+  os.chdir(name + "_gcta")
+  write_plink(simulation, obss, "observed")
+  write_plink(simulation, cass, "causal")
+  gcta64("observed")
+  gcta64("causal")
+  os.chdir("..")
 
 if run_relate:
-  write_relate(simulation, obss, name + "observed_relate")
-  relate(name + "observed_relate")
-  trees_relate = tskit.load(name + "observed_relate.trees")
-  K_relate = getEK_trees(trees_relate)
+  os.mkdir(name + "_relate")
+  os.chdir(name + "_relate")
+  write_relate(simulation, obss, "observed")
+  relate("observed")
+  trees_relate = tskit.load("observed.trees")
+  Km_relate = getEK_trees(trees_relate)
+  os.chdir("..")
 
 ### run BLUP
 Z_cas = simulation["phenotypes"]["Z_cas"]
@@ -71,7 +84,8 @@ y = simulation["phenotypes"]["y"]
 a = []
 b = []
 c = []
-for i in range(100):
+d = []
+for i in range(1000):
   tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
   tests.sort()
   trains = [i for i in range(N) if i not in tests]
@@ -84,10 +98,33 @@ for i in range(100):
   y_ = BLUP(K_obs, y_train, trains, tests, h2 = 0.9)
   b.append(np.corrcoef(y_, y_test)[0, 1])
   
-  y_ = BLUP(K_relate, y_train, trains, tests, h2 = 0.9)
+  y_ = BLUP(Km, y_train, trains, tests, h2 = 0.9)
   c.append(np.corrcoef(y_, y_test)[0, 1])
+  
+  y_ = BLUP(Km_relate, y_train, trains, tests, h2 = 0.9)
+  d.append(np.corrcoef(y_, y_test)[0, 1])
 
+
+### output
 a = np.array(a)
 b = np.array(b)
 c = np.array(c)
+d = np.array(d)
+
+def printf(string):
+  out_file = open(name, "a")
+  out_file.write(str(string) + "\n")
+  out_file.close()
+
+printf(args)
+printf("M_cas / M = " + str(np.array(M_cas/M).round(2)))
+printf("M_obs / M_5 = " + str(np.array(M_obs/M_5).round(2)))
+
+printf("true number of trees = " + str(trees.num_trees))
+printf("relate inferred number of trees = " + str(trees_relate.num_trees))
+
+printf("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
+printf("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
+printf("Km BLUP: " + str(c.mean().round(3)) + " +- " + str(c.std().round(3)))
+printf("Km_relate BLUP: " + str(e.mean().round(3)) + " +- " + str(e.std().round(3)))
 
