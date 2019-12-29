@@ -52,6 +52,7 @@ simulation = simulate(**args)
 make_diploid(simulation)
 
 trees = simulation["hapdata"]["tree_sequence"]
+N = simulation["hapdata"]["N"]
 M = simulation["hapdata"]["M"]
 M_cas = simulation["phenotypes"]["M_cas"]
 M_obs = simulation["observations"]["M_obs"]
@@ -130,6 +131,15 @@ printf("M_obs / M_5 = " + str(np.array(M_obs/M_5).round(2)))
 
 printf("true number of trees = " + str(trees.num_trees))
 printf("relate inferred number of trees = " + str(trees_relate.num_trees))
+
+diags = np.diag_indices(N)
+non_diags = np.where(~np.eye(N,dtype=bool))
+
+table = {"K_cas":K_cas[non_diags].flatten(), "K_obs":K_obs[non_diags].flatten(),
+         "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten()}
+
+table = pd.DataFrame(data=table)
+printf(table.corr(method ='pearson'))
 
 printf("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
 printf("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
