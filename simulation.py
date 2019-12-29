@@ -20,7 +20,7 @@ recomb_rate = 1e-8
 
 cas_ratio = 0.1
 obs_ratio = 0.2
-Alpha = -0.5
+Alpha = -1
 Beta = 1
 h2g = 1.0
 
