@@ -41,7 +41,13 @@ del args['gcta']
 run_relate = args["relate"]
 del args['relate']
 
+def printf(string):
+  out_file = open(name, "a")
+  out_file.write(str(string) + "\n")
+  out_file.close()
+
 ### run workflow
+printf("simulating ...")
 simulation = simulate(**args)
 make_diploid(simulation)
 
@@ -53,10 +59,12 @@ M_5 = simulation["observations"]["M_5"]
 cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
+printf("computing Km ...")
 flags_obs = get_flags(trees, obss)
 Km = getEK_trees(trees, flags_obs)
 
 if run_gcta:
+  printf("running gcta ...")
   os.mkdir(name + "_gcta")
   os.chdir(name + "_gcta")
   write_plink(simulation, obss, "observed")
@@ -66,11 +74,13 @@ if run_gcta:
   os.chdir("..")
 
 if run_relate:
+  printf("running relate ...")
   os.mkdir(name + "_relate")
   os.chdir(name + "_relate")
   write_relate(simulation, obss, "observed")
   relate("observed")
   trees_relate = tskit.load("observed.trees")
+  printf("computing Km_relate ...")
   Km_relate = getEK_trees(trees_relate)
   os.chdir("..")
 
@@ -102,20 +112,17 @@ for i in range(1000):
   y_ = BLUP(Km, y_train, trains, tests, h2 = 0.9)
   c.append(np.corrcoef(y_, y_test)[0, 1])
   
+  if run_relate == False:
+    continue
+  
   y_ = BLUP(Km_relate, y_train, trains, tests, h2 = 0.9)
   d.append(np.corrcoef(y_, y_test)[0, 1])
-
 
 ### output
 a = np.array(a)
 b = np.array(b)
 c = np.array(c)
 d = np.array(d)
-
-def printf(string):
-  out_file = open(name, "a")
-  out_file.write(str(string) + "\n")
-  out_file.close()
 
 printf(args)
 printf("M_cas / M = " + str(np.array(M_cas/M).round(2)))
