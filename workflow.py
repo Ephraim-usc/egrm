@@ -83,9 +83,9 @@ if run_relate:
   write_relate(simulation, obss, "observed")
   relate("observed")
   trees_relate = tskit.load("observed.trees")
+  os.chdir("..")
   printf("computing Km_relate ...")
   Km_relate = getEK_trees(trees_relate)
-  os.chdir("..")
 
 ### run BLUP
 Z_cas = simulation["phenotypes"]["Z_cas"]
