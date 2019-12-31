@@ -55,6 +55,7 @@ make_diploid(simulation)
 trees = simulation["hapdata"]["tree_sequence"]
 N = simulation["hapdata"]["N"]
 M = simulation["hapdata"]["M"]
+variants = simulation["hapdata"]["variants"]
 M_cas = simulation["phenotypes"]["M_cas"]
 M_obs = simulation["observations"]["M_obs"]
 M_5 = simulation["observations"]["M_5"]
@@ -62,7 +63,7 @@ cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
 printf("computing Km ...")
-flags_obs = get_flags(trees, obss)
+flags_obs = get_flags(trees, variants[obss])
 Km = getEK_trees(trees, flags_obs)
 
 if run_gcta:
