@@ -81,7 +81,7 @@ def write_crm(crm, file):
   crm_file = open(file + ".crm", 'a')
   for i in range(N):
     vector = crm_melted.iloc[i, :]
-    string = str(vector[0] + 1) + " " + str(vector[1] + 1) + " INF " + str(vector[2]) + "\n"
+    string = str(vector[0] + 1) + " " + str(vector[1] + 1) + " 1000000 " + str(vector[2]) + "\n"
     bytes = crm_file.write(string)
   crm_file.close()
 
