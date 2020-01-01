@@ -15,15 +15,10 @@ args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 input = args["input"]
-output = input[:-6] + ".grm"
+output = input[:-6]
 
 ### 
-trees = tskit.load("input")
+trees = tskit.load(input)
 crm = getEK_trees(trees)
 
-crm_df = pd.DataFrame(data = crm)
-crm_df["row"] = range(crm.shape[0])
-crm_melted = pd.melt(crm_df, id_vars=['row'], var_name='column', value_name='crm')
-
-
-crm_melted = pd.melt(crm_df)
+write_crm(crm, output)
