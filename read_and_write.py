@@ -2,6 +2,7 @@
 import os
 import math
 import numpy as np
+import pandas as pd
 
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
@@ -70,6 +71,19 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
     string = string + str(math.ceil(variants[i])/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
+
+def write_crm(crm, file):
+  N = crm.shape[0]
+  crm_df = pd.DataFrame(data = crm)
+  crm_df["row"] = range(N)
+  crm_melted = pd.melt(crm_df, id_vars=['row'], var_name='column', value_name='crm')
+  
+  crm_file = open(file + ".crm", 'a')
+  for i in range(N):
+    vector = crm_melted.iloc[i, :]
+    string = str(vector[0] + 1) + " " + str(vector[1] + 1) + " INF " + str(vector[2]) + "\n"
+    bytes = crm_file.write(string)
+  crm_file.close()
 
 def gcta64(file):
   os.system("/home/rcf-40/caoqifan/cc2/plink-1.07-x86_64/plink --file " + 
