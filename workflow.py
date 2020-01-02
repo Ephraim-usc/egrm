@@ -100,10 +100,10 @@ if grm:
   printf("running grm matrices ...")
   os.mkdir(name + "_grm")
   os.chdir(name + "_grm")
-  np.savetext("K_cas.txt", K_cas)
-  np.savetext("K_obs.txt", K_obs)
-  np.savetext("Km.txt", Km)
-  np.savetext("Km_relate.txt", Km_relate)
+  np.savetxt("K_cas.txt", K_cas)
+  np.savetxt("K_obs.txt", K_obs)
+  np.savetxt("Km.txt", Km)
+  np.savetxt("Km_relate.txt", Km_relate)
   os.chdir("..")
 
 a = []
