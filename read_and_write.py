@@ -3,6 +3,7 @@ import os
 import math
 import numpy as np
 import pandas as pd
+import tskit
 
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
@@ -71,6 +72,9 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
     string = string + str(math.ceil(variants[i])/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
+
+def read_trees(file):
+  return tskit.load(file)
 
 def write_crm(crm, file):
   N = crm.shape[0]
