@@ -23,6 +23,5 @@ setup(name='crm',
       install_requires=[
           'tskit', 'tqdm', 'msprime'
       ],
-      scripts=['bin/trees2crm', 'bin/workflow']
-      },
+      scripts=['bin/trees2crm', 'bin/workflow'],
       zip_safe=False)
