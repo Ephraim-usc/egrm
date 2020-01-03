@@ -1,14 +1,8 @@
 
 ### importing packages
-#import sys
-#import time
-#import datetime
 import msprime
-#import tskit
 import math
 import numpy as np
-#import pandas as pd
-#import os
 
 ### parameters
 out = "tmp"
