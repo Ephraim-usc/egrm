@@ -10,7 +10,7 @@ setup(name='crm',
       description='Coalescent Relationship Matrix',
       long_description=readme(),
       classifiers=[
-        'Development Status :: 3 - Alpha',,
+        'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.7',
         'Topic :: Scientific/Engineering :: Bio-Informatics', 
       ],
