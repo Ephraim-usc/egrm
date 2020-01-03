@@ -1,13 +1,10 @@
-### loading packages
+### importing packages
 import argparse
 import os
 import pandas as pd
 
-### loading files
-exec(open("crm/crm.py").read())
-exec(open("crm/read_and_write.py").read())
-exec(open("crm/simulation.py").read())
-exec(open("crm/blup.py").read())
+### importing crm
+from crm import *
 
 ### parse arguments
 parser=argparse.ArgumentParser()
