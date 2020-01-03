@@ -3,11 +3,6 @@ import tskit
 import tqdm
 import numpy as np
 
-### import trees
-def read_trees(file):
-  trees = tskit.load(file)
-  return trees
-
 ### coalescent relationship matrix
 def g(p):
   return 1/(p*(1-p))
