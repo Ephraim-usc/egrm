@@ -71,7 +71,7 @@ def getEK_trees(trees, flags = None, file = None):
   pbar.close()
   return EK
 
-def get_flags(trees, variants, file):
+def get_flags(trees, variants, file = None):
     flags = [False] * trees.num_trees
     for v in tqdm.tqdm(variants, bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
                        miniters = len(variants) // 100, 
