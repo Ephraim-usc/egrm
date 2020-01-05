@@ -3,8 +3,8 @@
 ### importing packages
 import argparse
 
-### importing crm
-from crm import getEK_trees, read_trees, write_crm
+### importing egrm
+from egrm import getEK_trees, read_trees, write_crm
 
 ### parse arguments
 parser=argparse.ArgumentParser()
