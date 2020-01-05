@@ -89,19 +89,25 @@ def write_crm(crm, file):
     bytes = crm_file.write(string)
   crm_file.close()
 
+def run_cmd(cmd, log = None):
+  if log != None:
+    os.system(cmd + " > " + log)
+  else:
+    os.system(cmd)
+
 def gcta64(file):
-  os.system("/home/rcf-40/caoqifan/cc2/plink-1.07-x86_64/plink --file " + 
+  run_cmd("/home/rcf-40/caoqifan/cc2/plink-1.07-x86_64/plink --file " + 
             file + " --make-bed --out " + file + " --noweb")
   
-  os.system("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64 --bfile " + 
+  run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64 --bfile " + 
             file + " --make-grm-bin --out " + file)
   
-  os.system("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
+  run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
             file + " --out " + file + " --pheno " + file + ".phen")
   
 def relate(file):
-  os.system("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --haps " + 
+  run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --haps " + 
             file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file)
   
-  os.system("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
+  run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file)
