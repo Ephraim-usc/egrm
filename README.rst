@@ -2,7 +2,7 @@ Expected Genetic Relationship Matrix
 ========
 
 Expected Genetic Relationship Matrix (EGRM) is the expected value of the Genetic Relationship Matrix (GRM) on unknown SNPs 
-given the complete genealogical tree, derived under the coalescent theory framework.
+given the complete genealogical tree of a sample of individuals, derived under the coalescent theory framework.
 
 
 Installation
