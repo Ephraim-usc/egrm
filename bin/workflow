@@ -41,13 +41,21 @@ del args['gcta']
 run_relate = args["relate"]
 del args['relate']
 
-def printf(string):
+def print_results(string):
   out_file = open(name, "a")
   out_file.write(str(string) + "\n")
   out_file.close()
 
+def print_logs(string):
+  out_file = open(name + ".log", "a")
+  out_file.write(str(string) + "\n")
+  out_file.close()
+
 ### run workflow
-printf("simulating ...")
+print_results(args)
+print_results(" \n")
+
+print_logs("simulating ...")
 simulation = simulate(**args)
 make_diploid(simulation)
 
@@ -61,12 +69,12 @@ M_5 = simulation["observations"]["M_5"]
 cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
-printf("computing Km ...")
-flags_obs = get_flags(trees, variants[obss])
-Km = getEK_trees(trees, flags_obs)
+print_logs("computing Km ...")
+flags_obs = get_flags(trees, variants[obss], file = name + ".log")
+Km = getEK_trees(trees, flags_obs, file = name + ".log")
 
 if run_gcta:
-  printf("running gcta ...")
+  print_logs("running gcta ...")
   os.mkdir(name + "_gcta")
   os.chdir(name + "_gcta")
   write_plink(simulation, obss, "observed")
@@ -76,15 +84,15 @@ if run_gcta:
   os.chdir("..")
 
 if run_relate:
-  printf("running relate ...")
+  print_logs("running relate ...")
   os.mkdir(name + "_relate")
   os.chdir(name + "_relate")
   write_relate(simulation, obss, "observed")
   relate("observed")
   trees_relate = tskit.load("observed.trees")
   os.chdir("..")
-  printf("computing Km_relate ...")
-  Km_relate = getEK_trees(trees_relate)
+  print_logs("computing Km_relate ...")
+  Km_relate = getEK_trees(trees_relate, file = name + ".log")
 
 ### run BLUP
 Z_cas = simulation["phenotypes"]["Z_cas"]
@@ -96,7 +104,7 @@ y = simulation["phenotypes"]["y"]
 
 grm = 1
 if grm:
-  printf("running grm matrices ...")
+  print_logs("running grm matrices ...")
   os.mkdir(name + "_grm")
   os.chdir(name + "_grm")
   np.savetxt("K_cas.txt", K_cas)
@@ -137,12 +145,12 @@ b = np.array(b)
 c = np.array(c)
 d = np.array(d)
 
-printf(args)
-printf("M_cas / M = " + str(np.array(M_cas/M).round(2)))
-printf("M_obs / M_5 = " + str(np.array(M_obs/M_5).round(2)))
 
-printf("true number of trees = " + str(trees.num_trees))
-printf("relate inferred number of trees = " + str(trees_relate.num_trees))
+print_results("M_cas / M = " + str(np.array(M_cas/M).round(2)))
+print_results("M_obs / M_5 = " + str(np.array(M_obs/M_5).round(2)))
+
+print_results("true number of trees = " + str(trees.num_trees))
+print_results("relate inferred number of trees = " + str(trees_relate.num_trees))
 
 diags = np.diag_indices(N)
 non_diags = np.where(~np.eye(N,dtype=bool))
@@ -151,9 +159,9 @@ table = {"K_cas":K_cas[non_diags].flatten(), "K_obs":K_obs[non_diags].flatten(),
          "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten()}
 
 table = pd.DataFrame(data=table)
-printf(table.corr(method ='pearson'))
+print_results(table.corr(method ='pearson'))
 
-printf("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
-printf("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
-printf("Km BLUP: " + str(c.mean().round(3)) + " +- " + str(c.std().round(3)))
-printf("Km_relate BLUP: " + str(d.mean().round(3)) + " +- " + str(d.std().round(3)))
+print_results("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
+print_results("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
+print_results("Km BLUP: " + str(c.mean().round(3)) + " +- " + str(c.std().round(3)))
+print_results("Km_relate BLUP: " + str(d.mean().round(3)) + " +- " + str(d.std().round(3)))
