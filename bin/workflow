@@ -3,7 +3,6 @@
 ### importing packages
 import argparse
 import os
-import io
 import pandas as pd
 
 ### importing crm
@@ -71,8 +70,8 @@ cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
 print_logs("computing Km ...")
-flags_obs = get_flags(trees, variants[obss], file = io.stringIO(name + ".log"))
-Km = getEK_trees(trees, flags_obs, file = io.stringIO(name + ".log"))
+flags_obs = get_flags(trees, variants[obss], file = open(name + ".log", "a"))
+Km = getEK_trees(trees, flags_obs, file = open(name + ".log", "a"))
 
 if run_gcta:
   print_logs("running gcta ...")
@@ -93,7 +92,7 @@ if run_relate:
   trees_relate = tskit.load("observed.trees")
   os.chdir("..")
   print_logs("computing Km_relate ...")
-  Km_relate = getEK_trees(trees_relate, file = io.stringIO(name + ".log"))
+  Km_relate = getEK_trees(trees_relate, file = open(name + ".log", "a"))
 
 ### run BLUP
 Z_cas = simulation["phenotypes"]["Z_cas"]
