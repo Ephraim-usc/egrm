@@ -1,7 +1,7 @@
-Coalescent Relationship Matrix
+Expected Genetic Relationship Matrix
 ========
 
-Coalescent Relationship Matrix (CRM) is the expected Genetic Relationship Matrix (GRM) on unknown SNPs 
+Expected Genetic Relationship Matrix (EGRM) is the expected value of the Genetic Relationship Matrix (GRM) on unknown SNPs 
 given the complete genealogical tree, derived under the coalescent theory framework.
 
 
@@ -10,11 +10,11 @@ Installation
 
 Install from PyPI:
 
-    pip install crm
+    pip install egrm
 
 Or download the package and install from local:
 
-    pip install ./crm
+    pip install ./egrm
 
 
 Command Line Tool
@@ -22,10 +22,10 @@ Command Line Tool
 
 There are two command line tools:
 
-    trees2crm [--input INPUT]
+    trees2egrm [--input INPUT]
 
 Where INPUT is the tree sequence filename which must end with '.trees'.
-It outputs the CRM matrix in a file with the same name but '.crm' suffix.
+It outputs the CRM matrix in a file with the same name but '.egrm' suffix.
 
     workflow [--out OUT] [--name NAME] [--gcta] [--relate]
 
