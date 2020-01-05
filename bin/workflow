@@ -5,8 +5,8 @@ import argparse
 import os
 import pandas as pd
 
-### importing crm
-from crm import *
+### importing egrm
+from egrm import *
 
 ### parse arguments
 parser=argparse.ArgumentParser()
