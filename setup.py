@@ -7,8 +7,8 @@ def readme():
 
 setup(name='egrm',
       version='0.1',
-      description='Coalescent Relationship Matrix',
-      long_description=readme(),
+      description='Expected Genetic Relationship Matrix',
+      #long_description=readme(),
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.7',
