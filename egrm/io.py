@@ -105,7 +105,7 @@ def gcta64(file, log = None):
   run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
             file + " --out " + file + " --pheno " + file + ".phen", log)
   
-def relate(file):
+def relate(file, log):
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --haps " + 
             file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file, log)
   
