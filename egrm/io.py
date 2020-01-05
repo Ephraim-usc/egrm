@@ -91,7 +91,7 @@ def write_crm(crm, file):
 
 def run_cmd(cmd, log = None):
   if log != None:
-    os.system(cmd + " > " + log)
+    os.system(cmd + " > " + log + " 2>&1")
   else:
     os.system(cmd)
 
