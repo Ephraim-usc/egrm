@@ -5,7 +5,7 @@ def readme():
     with open('README.rst') as f:
         return f.read()
 
-setup(name='crm',
+setup(name='egrm',
       version='0.1',
       description='Coalescent Relationship Matrix',
       long_description=readme(),
@@ -15,13 +15,13 @@ setup(name='crm',
         'Topic :: Scientific/Engineering :: Bio-Informatics', 
       ],
       keywords='genetics genome SNP coalescence',
-      url='https://github.com/Ephraim-usc/crm.git',
+      url='https://github.com/Ephraim-usc/egrm.git',
       author='Caoqi Fan',
       author_email='caoqifan@usc.edu',
       license='USC',
-      packages=['crm'],
+      packages=['egrm'],
       install_requires=[
           'tskit', 'tqdm', 'msprime'
       ],
-      scripts=['bin/trees2crm', 'bin/workflow'],
+      scripts=['bin/trees2egrm', 'bin/workflow'],
       zip_safe=False)
