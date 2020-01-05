@@ -29,7 +29,8 @@ args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 out = args["out"]
-os.mkdir(out)
+if not os.path.exists(out):
+  os.mkdir(out)
 os.chdir(out)
 del args['out']
 
