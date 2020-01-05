@@ -5,16 +5,10 @@ Coalescent Relationship Matrix (CRM) is the expected Genetic Relationship Matrix
 given the complete genealogical tree, derived under the coalescent theory framework.
 
 
-Features
---------
-
-- Be awesome
-- Make things faster
-
 Installation
 ------------
 
-Install $project by running:
+Copy the :
 
     install project
 
