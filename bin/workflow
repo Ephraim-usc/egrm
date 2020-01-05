@@ -94,6 +94,8 @@ if run_relate:
   os.chdir("..")
   print_logs("computing Km_relate ...")
   Km_relate = getEK_trees(trees_relate, file = open(name + ".log", "a"))
+else:
+  Km_relate = Km
 
 ### run BLUP
 Z_cas = simulation["phenotypes"]["Z_cas"]
@@ -145,7 +147,6 @@ a = np.array(a)
 b = np.array(b)
 c = np.array(c)
 d = np.array(d)
-
 
 print_results("M_cas / M = " + str(np.array(M_cas/M).round(2)))
 print_results("M_obs / M_5 = " + str(np.array(M_obs/M_5).round(2)))
