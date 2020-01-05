@@ -1,4 +1,4 @@
 from .simulation import *
-from .crm import *
+from .egrm import *
 from .io import *
 from .blup import *
