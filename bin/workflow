@@ -55,7 +55,6 @@ def print_logs(string):
 
 ### run workflow
 print_results(args)
-print_results(" \n")
 
 print_logs("simulating ...")
 simulation = simulate(**args)
