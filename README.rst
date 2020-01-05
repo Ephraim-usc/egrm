@@ -30,7 +30,8 @@ It outputs the CRM matrix in a file with the same name but '.egrm' suffix.
     workflow [--out OUT] [--name NAME] [--gcta] [--relate]
 
 Where OUT is the output directory, and NAME is the prefix of all output files associated with this simulation.
-It simulates the haplotypic and phenotypic data, and runs phenotype imputation based on several relationship matrices.
+Results are written into OUT/NAME, Running log info is written into OUT/NAME.log.
+This workflow simulates the haplotypic and phenotypic data, and runs phenotype imputation based on several relationship matrices.
 Include --gcta to run the GCTA analysis.
 Include --relate to run relate tree reconstruction (which is required by Km_relate).
 Use 
