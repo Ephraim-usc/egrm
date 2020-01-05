@@ -45,7 +45,7 @@ def getEK(tree):
   L = tree.total_branch_length
   return buffer/L
 
-def getEK_trees(trees, flags = None):
+def getEK_trees(trees, flags = None, file = None):
   if (flags == None):
     flags = [True] * trees.num_trees
   elif len(flags) != trees.num_trees:
@@ -57,7 +57,8 @@ def getEK_trees(trees, flags = None):
   total_length = 0
   pbar = tqdm.tqdm(total = len(idx_trees), 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
-                   miniters = len(idx_trees) // 100)
+                   miniters = len(idx_trees) // 100,
+                   file = file)
   
   for i in idx_trees:
     tree = trees.at_index(i)
@@ -70,9 +71,10 @@ def getEK_trees(trees, flags = None):
   pbar.close()
   return EK
 
-def get_flags(trees, variants):
+def get_flags(trees, variants, file):
     flags = [False] * trees.num_trees
     for v in tqdm.tqdm(variants, bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
-                       miniters = len(variants) // 100):
+                       miniters = len(variants) // 100, 
+                       file = file):
       flags[trees.at(v).index] = True
     return flags
