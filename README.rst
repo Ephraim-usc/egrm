@@ -39,6 +39,27 @@ Use
 to see more parameters for the simulation.
 
 
+
+Python Functions
+-----------------
+
+    simulate( ... )
+
+This will run the whole simulation process (of haplotypic data, of phenotypes and of observed SNPs) and 
+store all output data in a nested dictionary structure.
+It has many optional parameters to setup the simulation conditions.
+
+    getEK(tree)
+
+This will compute the expected GRM based on the tskit.Tree object.
+The output is a numpy matrix.
+
+    getEK_trees(trees)
+
+This will compute the expected GRM based on the tskit.TreeSequence object.
+It is just the weighted mean (by genomic interval length) of all outputs of getEK on each tree.
+The output is a numpy matrix.
+
 Support
 -------
 
