@@ -8,23 +8,18 @@ given the complete genealogical tree, derived under the coalescent theory framew
 Installation
 ------------
 
-Copy the :
+Install from PyPI:
 
-    install project
+    pip install crm
 
-Contribute
-----------
+Or download the package and install from local:
 
-- Issue Tracker: github.com/$project/$project/issues
-- Source Code: github.com/$project/$project
+    pip install ./crm
+
 
 Support
 -------
 
 If you are having issues, please let us know.
-We have a mailing list located at: project@google-groups.com
+Email the author: caoqifan@usc.edu
 
-License
--------
-
-The project is licensed under the BSD license.
