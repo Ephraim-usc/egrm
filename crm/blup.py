@@ -1,3 +1,5 @@
+import numpy as np
+
 def BLUP(K, y_train, trains, tests, h2 = 0.9):
   N_train = len(trains)
   
