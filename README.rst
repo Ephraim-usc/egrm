@@ -17,7 +17,7 @@ Or download the package and install from local:
     pip install ./egrm
 
 
-Command Line Tool
+Command Line Tools
 -----------------
 
 There are two command line tools:
