@@ -53,7 +53,7 @@ for file in files:
     
     df.loc[df.shape[0] + 1] = results
 
-df.to_csv(out, sep='\t', index=False, header=True)
+df.to_csv(output, sep='\t', index=False, header=True)
 
 
 
