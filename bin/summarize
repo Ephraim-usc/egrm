@@ -2,15 +2,58 @@
 
 ### importing packages
 import argparse
+from os import listdir
+from os.path import isfile, join
+import pandas as pd
+import re
 
 ### parse arguments
 parser=argparse.ArgumentParser()
-parser.add_argument('--input', type = str, help='directory of files to summarize from')
+parser.add_argument('--dir', type = str, help='directory of files to summarize from')
 
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
-input = args["input"]
+input = args["dir"]
 output = input + ".summary" 
 
 ### 
+files = [f for f in listdir(input) if isfile(join(input, f))]
+df = pd.DataFrame(columns=['filename','parameters','N_trees','N_trees_relate',
+                           'r_Kcas_Kobs','r_Kcas_Km','r_Kcas_Km_relate', 
+                           'blup_Kcas', 'blup_Kobs', 'blup_Km', 'blup_Km_relate'])
+
+for file in files:
+    texts = open(input + "/" + file, "r").read()
+    splitted = texts.split("\n")
+    results = [file]
+    
+    tmp = list(filter(lambda x: re.search(r'Km_relate BLUP', x), splitted))
+    if tmp == []:
+      continue
+    
+    tmp = list(filter(lambda x: re.search(r'{', x), splitted))[0]
+    results.append(tmp)
+    tmp = list(filter(lambda x: re.search(r'true number of trees', x), splitted))[0]
+    results.append(tmp.split(" = ")[1])
+    tmp = list(filter(lambda x: re.search(r'relate inferred number of trees', x), splitted))[0]
+    results.append(tmp.split(" = ")[1])
+    tmp = list(filter(lambda x: re.search(r'K_cas      1', x), splitted))[0]
+    results.append(tmp.split()[2])
+    results.append(tmp.split()[3])
+    results.append(tmp.split()[4])
+    tmp = list(filter(lambda x: re.search(r'K_cas BLUP', x), splitted))[0]
+    results.append(tmp.split()[2])
+    tmp = list(filter(lambda x: re.search(r'K_obs BLUP', x), splitted))[0]
+    results.append(tmp.split()[2])
+    tmp = list(filter(lambda x: re.search(r'Km BLUP', x), splitted))[0]
+    results.append(tmp.split()[2])
+    tmp = list(filter(lambda x: re.search(r'Km_relate BLUP', x), splitted))[0]
+    results.append(tmp.split()[2])
+    
+    df.loc[df.shape[0] + 1] = results
+
+df.to_csv(out, sep='\t', index=False, header=True)
+
+
+
