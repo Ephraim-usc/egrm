@@ -23,5 +23,5 @@ setup(name='egrm',
       install_requires=[
           'tskit', 'tqdm', 'msprime'
       ],
-      scripts=['bin/trees2egrm', 'bin/workflow'],
+      scripts=['bin/trees2egrm', 'bin/workflow', 'bin/summarize'],
       zip_safe=False)
