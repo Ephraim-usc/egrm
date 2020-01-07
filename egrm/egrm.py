@@ -63,7 +63,7 @@ def getEK_trees(trees, flags = None, file = None):
   for i in idx_trees:
     tree = trees.at_index(i)
     interval = tree.interval
-    length = interval[1] - interval[0]
+    length = (interval[1] - interval[0]) * tree.total_branch_length
     total_length += length
     EK += getEK(tree) * length
     pbar.update(1)
