@@ -4,6 +4,7 @@ import math
 import numpy as np
 import pandas as pd
 import tskit
+import struct
 
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
@@ -76,7 +77,28 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
 def read_trees(file):
   return tskit.load(file)
 
-def write_crm(crm, file):
+def write_grm(grm, M, file):
+  N = grm.shape[0]
+  with open("{}.grm.bin".format(file), "wb") as grmfile:
+    for idx in range(N):
+      for jdx in range(idx + 1):
+        val = struct.pack('f', grm[idx, jdx])
+        grmfile.write(val)
+  
+  val = struct.pack('i', int(M))
+  with open("{}.grm.N.bin".format(file), "wb") as grmfile:
+    for idx in range(N):
+      for jdx in range(idx + 1):
+        grmfile.write(val)
+  
+  with open("{}.grm.id".format(file), "w") as grmfile:
+    for idx in range(N):
+      fid = "FID{}".format(idx)
+      iid = "IID{}".format(idx)
+      grmfile.write("\t".join([fid, iid]) + os.linesep)
+
+'''
+def write_crm(grm, file):
   N = crm.shape[0]
   crm_df = pd.DataFrame(data = crm)
   crm_df["row"] = range(N)
@@ -88,6 +110,7 @@ def write_crm(crm, file):
     string = str(vector[0] + 1) + " " + str(vector[1] + 1) + " 1000000 " + str(vector[2]) + "\n"
     bytes = crm_file.write(string)
   crm_file.close()
+'''
 
 def run_cmd(cmd, log = None):
   if log != None:
