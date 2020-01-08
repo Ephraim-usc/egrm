@@ -4,6 +4,7 @@
 import argparse
 import os
 import pandas as pd
+from shutil import copyfile
 
 ### importing egrm
 from egrm import *
@@ -91,9 +92,16 @@ if run_relate:
   write_relate(simulation, obss, "observed")
   relate("observed", name + ".log")
   trees_relate = tskit.load("observed.trees")
-  os.chdir("..")
   print_logs("computing Km_relate ...")
   Km_relate = getEK_trees(trees_relate, file = open(name + ".log", "a"))
+  os.chdir("..")
+  if run_gcta:
+    os.chdir(name + "_gcta")
+    total_timelength = sum((tree.interval[1] - tree.interval[0]) * 
+                         tree.total_branch_length for tree in trees_relate.trees())
+    total_timelength = round(total_timelength / 1e8)
+    write_grm(Km_relate, total_timelength, "relate")
+    gcta64reml("relate", "observed", name + ".log")
 else:
   Km_relate = Km
 
