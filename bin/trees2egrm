@@ -4,7 +4,7 @@
 import argparse
 
 ### importing egrm
-from egrm import getEK_trees, read_trees, write_crm
+from egrm import getEK_trees, read_trees, write_egrm
 
 ### parse arguments
 parser=argparse.ArgumentParser()
