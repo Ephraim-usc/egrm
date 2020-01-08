@@ -17,20 +17,20 @@ def write_plink(simulation, idx, file):
   
   ped_file = open(file + ".ped", 'a')
   for i in range(N):
-    string = "msprime " + str(i+1) + " 0 0 0 " + str(y[i]) + " "
+    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + " "
     string = string + " ".join(map(str, X[i])) + "\n"
     bytes = ped_file.write(string)
   ped_file.close()
   
   fam_file = open(file + ".fam", 'a')
   for i in range(N):
-    string = "msprime " + str(i+1) + " 0 0 0 " + str(y[i]) + "\n"
+    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + "\n"
     bytes = fam_file.write(string)
   fam_file.close()
   
   phen_file = open(file + ".phen", 'a')
   for i in range(N):
-    string = "msprime " + str(i+1) + " " + str(y[i]) + "\n"
+    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " " + str(y[i]) + "\n"
     bytes = phen_file.write(string)
   phen_file.close()
   
