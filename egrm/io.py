@@ -17,20 +17,20 @@ def write_plink(simulation, idx, file):
   
   ped_file = open(file + ".ped", 'a')
   for i in range(N):
-    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + " "
+    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + " "
     string = string + " ".join(map(str, X[i])) + "\n"
     bytes = ped_file.write(string)
   ped_file.close()
   
   fam_file = open(file + ".fam", 'a')
   for i in range(N):
-    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + "\n"
+    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + "\n"
     bytes = fam_file.write(string)
   fam_file.close()
   
   phen_file = open(file + ".phen", 'a')
   for i in range(N):
-    string = "FID{}".format(i+1) + "IID{}".format(i+1) + " " + str(y[i]) + "\n"
+    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " " + str(y[i]) + "\n"
     bytes = phen_file.write(string)
   phen_file.close()
   
@@ -127,6 +127,10 @@ def gcta64(file, log = None):
   
   run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
             file + " --out " + file + " --pheno " + file + ".phen", log)
+
+def gcta64reml(file, phen, log = None):
+  run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
+            file + " --out " + file + " --pheno " + phen + ".phen", log)
   
 def relate(file, log):
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --haps " + 
