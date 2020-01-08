@@ -102,6 +102,7 @@ if run_relate:
     total_timelength = round(total_timelength / 1e8)
     write_grm(Km_relate, total_timelength, "relate")
     gcta64reml("relate", "observed", name + ".log")
+    os.chdir("..")
 else:
   Km_relate = Km
 
