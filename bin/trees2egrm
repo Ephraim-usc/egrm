@@ -17,9 +17,9 @@ args = dict((k,v) for k,v in args.items() if v is not None)
 input = args["input"]
 
 if args.get("output", None) == None:
-  output = input[:-6]
-else:
   output = input + ".e"
+else:
+  output = args["output"]
 
 ### 
 trees = read_trees(input + ".trees")
