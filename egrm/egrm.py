@@ -54,7 +54,7 @@ def getEK_trees(trees, flags = None, file = None):
   
   N = trees.num_samples
   EK = np.zeros([N, N])
-  total_timelength = 0
+  total_tl = 0
   pbar = tqdm.tqdm(total = len(idx_trees), 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
                    miniters = len(idx_trees) // 100,
@@ -63,13 +63,13 @@ def getEK_trees(trees, flags = None, file = None):
   for i in idx_trees:
     tree = trees.at_index(i)
     interval = tree.interval
-    timelength = (interval[1] - interval[0]) * tree.total_branch_length
-    total_timelength += timelength
-    EK += getEK(tree) * timelength
+    tl = (interval[1] - interval[0]) * tree.total_branch_length
+    total_tl += tl
+    EK += getEK(tree) * tl
     pbar.update(1)
-  EK /= total_timelength
+  EK /= total_tl
   pbar.close()
-  return EK
+  return (EK, total_tl)
 
 def get_flags(trees, variants, file = None):
     flags = [False] * trees.num_trees
