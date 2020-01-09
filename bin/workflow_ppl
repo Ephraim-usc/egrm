@@ -95,7 +95,6 @@ y = simulation["phenotypes"]["y"]
 '''
 
 ### parallelized computing
-os.chdir(out)
 simulation = pickle.load(open("{}.p".format(name), "rb"))
 trees = read_trees("{}.trees".format(name))
 simulation["hapdata"]["tree_sequence"] = trees
