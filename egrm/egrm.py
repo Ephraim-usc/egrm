@@ -69,7 +69,7 @@ def getEK_trees(trees, flags = None, file = None):
     pbar.update(1)
   EK /= total_tl
   pbar.close()
-  return (EK, total_tl)
+  return (EK, round(total_tl))
 
 def get_flags(trees, variants, file = None):
     flags = [False] * trees.num_trees
