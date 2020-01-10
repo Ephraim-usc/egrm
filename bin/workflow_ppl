@@ -105,14 +105,14 @@ chunk_name = "observed_chunk" + str(i)
 
 variants = simulation["hapdata"]["variants"]
 flags_obs = get_flags(trees, variants[obss], file = open(chunk_name + ".log", "a"))
-Km, Km_tl = getEK_trees(trees, flags_obs, file = open(name + ".log", "a"))
+Km, Km_tl = getEK_trees(trees, flags_obs, file = open(chunk_name + ".log", "a"))
 
 os.mkdir(chunk_name + "_relate")
 os.chdir(chunk_name + "_relate")
 write_relate(simulation, obss, chunk_name)
 relate(chunk_name, chunk_name + ".log")
 trees_relate = read_trees(chunk_name + ".trees")
-Km_relate, Km_relate_tl = getEK_trees(trees_relate, file = open(name + ".log", "a"))
+Km_relate, Km_relate_tl = getEK_trees(trees_relate, file = open(chunk_name + ".log", "a"))
 
 os.chdir("..")
 write_grm(Km, Km_tl, chunk_name + "_Km")
