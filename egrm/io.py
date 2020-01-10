@@ -97,6 +97,51 @@ def write_grm(grm, M, file):
       iid = "IID{}".format(idx)
       grmfile.write("\t".join([fid, iid]) + os.linesep)
 
+def ReadGRMBin(prefix, AllN = False):
+    """
+    read a GCTA binary GRM file storing relatedness values between individuals
+    adapted from an R function on the GCTA website
+    Davis McCarthy, February 2015
+    """
+    BinFileName  = prefix + ".grm.bin"
+    NFileName = prefix + ".grm.N.bin"
+    IDFileName = prefix + ".grm.id"
+    dt = np.dtype('f4') # Relatedness is stored as a float of size 4 in the binary file
+    entry_format = 'f' # N is stored as a float in the binary file
+    entry_size = calcsize(entry_format)
+    ## Read IDs
+    ids = pd.read_csv(IDFileName, sep = '\t', header = None)
+    ids_vec = ids.iloc[:,1]
+    n = len(ids.index)
+    ids_diag = ['NA' for x in range(n)]
+    n_off = int((n * (n + 1) / 2) - n)
+    ids_off = ['NA' for x in range(n_off)]
+    ## Generate ids for relatedness values by concatenating individual IDs
+    ticker = 0
+    for i in range(n):
+        for j in range(i):
+            if i == j:
+                ids_diag[i] = str(ids_vec[i])
+            else:
+                ids_off[ticker] = str(ids_vec[i]) + '_' + str(ids_vec[j])
+                ticker += 1
+    ## Read relatedness values
+    grm = np.fromfile(BinFileName, dtype = dt)
+    ## Read number of markers values
+    if AllN:
+        N = np.fromfile(NFileName, dtype = dt)
+    else:
+        with open(NFileName, mode='rb') as f:
+            record = f.read(entry_size)
+            N = unpack(entry_format, record)[0]
+            N = int(N)
+    i = sum_n_vec(n)
+    out = {'diag': grm[i], 'off': np.delete(grm, i), 'id': ids, 'id_off': ids_off, 'id_diag': ids_diag, 'N': N}
+    return(out)
+
+
+      
+      
 '''
 def write_crm(grm, file):
   N = crm.shape[0]
