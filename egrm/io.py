@@ -97,6 +97,32 @@ def write_grm(grm, M, file):
       iid = "IID{}".format(idx)
       grmfile.write("\t".join([fid, iid]) + os.linesep)
 
+def read_grm(file):
+  BinFileName  = file + ".grm.bin"
+  NFileName = file + ".grm.N.bin"
+  dt = np.dtype('f4')
+  grm_vector = np.fromfile(BinFileName, dtype = dt)
+  M_vector = np.fromfile(NFileName, dtype = dt)
+  
+  N = int(np.floor(np.sqrt(2 * grm_vector.shape[0])))
+  grm = np.zeros((N, N))
+  M = np.zeros((N, N))
+  
+  p = 0
+  for idx in range(N):
+    for jdx in range(idx + 1):
+      grm[idx, jdx] = grm_vector[p]
+      M[idx, jdx] = M_vector[p]
+      p += 1
+  
+  grm_diags = np.diag(grm); grm = grm.T + grm
+  np.fill_diagonal(grm, grm_diags)
+  M_diags = np.diag(M); M = M.T + M
+  np.fill_diagonal(M, M_diags)
+  return (grm, M)
+  
+  
+'''
 def ReadGRMBin(prefix, AllN = False):
     """
     read a GCTA binary GRM file storing relatedness values between individuals
@@ -138,7 +164,7 @@ def ReadGRMBin(prefix, AllN = False):
     i = sum_n_vec(n)
     out = {'diag': grm[i], 'off': np.delete(grm, i), 'id': ids, 'id_off': ids_off, 'id_diag': ids_diag, 'N': N}
     return(out)
-
+'''
 
       
       
