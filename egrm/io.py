@@ -85,7 +85,7 @@ def write_grm(grm, M, file):
         val = struct.pack('f', grm[idx, jdx])
         grmfile.write(val)
   
-  val = struct.pack('i', int(M))
+  val = struct.pack('f', int(M))
   with open("{}.grm.N.bin".format(file), "wb") as grmfile:
     for idx in range(N):
       for jdx in range(idx + 1):
