@@ -119,3 +119,5 @@ write_grm(Km, Km_tl, chunk_name + "_Km")
 write_grm(Km_relate, Km_relate_tl, chunk_name + "_Km_relate")
 
 
+if i == 0:
+  pass
