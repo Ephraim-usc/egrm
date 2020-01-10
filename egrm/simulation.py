@@ -48,7 +48,7 @@ def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = 
     variants = np.array([v.position for v in tree_sequence.variants()])
     M = len(variants)
 
-    return {"N":N, "tree_sequence":tree_sequence, "genotype_matrix":genotype_matrix, 
+    return {"tree_sequence":tree_sequence, "genotype_matrix":genotype_matrix, 
             "MAFs":MAFs, "MACs":MACs, "variants":variants, "M":M}
 
 def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha):
@@ -110,11 +110,12 @@ def simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta):
 def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate,
             h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha,
             obs_ratio = obs_ratio, Beta = Beta):
+    parameters = locals()
     hapdata = simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate)
     phenotypes = simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha)
     observations = simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta)
 
-    return {"hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
+    return {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
 
 def make_diploid(simulation):
     genotype_matrix = simulation["hapdata"]["genotype_matrix"]
