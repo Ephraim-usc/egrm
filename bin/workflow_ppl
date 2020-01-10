@@ -65,7 +65,7 @@ if i == None:
   
   ### chunks data
   obss = simulation["observations"]["obss"]
-  obss_chunks = list(chunks(obss, 10000))
+  obss_chunks = list(chunks(obss, 2000))
   n = len(obss_chunks)
   
   os.mkdir(name + "_chunks")
@@ -117,3 +117,5 @@ Km_relate, Km_relate_tl = getEK_trees(trees_relate, file = open(chunk_name + ".l
 os.chdir("..")
 write_grm(Km, Km_tl, chunk_name + "_Km")
 write_grm(Km_relate, Km_tl_relate, chunk_name + "_Km_relate")
+
+
