@@ -23,9 +23,6 @@ else:
 
 ### 
 trees = read_trees(input + ".trees")
-egrm = getEK_trees(trees)
+egrm, egrm_tl = getEK_trees(trees)
 
-total_timelength = sum((tree.interval[1] - tree.interval[0]) * tree.total_branch_length for tree in trees.trees())
-total_timelength = round(total_timelength / 1e8)
-
-write_grm(egrm, total_timelength, output)
+write_grm(egrm, egrm_tl, output)
