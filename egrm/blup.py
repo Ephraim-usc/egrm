@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 def BLUP(K, y_train, trains, tests, h2 = 0.9):
   N_train = len(trains)
@@ -13,6 +14,7 @@ def BLUP(K, y_train, trains, tests, h2 = 0.9):
   return y_
 
 def test(simulation, repeats = 1000):
+  N = simulation["parameters"]["N"]
   K_cas = simulation["Ks"]["K_cas"]
   K_obs = simulation["Ks"]["K_obs"]
   Km = simulation["Ks"]["Km"]
