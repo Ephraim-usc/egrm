@@ -115,6 +115,7 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     phenotypes = simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha)
     observations = simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta)
     
+    simulation = {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
     Z_cas = simulation["phenotypes"]["Z_cas"]
     Z_obs = simulation["observations"]["Z_obs"]
     K_cas = np.dot(Z_cas, np.transpose(Z_cas)) / Z_cas.shape[1]
@@ -123,7 +124,7 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
         "K_obs":K_obs, "K_obs_M":simulation["observations"]["M_obs"]}
     simulation["Ks"] = Ks
     
-    return {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
+    return simulation
 
 def make_diploid(simulation):
     genotype_matrix = simulation["hapdata"]["genotype_matrix"]
