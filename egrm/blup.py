@@ -28,7 +28,7 @@ def test(simulation, repeats = 1000):
            "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten()}
   
   table = pd.DataFrame(data=table)
-    corr = table.corr(method ='pearson')
+  corr = table.corr(method ='pearson')
   
   y = simulation["phenotypes"]["y"]
   a = []
