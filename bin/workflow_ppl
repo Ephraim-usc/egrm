@@ -85,6 +85,7 @@ if i == 0:
   #tuple(zip(grm_files, M_files))
   grm_files = list(filter(lambda x:'grm.bin' in x, os.listdir()))
   chunk_names = [x.split('_')[0] + "_" + x.split('_')[1] for x in grm_files]
+  chunk_names = list(set(chunk_names))
   chunk_names_Km = [x + "_Km" for x in chunk_names]
   chunk_names_Km_relate = [x + "_Km_relate" for x in chunk_names]
   
