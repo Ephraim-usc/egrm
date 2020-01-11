@@ -106,6 +106,8 @@ if i == 0:
   simulation["Ks"]["Km_relate"] = Km_relate
   simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
   
+  test(simulation)
+  
   os.chdir("..")
   pickle.dump(simulation, open("{}.p".format(name), "wb"))
   write_grm(Km, Km_tl, name + "_Km")
