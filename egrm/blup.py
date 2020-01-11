@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import math
 
 def BLUP(K, y_train, trains, tests, h2 = 0.9):
   N_train = len(trains)
@@ -27,7 +28,7 @@ def test(simulation, repeats = 1000):
            "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten()}
   
   table = pd.DataFrame(data=table)
-  corr = table.corr(method ='pearson')
+    corr = table.corr(method ='pearson')
   
   y = simulation["phenotypes"]["y"]
   a = []
