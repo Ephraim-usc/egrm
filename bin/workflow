@@ -61,7 +61,7 @@ simulation = simulate(**args)
 make_diploid(simulation)
 
 trees = simulation["hapdata"]["tree_sequence"]
-N = simulation["hapdata"]["N"]
+N = simulation["parameters"]["N"]
 M = simulation["hapdata"]["M"]
 variants = simulation["hapdata"]["variants"]
 M_cas = simulation["phenotypes"]["M_cas"]
