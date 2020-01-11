@@ -98,7 +98,7 @@ if i == 0:
     Km += Kms[i][0] * Kms[i][1][0, 0]
     Km_relate += Km_relates[i][0] * Km_relates[i][1][0, 0]
   
-  Km_tl = sum([x[1][0, 0] for x in Kms]), Km /= Km_tl
+  Km_tl = sum([x[1][0, 0] for x in Kms]); Km /= Km_tl
   Km_relate_tl = sum([x[1][0, 0] for x in Km_relates]); Km_relate /= Km_relate_tl
   
   simulation["Ks"]["Km"] = Km
