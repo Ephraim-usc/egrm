@@ -107,9 +107,10 @@ if i == 0:
   simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
   
   os.chdir("..")
-  pickle.dump(simulation, open("{}_with_Ks.p".format(name), "wb"))
+  pickle.dump(simulation, open("{}.p".format(name), "wb"))
   write_grm(Km, Km_tl, name + "_Km")
   write_grm(Km_relate, Km_relate_tl, name + "_Km_relate")
+  sys.exit(0)
 
 
 ### parallelized computing
