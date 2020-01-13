@@ -58,5 +58,20 @@ def test(simulation, repeats = 1000):
   blup = {"K_cas":a, "K_obs":b, "Km":c, "Km_relate":d}
   simulation["tests"] = {"corr":corr, "blup":blup}
 
-
+def summary(simulation):
+  summ = "==========\nparameters \n==========\n"
+  summ += "\n".join([str(x) + "\t" + str(simulation["parameters"][x]) for x in simulation["parameters"].keys()]) + "\n"
+  summ += "==========\nK matrix correlations \n==========\n"
+  summ += str(simulation["tests"]["corr"]) + "\n"
+  tmp = simulation["tests"]["blup"]["K_cas"]
+  summ += "==========\nBLUP accuracy \n==========\n"
+  summ += "K_cas\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup"]["K_obs"]
+  summ += "K_obs\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup"]["Km"]
+  summ += "Km\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup"]["Km_relate"]
+  summ += "Km_relate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  
+  return(summ)
 
