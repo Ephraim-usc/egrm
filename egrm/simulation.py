@@ -144,3 +144,20 @@ def make_diploid(simulation):
 
     y_diploid = y[maternals_hap] + y[paternals_hap]
     simulation["phenotypes"]["y_diploid"] = y_diploid
+
+def merge(simulations):
+    ls = list(x["parameters"]["l"] for x in simulations)
+    simulation = {}
+    simulation["parameters"] = simulations[0]["parameters"]
+    simulation["parameters"]["l"] = sum(ls)
+    
+    simulation["phenotypes"] = {}
+    simulation["phenotypes"]["y"] = sum([ls[i] * simulations[i]["phenotypes"]["y"] for i in range(len(ls))]) / sum(ls)
+    simulation["Ks"] = {}
+    simulation["Ks"]["K_cas"] = sum([ls[i] * simulations[i]["Ks"]["K_cas"] for i in range(len(ls))]) / sum(ls)
+    simulation["Ks"]["K_obs"] = sum([ls[i] * simulations[i]["Ks"]["K_obs"] for i in range(len(ls))]) / sum(ls)
+    simulation["Ks"]["Km"] = sum([ls[i] * simulations[i]["Ks"]["Km"] for i in range(len(ls))]) / sum(ls)
+    simulation["Ks"]["Km_relate"] = sum([ls[i] * simulations[i]["Ks"]["Km_relate"] for i in range(len(ls))]) / sum(ls)
+    
+    return(simulation)
+
