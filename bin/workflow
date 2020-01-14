@@ -109,6 +109,7 @@ simulation["Ks"]["Km_relate"] = Km_relate
 simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
 
 test(simulation)
+print_results(summary(simulation))
 
 ### save
 trees = simulation["hapdata"].pop("tree_sequence")
