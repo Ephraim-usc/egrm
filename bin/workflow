@@ -116,6 +116,8 @@ if run_tsinfer:
     sample_data.add_site(variants[obs], simulation["hapdata"]["genotype_matrix"][obs, :])
   trees_tsinfer = tsinfer.infer(sample_data)
   Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
+else:
+  Km_tsinfer, Km_tsinfer_tl = Km, Km_tl
 
 simulation["Ks"]["Km"] = Km
 simulation["Ks"]["Km_tl"] = Km_tl
