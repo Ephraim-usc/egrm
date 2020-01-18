@@ -5,6 +5,8 @@ import argparse
 import os
 import pandas as pd
 import pickle
+import datetime
+import tsinfer
 
 ### importing egrm
 from egrm import *
@@ -14,8 +16,10 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
 parser.add_argument('--name', type = str, help='output file name')
+parser.add_argument('--all', help='run all steps', action='store_true')
 parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
+parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
@@ -29,20 +33,21 @@ parser.add_argument('--Beta', type = float, help='Beta -- observation probabilit
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
-out = args["out"]
+out = args.pop("out")
 if not os.path.exists(out):
   os.mkdir(out)
 os.chdir(out)
-del args['out']
 
-name = args["name"]
-del args['name']
+name = args.pop("name")
+run_all = args.pop("all")
+run_gcta = args.pop("gcta")
+run_relate = args.pop("relate")
+run_tsinfer = args.pop("tsinfer")
 
-run_gcta = args["gcta"]
-del args['gcta']
-
-run_relate = args["relate"]
-del args['relate']
+if run_all:
+  run_gcta = True
+  run_relate = True
+  run_tsinfer = True
 
 def print_results(string):
   out_file = open(name, "a")
@@ -55,6 +60,7 @@ def print_logs(string):
   out_file.close()
 
 ### run workflow
+print_results(str(datetime.datetime.now()))
 print_results(args)
 
 print_logs("simulating ...")
@@ -103,23 +109,28 @@ if run_relate:
 else:
   Km_relate, Km_relate_tl = Km, Km_tl
 
+if run_tsinfer:
+  print_logs("running tsinfer ...")
+  sample_data = tsinfer.SampleData(sequence_length = simulation["parameters"]["l"])
+  for obs in range(obss):
+    sample_data.add_site(variants[obs], simulation["hapdata"]["genotype_matrix"][obs, :])
+  trees_tsinfer = tsinfer.infer(sample_data)
+  Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
+
 simulation["Ks"]["Km"] = Km
 simulation["Ks"]["Km_tl"] = Km_tl
 simulation["Ks"]["Km_relate"] = Km_relate
 simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
+simulation["Ks"]["Km_tsinfer"] = Km_tsinfer
+simulation["Ks"]["Km_tsinfer_tl"] = Km_tsinfer_tl
 
 test(simulation)
 print_results(summary(simulation))
+print_results("\n" + str(datetime.datetime.now()))
 
 ### save
 trees = simulation["hapdata"].pop("tree_sequence")
 pickle.dump(simulation, open("{}.p".format(name), "wb"))
 trees.dump("{}.trees".format(name))
 
-### output
-'''
-print_results("K_cas BLUP: " + str(a.mean().round(3)) + " +- " + str(a.std().round(3)))
-print_results("K_obs BLUP: " + str(b.mean().round(3)) + " +- " + str(b.std().round(3)))
-print_results("Km BLUP: " + str(c.mean().round(3)) + " +- " + str(c.std().round(3)))
-print_results("Km_relate BLUP: " + str(d.mean().round(3)) + " +- " + str(d.std().round(3)))
-'''
+
