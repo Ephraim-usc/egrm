@@ -205,7 +205,7 @@ def gcta64reml(file, phen, log = None):
   
 def relate(file, log):
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/scripts/RelateParallel/RelateParallel.sh --mode All -m 1e-8 -N 30000 --haps " + 
-            file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file, log)
+            file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file + " --threads 8", log)
   
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file, log)
