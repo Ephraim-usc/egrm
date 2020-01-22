@@ -25,7 +25,8 @@ def test(simulation, repeats = 1000):
   non_diags = np.where(~np.eye(N,dtype=bool))
   
   table = {"K_cas":K_cas[non_diags].flatten(), "K_obs":K_obs[non_diags].flatten(),
-           "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten()}
+           "Km":Km[non_diags].flatten(), "Km_relate":Km_relate[non_diags].flatten(),
+           "Km_tsinfer":Km_tsinfer[non_diags].flatten()}
   
   table = pd.DataFrame(data=table)
   corr = table.corr(method ='pearson')
@@ -35,6 +36,7 @@ def test(simulation, repeats = 1000):
   b = []
   c = []
   d = []
+  e = []
   for i in range(1000):
     tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
     tests.sort()
@@ -50,12 +52,15 @@ def test(simulation, repeats = 1000):
     c.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_relate, y_train, trains, tests, h2 = 0.9)
     d.append(np.corrcoef(y_, y_test)[0, 1])
+    y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
+    d.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
   c = np.array(c)
   d = np.array(d)
-  blup = {"K_cas":a, "K_obs":b, "Km":c, "Km_relate":d}
+  e = np.array(e)
+  blup = {"K_cas":a, "K_obs":b, "Km":c, "Km_relate":d, "Km_tsinfer":e}
   simulation["tests"] = {"corr":corr, "blup":blup}
 
 def summary(simulation):
@@ -72,6 +77,8 @@ def summary(simulation):
   summ += "Km\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   tmp = simulation["tests"]["blup"]["Km_relate"]
   summ += "Km_relate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup"]["Km_tsinfer"]
+  summ += "Km_tsinfer\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   
   return(summ)
 
