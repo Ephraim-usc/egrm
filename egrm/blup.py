@@ -20,6 +20,7 @@ def test(simulation, repeats = 1000):
   K_obs = simulation["Ks"]["K_obs"]
   Km = simulation["Ks"]["Km"]
   Km_relate = simulation["Ks"]["Km_relate"]
+  Km_tsinfer = simulation["Ks"]["Km_tsinfer"]
   
   diags = np.diag_indices(N)
   non_diags = np.where(~np.eye(N,dtype=bool))
