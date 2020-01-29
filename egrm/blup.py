@@ -68,7 +68,7 @@ def test(simulation, repeats = 1000):
     y_ = BLUP(Km_relate, y_train, trains, tests, h2 = 0.9)
     d.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
-    d.append(np.corrcoef(y_, y_test)[0, 1])
+    e.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
