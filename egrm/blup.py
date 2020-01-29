@@ -74,7 +74,7 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
   d = []
   e = []
   for i in range(repeats):
-    print(i)
+    #print(i)
     tests = np.random.choice(int(N/2), math.floor(N * 0.125), replace = False)
     tests.sort()
     trains = [i for i in range(int(N/2)) if i not in tests]
@@ -134,8 +134,8 @@ def test(simulation, repeats = 1000):
                   'Km_tsinfer':h_estimate(Km_tsinfer, y, N)} 
   
   simulation["tests"] = {"corr":corr, 'h_estimation':h_estimation}
-  phenotype_impute(simulation)
-  phenotype_impute(simulation)
+  phenotype_impute(simulation, repeats)
+  phenotype_impute_diploid(simulation, repeats)
 
 
 def summary(simulation):
