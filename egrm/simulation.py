@@ -131,7 +131,14 @@ def make_diploid(simulation):
     N = genotype_matrix.shape[1]
     M = simulation["hapdata"]["M"]
     y = simulation["phenotypes"]["y"]
+    
+    maternals = np.random.choice(list(range(N)), int(N/2), replace = False); maternals.sort()
+    paternals = np.array(list(set(range(N)) - set(maternals)))
+    y_diploid = y[maternals] + y[paternals]
+    
+    simulation['diploid'] = {'maternals':maternals, 'paternals':paternals, 'y_diploid':y}
 
+    '''
     maternals_snp = np.arange(0, M * 2 - 1, 2)
     paternals_snp = np.arange(1, M * 2, 2)
     maternals_hap = np.arange(0, N - 1, 2)
@@ -144,6 +151,7 @@ def make_diploid(simulation):
 
     y_diploid = y[maternals_hap] + y[paternals_hap]
     simulation["phenotypes"]["y_diploid"] = y_diploid
+    '''
 
 def merge(simulations):
     ls = list(x["parameters"]["l"] for x in simulations)
