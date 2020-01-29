@@ -13,14 +13,17 @@ def write_plink(simulation, idx, file):
   idx_diploid = np.sort(idx_diploid)
   X = np.transpose(simulation["hapdata"]["genotype_matrix_diploid"][idx_diploid])
   '''
+  N = int(simulation['parameters']['N'] / 2)
+  M = simulation['hapdata']['M']
   maternals = simulation["diploid"]['maternals']
   paternals = simulation["diploid"]['paternals']
   genotype_matrix = simulation["hapdata"]["genotype_matrix"]
-  X = np.transpose(np.concatenate((genotype_matrix[:, maternals], genotype_matrix[:, paternals])))
+  X = np.zeros((N, 2 * M))
+  X[:, ::2] = np.transpose(genotype_matrix[:, maternals])
+  X[:, 1::2] = np.transpose(genotype_matrix[:, paternals])
   
   y = simulation["phenotypes"]["y_diploid"]
   variants = simulation["hapdata"]["variants"]
-  N = X.shape[0]
   
   ped_file = open(file + ".ped", 'a')
   for i in range(N):
