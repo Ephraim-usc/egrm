@@ -112,7 +112,7 @@ else:
 if run_tsinfer:
   print_logs("running tsinfer ...")
   sample_data = tsinfer.SampleData(sequence_length = simulation["parameters"]["l"])
-  for obs in range(obss):
+  for obs in obss:
     sample_data.add_site(variants[obs], simulation["hapdata"]["genotype_matrix"][obs, :])
   trees_tsinfer = tsinfer.infer(sample_data)
   Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
