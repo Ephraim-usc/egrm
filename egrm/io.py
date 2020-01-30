@@ -8,11 +8,10 @@ import struct
 
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
-  '''
+  
   idx_diploid = idx * 2; idx_diploid = np.concatenate([idx_diploid, idx_diploid + 1])
   idx_diploid = np.sort(idx_diploid)
-  X = np.transpose(simulation["hapdata"]["genotype_matrix_diploid"][idx_diploid])
-  '''
+  
   N = int(simulation['parameters']['N'] / 2)
   M = simulation['hapdata']['M']
   maternals = simulation["diploid"]['maternals']
@@ -21,6 +20,7 @@ def write_plink(simulation, idx, file):
   X = np.zeros((N, 2 * M))
   X[:, ::2] = np.transpose(genotype_matrix[:, maternals])
   X[:, 1::2] = np.transpose(genotype_matrix[:, paternals])
+  X = X[:, idx_diploid]
   
   y = simulation["phenotypes"]["y_diploid"]
   variants = simulation["hapdata"]["variants"]
