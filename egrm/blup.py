@@ -64,6 +64,9 @@ def K_diploid(K, maternals, paternals):
 
 def phenotype_impute_diploid(simulation, repeats = 1000):
   y_diploid = simulation['diploid']['y_diploid']
+  maternals = simulation['diploid']['maternals']
+  paternals = simulation['diploid']['paternals']
+  
   K_cas = K_diploid(simulation["Ks"]["K_cas"], maternals, paternals)
   K_obs = K_diploid(simulation["Ks"]["K_obs"], maternals, paternals)
   Km = K_diploid(simulation["Ks"]["Km"], maternals, paternals)
