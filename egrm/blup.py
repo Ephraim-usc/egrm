@@ -15,6 +15,7 @@ def BLUP(K, y_train, trains, tests, h2 = 0.9):
   return y_
 
 def phenotype_impute(simulation, repeats = 100):
+  y = simulation['phenotypes']['y']
   N = simulation["parameters"]["N"]
   K_cas = simulation["Ks"]["K_cas"]
   K_obs = simulation["Ks"]["K_obs"]
@@ -62,6 +63,7 @@ def K_diploid(K, maternals, paternals):
   return (K1 + K2 + K3 + K4)/2
 
 def phenotype_impute_diploid(simulation, repeats = 1000):
+  y_diploid = simulation['diploid']['y_diploid']
   K_cas = K_diploid(simulation["Ks"]["K_cas"], maternals, paternals)
   K_obs = K_diploid(simulation["Ks"]["K_obs"], maternals, paternals)
   Km = K_diploid(simulation["Ks"]["Km"], maternals, paternals)
