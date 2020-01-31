@@ -63,6 +63,7 @@ def K_diploid(K, maternals, paternals):
   return (K1 + K2 + K3 + K4)/2
 
 def phenotype_impute_diploid(simulation, repeats = 1000):
+  N = simulation["parameters"]["N"]
   y_diploid = simulation['diploid']['y_diploid']
   maternals = simulation['diploid']['maternals']
   paternals = simulation['diploid']['paternals']
