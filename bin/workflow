@@ -45,7 +45,7 @@ run_relate = args.pop("relate")
 run_tsinfer = args.pop("tsinfer")
 
 if run_all:
-  run_gcta = True
+  #run_gcta = True
   run_relate = True
   run_tsinfer = True
 
