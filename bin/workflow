@@ -95,7 +95,7 @@ if run_gcta:
 
 if run_relate:
   print_logs("running relate ...")
-  simulation["hapdata"]["genotype_matrix"] = pickle.load(open(""{}.gm.p".format(name)", "rb"))
+  simulation["hapdata"]["genotype_matrix"] = pickle.load(open("{}.gm.p".format(name)", "rb"))
   os.mkdir(name + "_relate")
   os.chdir(name + "_relate")
   
@@ -117,7 +117,7 @@ else:
 
 if run_tsinfer:
   print_logs("running tsinfer ...")
-  simulation["hapdata"]["genotype_matrix"] = pickle.load(open(""{}.gm.p".format(name)", "rb"))
+  simulation["hapdata"]["genotype_matrix"] = pickle.load(open("{}.gm.p".format(name)", "rb"))
   
   sample_data = tsinfer.SampleData(sequence_length = simulation["parameters"]["l"])
   for obs in obss:
