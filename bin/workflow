@@ -67,6 +67,8 @@ print_logs("simulating ...")
 simulation = simulate(**args)
 make_diploid(simulation)
 
+pickle.dump(simulation["hapdata"].pop("genotype_matrix"), open("{}.gm.p".format(name), "wb"))
+
 trees = simulation["hapdata"]["tree_sequence"]
 N = simulation["parameters"]["N"]
 M = simulation["hapdata"]["M"]
@@ -93,9 +95,13 @@ if run_gcta:
 
 if run_relate:
   print_logs("running relate ...")
+  simulation["hapdata"]["genotype_matrix"] = pickle.load(open(""{}.gm.p".format(name)", "rb"))
   os.mkdir(name + "_relate")
   os.chdir(name + "_relate")
+  
   write_relate(simulation, obss, "observed")
+  del simulation["hapdata"]["genotype_matrix"]
+  
   relate("observed", name + ".log")
   trees_relate = tskit.load("observed.trees")
   print_logs("computing Km_relate ...")
@@ -111,9 +117,13 @@ else:
 
 if run_tsinfer:
   print_logs("running tsinfer ...")
+  simulation["hapdata"]["genotype_matrix"] = pickle.load(open(""{}.gm.p".format(name)", "rb"))
+  
   sample_data = tsinfer.SampleData(sequence_length = simulation["parameters"]["l"])
   for obs in obss:
     sample_data.add_site(variants[obs], simulation["hapdata"]["genotype_matrix"][obs, :])
+  del simulation["hapdata"]["genotype_matrix"]
+  
   trees_tsinfer = tsinfer.infer(sample_data)
   Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
 else:
