@@ -121,8 +121,14 @@ def h_estimate(K, y, N):
   K2 = np.diag(np.dot(K, K)).sum()
   yTKy = np.dot(np.dot(np.transpose(y_norm), K), y_norm)
   yTy = np.dot(np.transpose(y_norm), y_norm)
-  buffer = (yTKy - yTy) / (K2 - N)
-  return buffer
+  h2g = (yTKy - yTy) / (K2 - N)
+  
+  I = np.identity(N)
+  Sigma = h2g * K + (1 - h2g) * I
+  tmp = np.dot(Sigma, (K - I))
+  tmp = np.diag(np.dot(tmp, tmp)).sum()
+  variance = tmp / ((K2 - N) * h2g)
+  return h2g, variance #needs change its usage accordingly!!!
 
 def test(simulation, repeats = 1000):
   N = simulation["parameters"]["N"]
