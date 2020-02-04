@@ -127,7 +127,7 @@ def h_estimate(K, y, N):
   Sigma = h2g * K + (1 - h2g) * I
   tmp = np.dot(Sigma, (K - I))
   tmp = np.diag(np.dot(tmp, tmp)).sum()
-  variance = tmp / ((K2 - N) * h2g)
+  variance = np.sqrt(tmp) / ((K2 - N) * h2g)
   return h2g, variance #needs change its usage accordingly!!!
 
 def test(simulation, repeats = 1000):
@@ -173,12 +173,18 @@ def summary(simulation):
   summ += str(simulation["tests"]["corr"]) + "\n"
   
   summ += "==========\nheritability estimation \n==========\n"
-  summ += "K_all\t" + str(round(simulation["tests"]["h_estimation"]["K_all"], 4)) + "\n"
-  summ += "K_cas\t" + str(round(simulation["tests"]["h_estimation"]["K_cas"], 4)) + "\n"
-  summ += "K_obs\t" + str(round(simulation["tests"]["h_estimation"]["K_obs"], 4)) + "\n"
-  summ += "Km\t" + str(round(simulation["tests"]["h_estimation"]["Km"], 4)) + "\n"
-  summ += "Km_relate\t" + str(round(simulation["tests"]["h_estimation"]["Km_relate"], 4)) + "\n"
-  summ += "Km_tsinfer\t" + str(round(simulation["tests"]["h_estimation"]["Km_tsinfer"], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["K_all"]
+  summ += "K_all\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["K_cas"]
+  summ += "K_cas\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["K_obs"]
+  summ += "K_obs\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["Km"]
+  summ += "Km\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["Km_relate"]
+  summ += "Km_relate\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["Km_tsinfer"]
+  summ += "Km_tsinfer\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
   
   summ += "==========\nBLUP accuracy \n==========\n"
   tmp = simulation["tests"]["blup"]["K_all"]
