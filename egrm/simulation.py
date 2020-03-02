@@ -62,7 +62,7 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     weights /= weights.sum()
     cass = np.random.choice(range(M), M_cas, replace = False, p = weights); cass.sort()
     
-    Z_cas = np.transpose(genotype_matrix[cass])
+    Z_cas = np.transpose(genotype_matrix[cass]).astype("float")
     Z_cas -= Z_cas.mean(axis=0)
     Z_cas /= Z_cas.std(axis=0)
     
@@ -101,7 +101,7 @@ def simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta):
     M_obs = int(round(M_observable * obs_ratio))
     obss = np.random.choice(np.where(observable)[0], M_obs, replace = False, p = weights[observable]); obss.sort()
     
-    Z_obs = np.transpose(genotype_matrix[obss])
+    Z_obs = np.transpose(genotype_matrix[obss]).astype("float")
     Z_obs -= Z_obs.mean(axis=0)
     Z_obs /= Z_obs.std(axis=0)
     
@@ -116,7 +116,7 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     observations = simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta)
     simulation = {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
     
-    Z_all = np.transpose(hapdata["genotype_matrix"])
+    Z_all = np.transpose(hapdata["genotype_matrix"]).astype("float")
     Z_all -= Z_all.mean(axis=0)
     Z_all /= Z_all.std(axis=0)
     
