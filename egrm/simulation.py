@@ -62,6 +62,7 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     weights /= weights.sum()
     cass = np.random.choice(range(M), M_cas, replace = False, p = weights); cass.sort()
     
+    X_cas = np.transpose(genotype_matrix[cass])
     Z_cas = np.transpose(genotype_matrix[cass]).astype("float")
     Z_cas -= Z_cas.mean(axis=0)
     Z_cas /= Z_cas.std(axis=0)
