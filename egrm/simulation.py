@@ -122,8 +122,7 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     
     K_cas = np.dot(Z_cas, np.transpose(Z_cas)) / Z_cas.shape[1]
     K_obs = np.dot(Z_obs, np.transpose(Z_obs)) / Z_obs.shape[1]
-    Ks = {"K_all":K_all, "K_all_M":simulation["hapdata"]["M"],
-          "K_cas":K_cas, "K_cas_M":simulation["phenotypes"]["M_cas"], 
+    Ks = {"K_cas":K_cas, "K_cas_M":simulation["phenotypes"]["M_cas"], 
           "K_obs":K_obs, "K_obs_M":simulation["observations"]["M_obs"]}
     
     simulation["Ks"] = Ks
