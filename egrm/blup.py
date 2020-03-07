@@ -23,6 +23,7 @@ def phenotype_impute(simulation, repeats = 100):
   Km = simulation["Ks"]["Km"]
   Km_relate = simulation["Ks"]["Km_relate"]
   Km_tsinfer = simulation["Ks"]["Km_tsinfer"]
+  Km_tsdate = simulation["Ks"]["Km_tsdate"]
   
   a = []
   b = []
@@ -30,6 +31,7 @@ def phenotype_impute(simulation, repeats = 100):
   d = []
   e = []
   f = []
+  g = []
   for i in range(repeats):
     #print(i)
     tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
@@ -50,6 +52,8 @@ def phenotype_impute(simulation, repeats = 100):
     e.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
     f.append(np.corrcoef(y_, y_test)[0, 1])
+    y_ = BLUP(Km_tsdate, y_train, trains, tests, h2 = 0.9)
+    f.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
@@ -57,7 +61,8 @@ def phenotype_impute(simulation, repeats = 100):
   d = np.array(d)
   e = np.array(e)
   f = np.array(f)
-  blup = {"K_all":a, "K_cas":b, "K_obs":c, "Km":d, "Km_relate":e, "Km_tsinfer":f}
+  g = np.array(g)
+  blup = {"K_all":a, "K_cas":b, "K_obs":c, "Km":d, "Km_relate":e, "Km_tsinfer":f, "Km_tsdate":g}
   simulation["tests"]['blup'] = blup
 
 def K_diploid(K, maternals, paternals):
@@ -79,6 +84,7 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
   Km = K_diploid(simulation["Ks"]["Km"], maternals, paternals)
   Km_relate = K_diploid(simulation["Ks"]["Km_relate"], maternals, paternals)
   Km_tsinfer = K_diploid(simulation["Ks"]["Km_tsinfer"], maternals, paternals)
+  Km_tsdate = K_diploid(simulation["Ks"]["Km_tsdate"], maternals, paternals)
   
   a = []
   b = []
@@ -86,6 +92,7 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
   d = []
   e = []
   f = []
+  g = []
   for i in range(repeats):
     #print(i)
     tests = np.random.choice(int(N/2), math.floor(N * 0.125), replace = False)
@@ -106,6 +113,8 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
     e.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
     f.append(np.corrcoef(y_, y_test)[0, 1])
+    y_ = BLUP(Km_tsdate, y_train, trains, tests, h2 = 0.9)
+    f.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
@@ -113,7 +122,8 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
   d = np.array(d)
   e = np.array(e)
   f = np.array(f)
-  blup_diploid = {"K_all":a, "K_cas":b, "K_obs":c, "Km":d, "Km_relate":e, "Km_tsinfer":f}
+  g = np.array(g)
+  blup_diploid = {"K_all":a, "K_cas":b, "K_obs":c, "Km":d, "Km_relate":e, "Km_tsinfer":f, "Km_tsdate":g}
   simulation["tests"]['blup_diploid'] = blup_diploid
 
 def h_estimate(K, y, N):
@@ -147,7 +157,8 @@ def test(simulation, repeats = 1000):
            "K_obs":K_obs[non_diags].flatten(),
            "Km":Km[non_diags].flatten(), 
            "Km_relate":Km_relate[non_diags].flatten(),
-           "Km_tsinfer":Km_tsinfer[non_diags].flatten()}
+           "Km_tsinfer":Km_tsinfer[non_diags].flatten(),
+           "Km_tsdate":Km_tsdate[non_diags].flatten()}
   
   table = pd.DataFrame(data=table)
   corr = table.corr(method ='pearson')
@@ -158,7 +169,8 @@ def test(simulation, repeats = 1000):
                   'K_obs':h_estimate(K_obs, y, N),
                   'Km':h_estimate(Km, y, N),
                   'Km_relate':h_estimate(Km_relate, y, N),
-                  'Km_tsinfer':h_estimate(Km_tsinfer, y, N)} 
+                  'Km_tsinfer':h_estimate(Km_tsinfer, y, N),
+                  'Km_tsdate':h_estimate(Km_tsdate, y, N)} 
   
   simulation["tests"] = {"corr":corr, 'h_estimation':h_estimation}
   phenotype_impute(simulation, repeats)
@@ -185,6 +197,8 @@ def summary(simulation):
   summ += "Km_relate\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
   tmp = simulation["tests"]["h_estimation"]["Km_tsinfer"]
   summ += "Km_tsinfer\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
+  tmp = simulation["tests"]["h_estimation"]["Km_tsdate"]
+  summ += "Km_tsdate\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
   
   summ += "==========\nBLUP accuracy \n==========\n"
   tmp = simulation["tests"]["blup"]["K_all"]
@@ -199,6 +213,8 @@ def summary(simulation):
   summ += "Km_relate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   tmp = simulation["tests"]["blup"]["Km_tsinfer"]
   summ += "Km_tsinfer\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup"]["Km_tsdate"]
+  summ += "Km_tsdate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   
   summ += "==========\ndiploid BLUP accuracy \n==========\n"
   tmp = simulation["tests"]["blup_diploid"]["K_all"]
@@ -213,6 +229,8 @@ def summary(simulation):
   summ += "Km_relate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   tmp = simulation["tests"]["blup_diploid"]["Km_tsinfer"]
   summ += "Km_tsinfer\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  tmp = simulation["tests"]["blup_diploid"]["Km_tsdate"]
+  summ += "Km_tsdate\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
   
   return(summ)
 
