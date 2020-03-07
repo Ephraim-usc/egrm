@@ -70,6 +70,13 @@ make_diploid(simulation)
 
 pickle.dump(simulation["hapdata"].pop("genotype_matrix"), open("{}.gm.p".format(name), "wb"))
 
+Z_all = np.transpose(pickle.load(open("{}.gm.p".format(name), "rb")).astype("float"))
+Z_all -= Z_all.mean(axis=0)
+Z_all /= Z_all.std(axis=0)
+K_all = np.dot(Z_all, np.transpose(Z_all)) / Z_all.shape[1]
+simulation["Ks"]["K_all"] = K_all
+simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
+
 trees = simulation["hapdata"]["tree_sequence"]
 N = simulation["parameters"]["N"]
 M = simulation["hapdata"]["M"]
