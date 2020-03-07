@@ -148,6 +148,7 @@ def test(simulation, repeats = 1000):
   Km = simulation["Ks"]["Km"]
   Km_relate = simulation["Ks"]["Km_relate"]
   Km_tsinfer = simulation["Ks"]["Km_tsinfer"]
+  Km_tsdate = simulation["Ks"]["Km_tsdate"]
   
   diags = np.diag_indices(N)
   non_diags = np.where(~np.eye(N,dtype=bool))
