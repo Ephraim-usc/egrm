@@ -7,6 +7,7 @@ import pandas as pd
 import pickle
 import datetime
 import tsinfer
+import tsdate
 
 ### importing egrm
 from egrm import *
@@ -126,8 +127,12 @@ if run_tsinfer:
   
   trees_tsinfer = tsinfer.infer(sample_data)
   Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
+  
+  trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate=1e-8)
+  Km_tsdate, Km_tsdate_tl = getEK_trees(trees_tsdate, file = open(name + ".log", "a"))
 else:
   Km_tsinfer, Km_tsinfer_tl = Km, Km_tl
+  Km_tsdate, Km_tsdate_tl = Km, Km_tl
 
 simulation["Ks"]["Km"] = Km
 simulation["Ks"]["Km_tl"] = Km_tl
@@ -135,6 +140,8 @@ simulation["Ks"]["Km_relate"] = Km_relate
 simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
 simulation["Ks"]["Km_tsinfer"] = Km_tsinfer
 simulation["Ks"]["Km_tsinfer_tl"] = Km_tsinfer_tl
+simulation["Ks"]["Km_tsdate"] = Km_tsdate
+simulation["Ks"]["Km_tsdate_tl"] = Km_tsdate_tl
 
 test(simulation)
 print_results(summary(simulation))
