@@ -1,6 +1,7 @@
 from memory_profiler import memory_usage
 from egrm import *
 import sys
+import datetime
 
 def test_fun1(N):
   hapdata = simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate)
@@ -25,6 +26,36 @@ for N in (5000, 8000):
   print("Memory usage: " + str(mu) + "Mb")
   print(" ")
 
+
+def getEK_trees(trees, flags = None, file = None):
+  if (flags == None):
+    flags = [True] * trees.num_trees
+  elif len(flags) != trees.num_trees:
+    print("incorrect flags length!")
+  idx_trees = np.where(flags)[0].tolist()
+  
+  N = trees.num_samples
+  EK = np.zeros([N, N])
+  total_tl = 0
+  times = []
+  
+  for i in idx_trees:
+    tree = trees.at_index(i)
+    interval = tree.interval
+    tl = (interval[1] - interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    EK += getEK(tree) * tl
+    pbar.update(1)
+  EK /= total_tl
+  times.append(datetime.datetime.now())
+  return (EK, round(total_tl), times)
+
+def test_fun(N):
+  simulation = simulate(N)
+  obss = simulation["observations"]["obss"]
+  variants = simulation["hapdata"]["variants"]
+  flags_obs = get_flags(trees, variants[obss])
+  Km, Km_tl, times = getEK_trees(trees, flags_obs)
 
 
 
