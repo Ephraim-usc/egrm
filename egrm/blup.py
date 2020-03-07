@@ -53,7 +53,7 @@ def phenotype_impute(simulation, repeats = 100):
     y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
     f.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_tsdate, y_train, trains, tests, h2 = 0.9)
-    f.append(np.corrcoef(y_, y_test)[0, 1])
+    g.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
@@ -114,7 +114,7 @@ def phenotype_impute_diploid(simulation, repeats = 1000):
     y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
     f.append(np.corrcoef(y_, y_test)[0, 1])
     y_ = BLUP(Km_tsdate, y_train, trains, tests, h2 = 0.9)
-    f.append(np.corrcoef(y_, y_test)[0, 1])
+    g.append(np.corrcoef(y_, y_test)[0, 1])
   
   a = np.array(a)
   b = np.array(b)
