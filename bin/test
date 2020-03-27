@@ -1,0 +1,202 @@
+from egrm import *
+import datetime
+import tsinfer
+
+N = 100
+l = 10000000
+name = "tmp"
+
+simulation = simulate(N = N, l = l)
+trees = simulation["hapdata"]["tree_sequence"]
+variants = simulation["hapdata"]["variants"]
+obss = simulation["observations"]["obss"]
+genotype_matrix = simulation["hapdata"]["genotype_matrix"]
+
+Z_all = np.transpose(genotype_matrix).astype("float")
+Z_all -= Z_all.mean(axis=0)
+Z_all /= Z_all.std(axis=0)
+K_all = np.dot(Z_all, np.transpose(Z_all)) / Z_all.shape[1]
+
+def meanTMRCA(trees):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_l = 0
+  for tree in trees.trees():
+    buffer_ = np.zeros([N, N])
+    for i in range(N):
+      for j in range(N):
+        buffer_[i, j] += tree.tmrca(i, j)
+    buffer_ *= tree.interval[1] - tree.interval[0]
+    buffer += buffer_
+    total_l += tree.interval[1] - tree.interval[0]
+    print(total_l)
+  buffer /= total_l
+  return buffer
+
+mTMRCA = meanTMRCA(trees)
+Km, Km_tl = getEK_trees(trees)
+np.savetxt("kall.csv", K_all, delimiter=",")
+np.savetxt("mtmrca.csv", mTMRCA, delimiter=",")
+np.savetxt("km.csv", Km, delimiter=",")
+
+
+os.mkdir(name + "_relate")
+os.chdir(name + "_relate")
+write_relate(simulation, obss, "observed")
+relate("observed", name + ".log")
+trees_relate = tskit.load("observed.trees")
+
+
+##############################################
+
+def g(p):
+  return 1/(p*(1-p))
+
+def relevant_nodes(tree):
+  N = tree.num_samples()
+  rel_nodes = []
+  for i in list(range(N)):
+    c = i
+    while not c in rel_nodes:
+      if c == -1: 
+        break
+      rel_nodes.append(c)
+      c = tree.parent(c)
+  rel_nodes.sort()
+  return rel_nodes
+
+def zeta(tree):
+  N = tree.num_samples()
+  rel_nodes = relevant_nodes(tree)
+  zetas = np.zeros([N, N]).astype('float32')
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
+    zetas[np.ix_(descendants, descendants)] += q
+  zetas /= tree.total_branch_length
+  return zetas
+
+def affected_nodes(prev_tree, tree):
+  buffer = []
+  for node in prev_tree.nodes():
+    if node < N:
+      continue
+    if sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
+      buffer.append(node)
+  
+  for node in tree.nodes():
+    if node < N:
+      continue
+    if sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
+      buffer.append(node)
+  
+  buffer = list(set(buffer))
+  return buffer
+
+def zeta_rec(prev_K, tree):
+  N = tree.num_samples()
+  tree.prev(); prev_tree = tree.copy(); tree.next()
+  K = prev_K * prev_tree.total_branch_length
+  affected = affected_nodes(prev_tree, tree)
+  
+  for node in affected:
+    descendants = list(prev_tree.samples(node))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    time = prev_tree.time(prev_tree.parent(node)) - prev_tree.time(node)
+    q = g(n / N)
+    K[np.ix_(descendants, descendants)] -= q * time
+  
+  for node in affected:
+    descendants = list(tree.samples(node))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    time = tree.time(tree.parent(node)) - tree.time(node)
+    q = g(n / N)
+    K[np.ix_(descendants, descendants)] += q * time
+  
+  K /= tree.total_branch_length
+  return K
+
+def EGRM(trees, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_tl = 0
+  for tree in trees.trees():
+    #print(total_tl)
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    buffer += zeta(tree) * tl
+    num -= 1
+    if num == 0:
+      break
+  buffer /= total_tl
+  return buffer, total_tl
+
+def EGRM_rec(trees, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  K = zeta(tree)
+  total_tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+  while tree.next():
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta_rec(K, tree)
+    buffer += K * tl
+    num -= 1
+    if num == 0:
+      break
+  buffer /= total_tl
+  return buffer, total_tl
+
+for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
+  hapdata = simulate_hapdata(N = n, l = 3000000)
+  trees = hapdata["tree_sequence"]
+  
+  A = datetime.datetime.now()
+  K1 = EGRM(trees, 100)
+  B = datetime.datetime.now()
+  K2 = EGRM_rec(trees, 100)
+  C = datetime.datetime.now()
+  print(n)
+  print(B-A)
+  print(C-B)
+  print(" ")
+
+import sys, traceback
+
+class Suppressor(object):
+  def __enter__(self):
+    self.stdout = sys.stdout
+    sys.stdout = self
+  def __exit__(self, type, value, traceback):
+    sys.stdout = self.stdout
+  def write(self, x): 
+    pass
+
+for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
+  hapdata = simulate_hapdata(N = n, l = 500000)
+  #trees = hapdata["tree_sequence"]
+  variants = hapdata["variants"]
+  sample_data = tsinfer.SampleData(sequence_length = 500000)
+  with Suppressor():
+    for i in range(len(variants)):
+      sample_data.add_site(variants[i], hapdata["genotype_matrix"][i, :])
+  trees = tsinfer.infer(sample_data)
+  print(trees.num_trees)
+  
+  A = datetime.datetime.now()
+  K1 = EGRM(trees)
+  B = datetime.datetime.now()
+  K2 = EGRM_rec(trees)
+  C = datetime.datetime.now()
+  print(n)
+  print(B-A)
+  print(C-B)
+  print(" ")
