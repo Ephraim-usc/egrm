@@ -70,7 +70,7 @@ def relevant_nodes(tree):
 def zeta(tree):
   N = tree.num_samples()
   rel_nodes = relevant_nodes(tree)
-  zetas = np.zeros([N, N]).astype('float32')
+  zetas = np.zeros([N, N])
   for c in rel_nodes:
     descendants = list(tree.samples(c))
     n = len(descendants)
@@ -202,3 +202,81 @@ for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
   print(B-A)
   print(C-B)
   print(" ")
+
+
+#################
+from egrm.simulation import *
+import tsinfer
+import tsdate
+from memory_profiler import memory_usage
+
+def f():
+  N = 20000
+  l = 1000000
+  population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
+  demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
+                 msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
+                 msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
+  tree_sequence = msprime.simulate(length = l, population_configurations = population_configurations, 
+                                   recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
+                                   demographic_events = demo_events)
+  variants = np.array([v.position for v in tree_sequence.variants()])
+  M = len(variants)
+  sample_data = tsinfer.SampleData(sequence_length = l)
+  for i in range(M):
+    sample_data.add_site(variants[i], simulation["hapdata"]["genotype_matrix"][obs, :])
+
+def f():
+  N = 10000; l = 1000000
+  hapdata = simulate_hapdata(N = N, l = l)
+  M = hapdata["M"]
+  variants = hapdata["variants"]
+  sample_data = tsinfer.SampleData(sequence_length = l)
+  for i in range(M):
+    sample_data.add_site(variants[i], hapdata["genotype_matrix"][i, :])
+  trees_tsinfer = tsinfer.infer(sample_data)
+  trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate=1e-8)
+  return hapdata["tree_sequence"], trees_tsinfer, trees_tsdate
+
+mem_usage = memory_usage(f)
+trees, trees_tsinfer, trees_tsdate = f()
+
+def relevant_nodes(tree):
+  N = tree.num_samples()
+  rel_nodes = []
+  for i in list(range(N)):
+    c = i
+    while not c in rel_nodes:
+      if c == -1: 
+        break
+      rel_nodes.append(c)
+      c = tree.parent(c)
+  rel_nodes.sort()
+  return rel_nodes
+
+def TMRCA(tree):
+  N = tree.num_samples()
+  rel_nodes = np.array(relevant_nodes(tree))
+  times = [tree.time(node) for node in rel_nodes]
+  rel_nodes = rel_nodes[np.flip(np.argsort(times))]
+  tmrca = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = tree.time(c)
+    tmrca[np.ix_(descendants, descendants)] = q
+  return tmrca
+
+def compare(trees1, trees2, n = 100):
+  loci = np.random.randint(0, l, n)
+  for locus in loci:
+    tree1 = trees1.at(locus)
+    tree2 = trees2.at(locus)
+    tmrca1 = TMRCA(tree1)
+    tmrca2 = TMRCA(tree2)
+    tmrca1 /= tmrca1.mean()
+    tmrca2 /= tmrca2.mean()
+    diff = np.abs(tmrca2 - tmrca1).mean()
+    print("locus: " + str(locus) + "  diff: " + str(diff))
