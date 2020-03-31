@@ -78,3 +78,32 @@ def get_flags(trees, variants, file = None):
                        file = file):
       flags[trees.at(v).index] = True
     return flags
+
+def TMRCA(tree):
+  N = tree.num_samples()
+  rel_nodes = np.array(relevant_nodes(tree))
+  times = [tree.time(node) for node in rel_nodes]
+  rel_nodes = rel_nodes[np.flip(np.argsort(times))]
+  tmrca = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = tree.time(c)
+    tmrca[np.ix_(descendants, descendants)] = q
+  return tmrca
+
+def compare(trees1, trees2, n = 100):
+  loci = np.random.randint(0, l, n)
+  diffs = []
+  for locus in loci:
+    tree1 = trees1.at(locus)
+    tree2 = trees2.at(locus)
+    tmrca1 = TMRCA(tree1)
+    tmrca2 = TMRCA(tree2)
+    tmrca1 /= tmrca1.mean()
+    tmrca2 /= tmrca2.mean()
+    diffs.append(np.abs(tmrca2 - tmrca1).mean())
+  return diffs
+    
