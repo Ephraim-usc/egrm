@@ -107,7 +107,7 @@ def compare(trees1, trees2, n = 100):
     tmrca1 /= tmrca1.mean()
     tmrca2 /= tmrca2.mean()
     diff = np.abs(tmrca2 - tmrca1).mean()
-    print("at " + str(locus) + " diff " + str(diff))
+    #print("at " + str(locus) + " diff " + str(diff))
     diffs.append(diff)
   return diffs
     
