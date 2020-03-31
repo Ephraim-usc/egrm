@@ -95,8 +95,9 @@ def TMRCA(tree):
   return tmrca
 
 def compare(trees1, trees2, n = 100):
-  l = trees1.last().interval[1]
+  l = min(trees1.last().interval[1], trees2.last().interval[1])
   loci = np.random.randint(0, l, n)
+  loci.sort()
   diffs = []
   for locus in loci:
     tree1 = trees1.at(locus)
@@ -105,6 +106,8 @@ def compare(trees1, trees2, n = 100):
     tmrca2 = TMRCA(tree2)
     tmrca1 /= tmrca1.mean()
     tmrca2 /= tmrca2.mean()
-    diffs.append(np.abs(tmrca2 - tmrca1).mean())
+    diff = np.abs(tmrca2 - tmrca1).mean()
+    print("at " + str(locus) + " diff " + str(diff))
+    diffs.append(diff)
   return diffs
     
