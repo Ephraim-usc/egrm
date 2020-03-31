@@ -95,6 +95,7 @@ def TMRCA(tree):
   return tmrca
 
 def compare(trees1, trees2, n = 100):
+  l = trees1.last().interval[1]
   loci = np.random.randint(0, l, n)
   diffs = []
   for locus in loci:
