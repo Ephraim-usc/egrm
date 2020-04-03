@@ -86,6 +86,8 @@ if run_relate:
   relate("observed", name + ".log")
   trees_relate = tskit.load("observed.trees")
   os.chdir("..")
+else:
+  trees_relate = trees
 
 if run_tsinfer:
   print_logs("running tsinfer ...")
