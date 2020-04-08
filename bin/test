@@ -83,24 +83,18 @@ def zeta(tree):
 
 def affected_nodes(prev_tree, tree):
   buffer = []
-  for node in prev_tree.nodes():
-    if node < N:
-      continue
-    if sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
+  for node in set(prev_tree.nodes()).union(set(tree.nodes())):
+    if prev_tree.parent(node) != tree.parent(node):
       buffer.append(node)
-  
-  for node in tree.nodes():
-    if node < N:
-      continue
-    if sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
+    elif sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
       buffer.append(node)
-  
   buffer = list(set(buffer))
   return buffer
 
-def zeta_rec(prev_K, tree):
+def zeta_rec(prev_K, tree, prev_tree = None):
   N = tree.num_samples()
-  tree.prev(); prev_tree = tree.copy(); tree.next()
+  if prev_tree == None:
+    tree.prev(); prev_tree = tree.copy(); tree.next()
   K = prev_K * prev_tree.total_branch_length
   affected = affected_nodes(prev_tree, tree)
   
@@ -133,7 +127,9 @@ def EGRM(trees, num = -1):
     #print(total_tl)
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
-    buffer += zeta(tree) * tl
+    K = zeta(tree)
+    print(K[0, 0])
+    buffer += K * tl
     num -= 1
     if num == 0:
       break
@@ -154,6 +150,44 @@ def EGRM_rec(trees, num = -1):
     num -= 1
     if num == 0:
       break
+  buffer /= total_tl
+  return buffer, total_tl
+
+def EGRM_obs(trees, loci):
+  N = trees.num_samples
+  total_tl = 0
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  i = 0
+  while i < len(loci):
+    while tree.interval[1] < loci[i]:
+      tree.next()
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta(tree)
+    buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+    i += 1
+  buffer /= total_tl
+  return buffer, total_tl
+
+def EGRM_obs_rec(trees, loci):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  i = 0
+  while tree.interval[1] < loci[i]:
+    tree.next()
+  tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+  total_tl = tl
+  K = zeta(tree); buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+  prev_tree = tree.copy(); i += 1
+  while i < len(loci):
+    while tree.interval[1] < loci[i]:
+      tree.next()
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta_rec(K, tree, prev_tree = prev_tree); buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+    prev_tree = tree.copy(); i += 1
   buffer /= total_tl
   return buffer, total_tl
 
@@ -183,7 +217,15 @@ class Suppressor(object):
     pass
 
 for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
-  hapdata = simulate_hapdata(N = n, l = 500000)
+  hapdata = simulate_hapdata(N = n, l = 300000)
+  trees = hapdata["tree_sequence"]
+  observations = simulate_observations(hapdata, obs_ratio = 0.02)
+  variants = hapdata["variants"]
+  obss = observations["obss"]
+  tmp1 = EGRM_obs(trees, variants[obss])
+  tmp2 = EGRM_obs_rec(trees, variants[obss])
+  
+  
   #trees = hapdata["tree_sequence"]
   variants = hapdata["variants"]
   sample_data = tsinfer.SampleData(sequence_length = 500000)
