@@ -160,13 +160,15 @@ def EGRM_obs(trees, loci):
   tree = trees.first()
   i = 0
   while i < len(loci):
+    while tree.interval[0] >= loci[i]:
+      i += 1
     while tree.interval[1] < loci[i]:
       tree.next()
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
     K = zeta(tree)
     buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
-    i += 1
+    tree.next(); i += 1
   buffer /= total_tl
   return buffer, total_tl
 
@@ -182,28 +184,19 @@ def EGRM_obs_rec(trees, loci):
   K = zeta(tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
   prev_tree = tree.copy(); i += 1
   while i < len(loci):
+    while tree.interval[0] >= loci[i]:
+      i += 1
     while tree.interval[1] < loci[i]:
       tree.next()
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
     K = zeta_rec(K, tree, prev_tree = prev_tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
-    prev_tree = tree.copy(); i += 1
+    prev_tree = tree.copy()
+    tree.next(); i += 1
   buffer /= total_tl
   return buffer, total_tl
 
-for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
-  hapdata = simulate_hapdata(N = n, l = 3000000)
-  trees = hapdata["tree_sequence"]
-  
-  A = datetime.datetime.now()
-  K1 = EGRM(trees, 100)
-  B = datetime.datetime.now()
-  K2 = EGRM_rec(trees, 100)
-  C = datetime.datetime.now()
-  print(n)
-  print(B-A)
-  print(C-B)
-  print(" ")
+
 
 import sys, traceback
 
