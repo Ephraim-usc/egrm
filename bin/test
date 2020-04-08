@@ -218,8 +218,8 @@ def print_results(string):
 
 import datetime
 
-for o_r in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
-  hapdata = simulate_hapdata(N = 1000, l = 300000)
+for o_r in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
+  hapdata = simulate_hapdata(N = 10000, l = 200000)
   trees = hapdata["tree_sequence"]
   observations = simulate_observations(hapdata, obs_ratio = o_r)
   variants = hapdata["variants"]
@@ -230,14 +230,17 @@ for o_r in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
   B = datetime.datetime.now()
   tmp2 = EGRM_obs_rec(trees, variants[obss])
   C = datetime.datetime.now()
+  
+  name = "N_10000"
   print_results(o_r)
   print_results(B-A)
   print_results(C-B)
   print_results(" ")
 
   
-for o_r in [0.01, 0.2, 0.4, 0.6, 0.8, 1]:
-  hapdata = simulate_hapdata(N = 10000, l = 300000)
+
+for o_r in [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]:
+  hapdata = simulate_hapdata(N = 5000, l = 200000)
   trees = hapdata["tree_sequence"]
   observations = simulate_observations(hapdata, obs_ratio = o_r)
   variants = hapdata["variants"]
@@ -248,10 +251,12 @@ for o_r in [0.01, 0.2, 0.4, 0.6, 0.8, 1]:
   B = datetime.datetime.now()
   tmp2 = EGRM_obs_rec(trees, variants[obss])
   C = datetime.datetime.now()
-  print(o_r)
-  print(B-A)
-  print(C-B)
-  print(" ")
+  
+  name = "N_5000"
+  print_results(o_r)
+  print_results(B-A)
+  print_results(C-B)
+  print_results(" ")
 
 
 
