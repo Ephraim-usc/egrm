@@ -128,7 +128,7 @@ def EGRM(trees, num = -1):
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
     K = zeta(tree)
-    print(K[0, 0])
+    #print(K[0, 0])
     buffer += K * tl
     num -= 1
     if num == 0:
@@ -165,7 +165,7 @@ def EGRM_obs(trees, loci):
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
     K = zeta(tree)
-    buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+    buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
     i += 1
   buffer /= total_tl
   return buffer, total_tl
@@ -179,14 +179,14 @@ def EGRM_obs_rec(trees, loci):
     tree.next()
   tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
   total_tl = tl
-  K = zeta(tree); buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+  K = zeta(tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
   prev_tree = tree.copy(); i += 1
   while i < len(loci):
     while tree.interval[1] < loci[i]:
       tree.next()
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
-    K = zeta_rec(K, tree, prev_tree = prev_tree); buffer += K * tl; print(str(tree.index) + " " + str(K[0, 0]))
+    K = zeta_rec(K, tree, prev_tree = prev_tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
     prev_tree = tree.copy(); i += 1
   buffer /= total_tl
   return buffer, total_tl
@@ -216,14 +216,22 @@ class Suppressor(object):
   def write(self, x): 
     pass
 
-for n in [500, 1000, 2000, 4000, 6000, 8000, 10000]:
-  hapdata = simulate_hapdata(N = n, l = 300000)
+for o_r in [0.2, 0.4, 0.6, 0.8, 1]:
+  hapdata = simulate_hapdata(N = 1000, l = 300000)
   trees = hapdata["tree_sequence"]
-  observations = simulate_observations(hapdata, obs_ratio = 0.02)
+  observations = simulate_observations(hapdata, obs_ratio = o_r)
   variants = hapdata["variants"]
   obss = observations["obss"]
+  
+  A = datetime.datetime.now()
   tmp1 = EGRM_obs(trees, variants[obss])
+  B = datetime.datetime.now()
   tmp2 = EGRM_obs_rec(trees, variants[obss])
+  C = datetime.datetime.now()
+  print(o_r)
+  print(B-A)
+  print(C-B)
+  print(" ")
   
   
   #trees = hapdata["tree_sequence"]
