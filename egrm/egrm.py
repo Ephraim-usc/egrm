@@ -79,6 +79,148 @@ def get_flags(trees, variants, file = None):
       flags[trees.at(v).index] = True
     return flags
 
+#########
+
+def zeta(tree):
+  N = tree.num_samples()
+  rel_nodes = list(tree.nodes())
+  zetas = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
+    zetas[np.ix_(descendants, descendants)] += q
+  zetas /= tree.total_branch_length
+  return zetas
+
+def affected_nodes(prev_tree, tree):
+  buffer = []
+  for node in set(prev_tree.nodes()).union(set(tree.nodes())):
+    if prev_tree.parent(node) != tree.parent(node):
+      buffer.append(node)
+    elif sorted(list(prev_tree.samples(node))) != sorted(list(tree.samples(node))):
+      buffer.append(node)
+  buffer = list(set(buffer))
+  return buffer
+
+def zeta_rec(prev_K, tree, prev_tree = None):
+  N = tree.num_samples()
+  if prev_tree == None:
+    tree.prev(); prev_tree = tree.copy(); tree.next()
+  K = prev_K * prev_tree.total_branch_length
+  affected = affected_nodes(prev_tree, tree)
+  
+  for node in affected:
+    descendants = list(prev_tree.samples(node))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    time = prev_tree.time(prev_tree.parent(node)) - prev_tree.time(node)
+    q = g(n / N)
+    K[np.ix_(descendants, descendants)] -= q * time
+  
+  for node in affected:
+    descendants = list(tree.samples(node))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    time = tree.time(tree.parent(node)) - tree.time(node)
+    q = g(n / N)
+    K[np.ix_(descendants, descendants)] += q * time
+  
+  K /= tree.total_branch_length
+  return K
+
+def EGRM(trees, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_tl = 0
+  for tree in trees.trees():
+    #print(total_tl)
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta(tree)
+    #print(K[0, 0])
+    buffer += K * tl
+    num -= 1
+    if num == 0:
+      break
+  buffer /= total_tl
+  return buffer, total_tl
+
+def EGRM_rec(trees, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  K = zeta(tree)
+  total_tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+  while tree.next():
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta_rec(K, tree)
+    buffer += K * tl
+    num -= 1
+    if num == 0:
+      break
+  buffer /= total_tl
+  return buffer, total_tl
+
+def EGRM_obs(trees, loci, num = -1):
+  N = trees.num_samples
+  total_tl = 0
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  i = 0
+  while i < len(loci):
+    while tree.interval[0] >= loci[i]:
+      i += 1
+      if i >= len(loci):
+        return buffer/total_tl, total_tl
+    while tree.interval[1] < loci[i]:
+      tree.next()
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta(tree)
+    buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
+    tree.next(); i += 1
+    num -= 1
+    if num == 0:
+      break
+  return buffer/total_tl, total_tl
+
+def EGRM_obs_rec(trees, loci, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  i = 0
+  while tree.interval[1] < loci[i]:
+    tree.next()
+  tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+  total_tl = tl
+  K = zeta(tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
+  prev_tree = tree.copy(); i += 1
+  while i < len(loci):
+    while tree.interval[0] >= loci[i]:
+      i += 1
+      if i >= len(loci):
+        return buffer/total_tl, total_tl
+    while tree.interval[1] < loci[i]:
+      tree.next()
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta_rec(K, tree, prev_tree = prev_tree); buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
+    prev_tree = tree.copy()
+    tree.next(); i += 1
+    num -= 1
+    if num == 0:
+      break
+  return buffer/total_tl, total_tl
+
+
+
+'''
 def TMRCA(tree):
   N = tree.num_samples()
   rel_nodes = np.array(relevant_nodes(tree))
@@ -109,5 +251,5 @@ def compare(trees1, trees2, n = 100):
     diff = np.abs(tmrca2 - tmrca1).mean()
     #print("at " + str(locus) + " diff " + str(diff))
     diffs.append(diff)
-  return diffs
-    
+  return diffs 
+'''
