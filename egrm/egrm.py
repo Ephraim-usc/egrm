@@ -167,6 +167,8 @@ def EGRM_rec(trees, num = -1):
   buffer /= total_tl
   return buffer, total_tl
 
+
+'''
 def EGRM_obs(trees, loci, num = -1):
   N = trees.num_samples
   total_tl = 0
@@ -220,7 +222,7 @@ def EGRM_obs_rec(trees, loci, num = -1):
 
 
 
-'''
+
 def TMRCA(tree):
   N = tree.num_samples()
   rel_nodes = np.array(relevant_nodes(tree))
