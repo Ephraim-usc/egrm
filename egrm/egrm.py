@@ -7,30 +7,18 @@ import numpy as np
 def g(p):
   return 1/(p*(1-p))
 
-def relevant_nodes(tree):
+def zeta(tree):
   N = tree.num_samples()
-  rel_nodes = []
-  for i in list(range(N)):
-    c = i
-    while not c in rel_nodes:
-      if c == -1: 
-        break
-      rel_nodes.append(c)
-      c = tree.parent(c)
-  rel_nodes.sort()
-  return rel_nodes
-
-def zeta(tree, g):
-  N = tree.num_samples()
-  rel_nodes = relevant_nodes(tree)
+  rel_nodes = list(tree.nodes())
   zetas = np.zeros([N, N])
   for c in rel_nodes:
-    descendents = list(tree.samples(c))
-    p = len(descendents) / N
-    if(p == 0 or p == 1):
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
       continue
-    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(p)
-    zetas[np.ix_(descendents, descendents)] += q
+    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
+    zetas[np.ix_(descendants, descendants)] += q
+  zetas /= tree.total_branch_length
   return zetas
 
 def epsilon(x):
@@ -79,22 +67,70 @@ def get_flags(trees, variants, file = None):
       flags[trees.at(v).index] = True
     return flags
 
+def eGRM(trees, num = -1):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_tl = 0
+  for tree in trees.trees():
+    #print(total_tl)
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta(tree)
+    #print(K[0, 0])
+    buffer += K * tl
+    num -= 1
+    if num == 0:
+      break
+  buffer /= total_tl
+  buffer = epsilon(zeta(tree, g))
+  return buffer, total_tl
+
+def eGRM_obs(trees, loci, num = -1):
+  N = trees.num_samples
+  total_tl = 0
+  buffer = np.zeros([N, N])
+  tree = trees.first()
+  i = 0
+  while i < len(loci):
+    while tree.interval[0] >= loci[i]:
+      i += 1
+      if i >= len(loci):
+        return buffer/total_tl, total_tl
+    while tree.interval[1] < loci[i]:
+      tree.next()
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    K = zeta(tree)
+    buffer += K * tl; #print(str(tree.index) + " " + str(K[0, 0]))
+    tree.next(); i += 1
+    num -= 1
+    if num == 0:
+      break
+  buffer = epsilon(zeta(tree, g))
+  return buffer/total_tl, total_tl
+
+  
+  
+  
 #########
 
-def zeta(tree):
+'''
+def relevant_nodes(tree):
   N = tree.num_samples()
-  rel_nodes = list(tree.nodes())
-  zetas = np.zeros([N, N])
-  for c in rel_nodes:
-    descendants = list(tree.samples(c))
-    n = len(descendants)
-    if(n == 0 or n == N):
-      continue
-    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
-    zetas[np.ix_(descendants, descendants)] += q
-  zetas /= tree.total_branch_length
-  return zetas
+  rel_nodes = []
+  for i in list(range(N)):
+    c = i
+    while not c in rel_nodes:
+      if c == -1: 
+        break
+      rel_nodes.append(c)
+      c = tree.parent(c)
+  rel_nodes.sort()
+  return rel_nodes
+'''
 
+
+'''
 def affected_nodes(prev_tree, tree):
   buffer = []
   for node in set(prev_tree.nodes()).union(set(tree.nodes())):
@@ -166,7 +202,7 @@ def EGRM_rec(trees, num = -1):
       break
   buffer /= total_tl
   return buffer, total_tl
-
+'''
 
 '''
 def EGRM_obs(trees, loci, num = -1):
