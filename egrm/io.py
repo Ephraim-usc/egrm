@@ -100,6 +100,7 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
 
 def write_tsinfer(simulation, idx, file):
   X = getX(simulation["hapdata"], idx)
+  loci = simulation["hapdata"]["loci"]
   with tsinfer.SampleData(path=file + ".samples", sequence_length=simulation["parameters"]["l"]) as sample_data:
     for index, i in zip(idx, range(len(idx))):
       sample_data.add_site(loci[index], X[:, i])
