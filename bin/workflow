@@ -153,6 +153,7 @@ if run_tsinfer:
   simulation["Ks"]["EK_tsdate"] = EK_tsdate
   simulation["Ks"]["EK_tsdate_tl"] = EK_tsdate_tl
 
+print_logs("testing performances ...")
 test(simulation)
 print_results(summary(simulation))
 print_results("\n" + str(datetime.datetime.now()))
