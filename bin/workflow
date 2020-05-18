@@ -18,7 +18,7 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--out', type = str, help='output directory')
 parser.add_argument('--name', type = str, help='output file name')
 parser.add_argument('--all', help='run all steps', action='store_true')
-parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
+#parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
 parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--l', type = int, help='chromosome length')
@@ -41,12 +41,10 @@ os.chdir(out)
 
 name = args.pop("name")
 run_all = args.pop("all")
-run_gcta = args.pop("gcta")
 run_relate = args.pop("relate")
 run_tsinfer = args.pop("tsinfer")
 
 if run_all:
-  #run_gcta = True
   run_relate = True
   run_tsinfer = True
 
@@ -68,29 +66,41 @@ print_logs("simulating ...")
 simulation = simulate(**args)
 make_diploid(simulation)
 
-pickle.dump(simulation["hapdata"].pop("genotype_matrix"), open("{}.gm.p".format(name), "wb"))
-
-Z_all = np.transpose(pickle.load(open("{}.gm.p".format(name), "rb")).astype("float"))
-Z_all -= Z_all.mean(axis=0)
-Z_all /= Z_all.std(axis=0)
-K_all = np.dot(Z_all, np.transpose(Z_all)) / Z_all.shape[1]
-simulation["Ks"]["K_all"] = K_all
-simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
-
-trees = simulation["hapdata"]["tree_sequence"]
+trees = simulation["hapdata"]["trees"]
 N = simulation["parameters"]["N"]
 M = simulation["hapdata"]["M"]
-variants = simulation["hapdata"]["variants"]
+loci = simulation["hapdata"]["loci"]
 M_cas = simulation["phenotypes"]["M_cas"]
 M_obs = simulation["observations"]["M_obs"]
 M_5 = simulation["observations"]["M_5"]
 cass = simulation["phenotypes"]["cass"]
 obss = simulation["observations"]["obss"]
 
+### K_all and Km
+print_logs("computing K_all ...")
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+K_all = np.zeros((N, N))
+for idx in chunks(list(range(M)), 5000):
+  Z = getX(simulation["hapdata"], idx)
+  Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
+  K_all += np.dot(Z, np.transpose(Z))
+  print(1)
+
+K_all /= M
+simulation["Ks"]["K_all"] = K_all
+simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
+
+'''
 print_logs("computing Km ...")
 flags_obs = get_flags(trees, variants[obss], file = open(name + ".log", "a"))
 Km, Km_tl = getEK_trees(trees, flags_obs, file = open(name + ".log", "a"))
+'''
 
+'''
 if run_gcta:
   print_logs("running gcta ...")
   os.mkdir(name + "_gcta")
@@ -100,17 +110,17 @@ if run_gcta:
   gcta64("observed", name + ".log")
   gcta64("causal", name + ".log")
   os.chdir("..")
+'''
 
+### Km_relate and Km_tsinfer
 if run_relate:
   print_logs("running relate ...")
-  simulation["hapdata"]["genotype_matrix"] = pickle.load(open("{}.gm.p".format(name), "rb"))
   os.mkdir(name + "_relate")
   os.chdir(name + "_relate")
   
   write_relate(simulation, obss, "observed")
-  del simulation["hapdata"]["genotype_matrix"]
-  
   relate("observed", name + ".log")
+  
   trees_relate = tskit.load("observed.trees")
   print_logs("computing Km_relate ...")
   Km_relate, Km_relate_tl = getEK_trees(trees_relate, file = open(name + ".log", "a"))
