@@ -117,14 +117,14 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     simulation = {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
     
     Z_cas = getX(hapdata, phenotypes["cass"])
-    Z_cas -= Z_cas.mean()
-    Z_cas /= Z_cas.std()
+    Z_cas -= Z_cas.mean(axis = 0)
+    Z_cas /= Z_cas.std(axis = 0)
     K_cas = np.dot(Z_cas, np.transpose(Z_cas)) / Z_cas.shape[1]
     del Z_cas
     
     Z_obs = getX(hapdata, observations["obss"])
-    Z_obs -= Z_obs.mean()
-    Z_obs -= Z_obs.mean()
+    Z_obs -= Z_obs.mean(axis = 0)
+    Z_obs -= Z_obs.mean(axis = 0)
     K_obs = np.dot(Z_obs, np.transpose(Z_obs)) / Z_obs.shape[1]
     del Z_obs
     
