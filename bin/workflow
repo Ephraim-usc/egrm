@@ -119,7 +119,7 @@ if run_relate:
   os.chdir(name + "_relate")
   
   write_relate(simulation, obss, "observed")
-  relate("observed", name + ".log")
+  cmd_relate("observed", name + ".log")
   trees_relate = tskit.load("observed.trees")
   
   print_logs("computing Km_relate ...")
