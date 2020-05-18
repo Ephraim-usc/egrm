@@ -29,7 +29,7 @@ def epsilon(x):
   return x + mean - colmean - rowmean
 
 def getEK(tree):
-  buffer = epsilon(zeta(tree, g))
+  buffer = epsilon(zeta(tree))
   L = tree.total_branch_length
   return buffer/L
 
@@ -67,22 +67,24 @@ def get_flags(trees, variants, file = None):
       flags[trees.at(v).index] = True
     return flags
 
-def eGRM(trees, num = -1):
+
+def eGRM(trees, file = None):
   N = trees.num_samples
   buffer = np.zeros([N, N])
   total_tl = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
   for tree in trees.trees():
-    #print(total_tl)
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
     K = zeta(tree)
-    #print(K[0, 0])
     buffer += K * tl
-    num -= 1
-    if num == 0:
-      break
+    pbar.update(1)
   buffer /= total_tl
-  buffer = epsilon(zeta(tree, g))
+  buffer = epsilon(buffer)
+  pbar.close()
   return buffer, total_tl
 
 def eGRM_obs(trees, loci, num = -1):
@@ -106,7 +108,7 @@ def eGRM_obs(trees, loci, num = -1):
     num -= 1
     if num == 0:
       break
-  buffer = epsilon(zeta(tree, g))
+  buffer = epsilon(buffer)
   return buffer/total_tl, total_tl
 
   
