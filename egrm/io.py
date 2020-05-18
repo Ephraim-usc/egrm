@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import tskit
 import struct
+import tsinfer
 
 def getX(hapdata, idx):
   N = hapdata["trees"].num_samples
@@ -96,6 +97,13 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
     string = string + str(math.ceil(loci[index])/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
+
+def write_tsinfer(simulation, idx, file):
+  X = getX(simulation["hapdata"], idx)
+  with tsinfer.SampleData(path=file + ".samples", sequence_length=simulation["parameters"]["l"]) as sample_data:
+    for obs, i in zip(obss, range(len(obss))):
+      sample_data.add_site(loci[obs], X[:, i])
+  del X
 
 def read_trees(file):
   return tskit.load(file)
@@ -213,9 +221,12 @@ def gcta64reml(file, phen, log = None):
   run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
             file + " --out " + file + " --pheno " + phen + ".phen", log)
   
-def relate(file, log):
+def cmd_relate(file, log):
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
             file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file, log)
   
   run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file, log)
+
+def cmd_tsinfer(file, log):
+  run_cmd("tsinfer infer " + file + ".samples -p -t 4", log)
