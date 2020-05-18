@@ -58,15 +58,17 @@ def write_plink(simulation, idx, file):
   
 def write_relate(simulation, idx, file): #usually we use obss as idx
   M = len(idx)
-  genotype_matrix = simulation["hapdata"]["genotype_matrix"]
-  variants = simulation["hapdata"]["variants"]
-  N = genotype_matrix.shape[1]
+  X = getX(simulation["hapdata"], idx)
+  loci = simulation["hapdata"]["loci"]
+  N = X.shape[0]
   
   haps_file = open(file + ".haps", 'a')
-  for i in idx:
-    string = "1 snp" + str(i+1) + " " + str(math.ceil(variants[i])) + " A" + " T "
-    string = string + " ".join(map(str, genotype_matrix[i])) + "\n"
+  i = 0
+  for index in idx:
+    string = "1 snp" + str(index+1) + " " + str(math.ceil(loci[index])) + " A" + " T "
+    string = string + " ".join(map(str, X[:, i])) + "\n"
     bytes = haps_file.write(string)
+    i += 1
   haps_file.close()
   
   sample_file = open(file + ".sample",'a')
@@ -78,9 +80,9 @@ def write_relate(simulation, idx, file): #usually we use obss as idx
   
   map_file = open(file + ".map",'a')
   map_file.write("pos COMBINED_rate Genetic_Map\n")
-  for i in idx:
-    string = str(math.ceil(variants[i])) + " " + str(1) + " "
-    string = string + str(math.ceil(variants[i])/1000000) + "\n"
+  for index in idx:
+    string = str(math.ceil(loci[index])) + " " + str(1) + " "
+    string = string + str(math.ceil(loci[index])/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
 
@@ -178,20 +180,7 @@ def ReadGRMBin(prefix, AllN = False):
 
       
       
-'''
-def write_crm(grm, file):
-  N = crm.shape[0]
-  crm_df = pd.DataFrame(data = crm)
-  crm_df["row"] = range(N)
-  crm_melted = pd.melt(crm_df, id_vars=['row'], var_name='column', value_name='crm')
-  
-  crm_file = open(file + ".crm", 'a')
-  for i in range(N):
-    vector = crm_melted.iloc[i, :]
-    string = str(vector[0] + 1) + " " + str(vector[1] + 1) + " 1000000 " + str(vector[2]) + "\n"
-    bytes = crm_file.write(string)
-  crm_file.close()
-'''
+
 
 def run_cmd(cmd, log = None):
   if log != None:
