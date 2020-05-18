@@ -123,13 +123,11 @@ if run_relate:
   trees_relate = tskit.load("observed.trees")
   
   print_logs("computing Km_relate ...")
-  EK_relate, EK_relate_tl = EGRM(trees_relate, file = open(name + ".log", "a"))
+  EK_relate, EK_relate_tl = eGRM(trees_relate, file = open(name + ".log", "a"))
   os.chdir("..")
   
   simulation["Ks"]["EK_relate"] = EK_relate
   simulation["Ks"]["EK_relate_tl"] = EK_relate_tl
-
-
       
 if run_tsinfer:
   print_logs("running tsinfer ...")
