@@ -6,6 +6,17 @@ import pandas as pd
 import tskit
 import struct
 
+def getX(hapdata, idx):
+  N = hapdata["trees"].num_samples
+  X = np.zeros((N, len(idx))).astype("int")
+  variants = hapdata["trees"].variants()
+  index = 0; num = 0
+  for v in variants:
+    if index in idx:
+      X[:, num] = v.genotypes; num += 1
+    index += 1
+  return X
+
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
   
