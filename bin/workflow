@@ -85,10 +85,10 @@ def chunks(lst, n):
 
 K_all = np.zeros((N, N))
 for idx in chunks(list(range(M)), 5000):
-  Z = getX(simulation["hapdata"], idx)
+  Z = getX(simulation["hapdata"], idx).astype("float")
   Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
   K_all += np.dot(Z, np.transpose(Z))
-  print(1)
+  del Z
 
 K_all /= M
 simulation["Ks"]["K_all"] = K_all
@@ -112,7 +112,9 @@ if run_gcta:
   os.chdir("..")
 '''
 
-### Km_relate and Km_tsinfer
+### Kms
+
+
 if run_relate:
   print_logs("running relate ...")
   os.mkdir(name + "_relate")
@@ -123,7 +125,7 @@ if run_relate:
   
   trees_relate = tskit.load("observed.trees")
   print_logs("computing Km_relate ...")
-  Km_relate, Km_relate_tl = getEK_trees(trees_relate, file = open(name + ".log", "a"))
+  Km_relate, Km_relate_tl = EGRM(trees_relate, file = open(name + ".log", "a"))
   os.chdir("..")
   if run_gcta:
     os.chdir(name + "_gcta")
@@ -131,28 +133,26 @@ if run_relate:
     gcta64reml("relate", "observed", name + ".log")
     os.chdir("..")
 else:
-  Km_relate, Km_relate_tl = Km, Km_tl
+  EK_relate, EK_relate_tl = None, None
 
 if run_tsinfer:
   print_logs("running tsinfer ...")
-  simulation["hapdata"]["genotype_matrix"] = pickle.load(open("{}.gm.p".format(name), "rb"))
   
-  sample_data = tsinfer.SampleData(sequence_length = simulation["parameters"]["l"])
+  sample_data = tsinfer.SampleData(path = "tsinfer.samples", sequence_length = simulation["parameters"]["l"])
+  X = getX(simulation["hapdata"], obss); i = 0
   for obs in obss:
-    sample_data.add_site(variants[obs], simulation["hapdata"]["genotype_matrix"][obs, :])
-  del simulation["hapdata"]["genotype_matrix"]
+    sample_data.add_site(loci[obs], X[:, i]); i += 1
+  del X
   
   trees_tsinfer = tsinfer.infer(sample_data)
-  Km_tsinfer, Km_tsinfer_tl = getEK_trees(trees_tsinfer, file = open(name + ".log", "a"))
+  Km_tsinfer, Km_tsinfer_tl = eGRM(trees_tsinfer, file = open(name + ".log", "a"))
   
   trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate=1e-8)
-  Km_tsdate, Km_tsdate_tl = getEK_trees(trees_tsdate, file = open(name + ".log", "a"))
+  Km_tsdate, Km_tsdate_tl = eGRM(trees_tsdate, file = open(name + ".log", "a"))
 else:
-  Km_tsinfer, Km_tsinfer_tl = Km, Km_tl
-  Km_tsdate, Km_tsdate_tl = Km, Km_tl
+  Km_tsinfer, Km_tsinfer_tl = None, None
+  Km_tsdate, Km_tsdate_tl = None, None
 
-simulation["Ks"]["Km"] = Km
-simulation["Ks"]["Km_tl"] = Km_tl
 simulation["Ks"]["Km_relate"] = Km_relate
 simulation["Ks"]["Km_relate_tl"] = Km_relate_tl
 simulation["Ks"]["Km_tsinfer"] = Km_tsinfer
