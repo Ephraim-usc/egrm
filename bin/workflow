@@ -159,7 +159,7 @@ print_results(summary(simulation))
 print_results("\n" + str(datetime.datetime.now()))
 
 ### save
-trees = simulation["hapdata"].pop("tree_sequence")
+trees = simulation["hapdata"].pop("trees")
 pickle.dump(simulation, open("{}.p".format(name), "wb"))
 trees.dump("{}.trees".format(name))
 
