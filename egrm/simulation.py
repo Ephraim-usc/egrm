@@ -52,7 +52,7 @@ def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = 
 
 def getX(hapdata, idx):
   N = hapdata["trees"].num_samples
-  X = np.zeros((N, len(idx)))
+  X = np.zeros((N, len(idx))).astype("int")
   variants = hapdata["trees"].variants()
   index = 0; num = 0
   for v in variants:
@@ -94,7 +94,7 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     weights = np.multiply(np.power(MAFs, Alpha), np.power(1-MAFs, Alpha))
     weights /= weights.sum()
     cass = np.random.choice(range(M), M_cas, replace = False, p = weights); cass.sort()
-    X_cas = getX(hapdata, cass)
+    X_cas = getX(hapdata, cass).astype("float")
     
     betas = np.random.normal(scale = np.sqrt(h2g / M_cas), size = (M_cas, 1))
     
@@ -116,13 +116,13 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     observations = simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta)
     simulation = {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
     
-    Z_cas = getX(hapdata, phenotypes["cass"])
+    Z_cas = getX(hapdata, phenotypes["cass"]).astype("float")
     Z_cas -= Z_cas.mean(axis = 0)
     Z_cas /= Z_cas.std(axis = 0)
     K_cas = np.dot(Z_cas, np.transpose(Z_cas)) / Z_cas.shape[1]
     del Z_cas
     
-    Z_obs = getX(hapdata, observations["obss"])
+    Z_obs = getX(hapdata, observations["obss"]).astype("float")
     Z_obs -= Z_obs.mean(axis = 0)
     Z_obs -= Z_obs.mean(axis = 0)
     K_obs = np.dot(Z_obs, np.transpose(Z_obs)) / Z_obs.shape[1]
