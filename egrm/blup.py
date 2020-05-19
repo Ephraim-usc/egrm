@@ -134,7 +134,7 @@ def h_estimate(K, y):
   variance = np.sqrt(tmp) / ((K2 - N) * h2g)
   return h2g, variance #needs change its usage accordingly!!!
 
-def test(simulation, repeats = 1000):
+def test(simulation, repeats = 100):
   N = simulation["parameters"]["N"]
   y = simulation["phenotypes"]["y"]
   Ks = getKs(simulation)
