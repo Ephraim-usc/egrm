@@ -20,7 +20,6 @@ def getX(hapdata, idx):
 
 ### PLINK and GCTA
 def write_plink(simulation, idx, file):
-  
   idx_diploid = idx * 2; idx_diploid = np.concatenate([idx_diploid, idx_diploid + 1])
   idx_diploid = np.sort(idx_diploid)
   
@@ -28,14 +27,14 @@ def write_plink(simulation, idx, file):
   M = simulation['hapdata']['M']
   maternals = simulation["diploid"]['maternals']
   paternals = simulation["diploid"]['paternals']
-  genotype_matrix = simulation["hapdata"]["genotype_matrix"]
+  genotype_matrix = simulation["hapdata"]["trees"].genotype_matrix()
   X = np.zeros((N, 2 * M))
   X[:, ::2] = np.transpose(genotype_matrix[:, maternals])
   X[:, 1::2] = np.transpose(genotype_matrix[:, paternals])
   X = X[:, idx_diploid]
   
-  y = simulation["phenotypes"]["y_diploid"]
-  variants = simulation["hapdata"]["variants"]
+  y = simulation["diploid"]["y_diploid"]
+  variants = [int(i.position) for i in simulation["hapdata"]["trees"].sites()]
   
   ped_file = open(file + ".ped", 'a')
   for i in range(N):
