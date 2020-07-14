@@ -101,9 +101,9 @@ simulation["Ks"]["mTMRCA"] = mtmrca
 simulation["Ks"]["mTMRCA_l"] = mtmrca_l
 
 print_logs("computing Km ...")
-Km, Km_tl = eGRM_obs(trees, loci)
-simulation["Ks"]["Km"] = Km
-simulation["Ks"]["Km_tl"] = Km_tl
+EK, EK_tl = eGRM_obs(trees, loci)
+simulation["Ks"]["Km"] = EK
+simulation["Ks"]["Km_tl"] = EK_tl
 
 '''
 if run_gcta:
