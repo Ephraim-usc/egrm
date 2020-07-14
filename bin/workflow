@@ -94,11 +94,18 @@ K_all /= M
 simulation["Ks"]["K_all"] = K_all
 simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
 
-'''
-print_logs("computing Km ...")
+
+print_logs("computing mTMRCA ...")
 flags_obs = get_flags(trees, variants[obss], file = open(name + ".log", "a"))
+mtmrca, mtmrca_l = mTMRCA(trees, flags_obs, file = open(name + ".log", "a"))
+simulation["Ks"]["mTMRCA"] = mtmrca
+simulation["Ks"]["mTMRCA_l"] = mtmrca_l
+
+print_logs("computing Km ...")
+#flags_obs = get_flags(trees, variants[obss], file = open(name + ".log", "a"))
 Km, Km_tl = getEK_trees(trees, flags_obs, file = open(name + ".log", "a"))
-'''
+simulation["Ks"]["Km"] = Km
+simulation["Ks"]["Km_tl"] = Km_tl
 
 '''
 if run_gcta:
