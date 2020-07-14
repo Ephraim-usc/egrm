@@ -30,6 +30,8 @@ def getKs(simulation):
     Ks["EK_tsinfer"] = simulation["Ks"]["EK_tsinfer"]
   if "EK_tsdate" in simulation["Ks"]:
     Ks["EK_tsdate"] = simulation["Ks"]["EK_tsdate"]
+  if "mTMRCA" in simulation["Ks"]:
+    Ks["mTMRCA"] = simulation["Ks"]["mTMRCA"]
   return Ks
 
 def phenotype_impute(simulation, repeats = 100):
