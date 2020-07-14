@@ -111,9 +111,39 @@ def eGRM_obs(trees, loci, num = -1):
   buffer = epsilon(buffer)
   return buffer/total_tl, total_tl
 
-  
-  
-  
+def TMRCA(tree):
+  N = tree.num_samples()
+  rel_nodes = list(tree.nodes())
+  times = [tree.time(node) for node in rel_nodes]
+  rel_nodes = rel_nodes[np.flip(np.argsort(times))]
+  tmrca = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = tree.time(c)
+    tmrca[np.ix_(descendants, descendants)] = q
+  return tmrca
+
+def mTMRCA(trees, file = None):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_l = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    l = (tree.interval[1] - tree.interval[0])
+    total_l += l
+    K = TMRCA(tree)
+    buffer += K * l
+    pbar.update(1)
+  buffer /= total_l
+  pbar.close()
+  return buffer, total_l
+
 #########
 
 '''
@@ -261,20 +291,7 @@ def EGRM_obs_rec(trees, loci, num = -1):
 
 
 
-def TMRCA(tree):
-  N = tree.num_samples()
-  rel_nodes = np.array(relevant_nodes(tree))
-  times = [tree.time(node) for node in rel_nodes]
-  rel_nodes = rel_nodes[np.flip(np.argsort(times))]
-  tmrca = np.zeros([N, N])
-  for c in rel_nodes:
-    descendants = list(tree.samples(c))
-    n = len(descendants)
-    if(n == 0 or n == N):
-      continue
-    q = tree.time(c)
-    tmrca[np.ix_(descendants, descendants)] = q
-  return tmrca
+
 
 def compare(trees1, trees2, n = 100):
   l = min(trees1.last().interval[1], trees2.last().interval[1])
