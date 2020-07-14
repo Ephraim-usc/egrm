@@ -6,6 +6,7 @@ import pandas as pd
 import tskit
 import struct
 import tsinfer
+import pickle
 
 def getX(hapdata, idx):
   N = hapdata["trees"].num_samples
@@ -108,8 +109,13 @@ def write_tsinfer(simulation, idx, file):
 def read_trees(file):
   return tskit.load(file)
 
-def write_grm(grm, M, file):
+def write_grm(grm, M, file, mode = "GCTA"):
   N = grm.shape[0]
+  
+  if mode == "pickle":
+    pickle.dump([grm, M], open(file + ".p", "wb" ))
+    return
+  
   with open("{}.grm.bin".format(file), "wb") as grmfile:
     for idx in range(N):
       for jdx in range(idx + 1):
