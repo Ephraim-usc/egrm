@@ -10,6 +10,7 @@ from egrm import getEK_trees, read_trees, write_grm
 parser=argparse.ArgumentParser()
 parser.add_argument('--input', type = str, help='input file prefix')
 parser.add_argument('--output', type = str, help='output file prefix')
+parser.add_argument('--mode', type = str, help='mode of output')
 
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
@@ -21,8 +22,13 @@ if args.get("output", None) == None:
 else:
   output = args["output"]
 
+if args.get("mode", None) == None:
+  mode = "GCTA"
+else:
+  mode = "pickle"
+
 ### 
 trees = read_trees(input + ".trees")
 egrm, egrm_tl = getEK_trees(trees)
 
-write_grm(egrm, egrm_tl, output)
+write_grm(egrm, egrm_tl, output, mode)
