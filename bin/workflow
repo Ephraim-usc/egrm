@@ -96,12 +96,12 @@ simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
 
 
 print_logs("computing mTMRCA ...")
-mtmrca, mtmrca_l = mTMRCA(trees, loci, file = open(name + ".log", "a"))
+mtmrca, mtmrca_l = mTMRCA(trees, file = open(name + ".log", "a"))
 simulation["Ks"]["mTMRCA"] = mtmrca
 simulation["Ks"]["mTMRCA_l"] = mtmrca_l
 
 print_logs("computing Km ...")
-Km, Km_tl = eGRM_obs(trees, loci, file = open(name + ".log", "a"))
+Km, Km_tl = eGRM_obs(trees, loci)
 simulation["Ks"]["Km"] = Km
 simulation["Ks"]["Km_tl"] = Km_tl
 
