@@ -116,7 +116,7 @@ def TMRCA(tree):
   N = tree.num_samples()
   rel_nodes = list(tree.nodes())
   times = [tree.time(node) for node in rel_nodes]
-  rel_nodes = rel_nodes[np.flip(np.argsort(times))]
+  rel_nodes = np.array(rel_nodes)[np.flip(np.argsort(times))]
   tmrca = np.zeros([N, N])
   for c in rel_nodes:
     descendants = list(tree.samples(c))
