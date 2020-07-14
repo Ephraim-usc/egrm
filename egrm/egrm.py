@@ -33,6 +33,7 @@ def getEK(tree):
   L = tree.total_branch_length
   return buffer/L
 
+'''
 def getEK_trees(trees, flags = None, file = None):
   if (flags == None):
     flags = [True] * trees.num_trees
@@ -66,7 +67,7 @@ def get_flags(trees, variants, file = None):
                        file = file):
       flags[trees.at(v).index] = True
     return flags
-
+'''
 
 def eGRM(trees, file = None):
   N = trees.num_samples
