@@ -4,7 +4,7 @@
 import argparse
 
 ### importing egrm
-from egrm import getEK_trees, read_trees, write_grm
+from egrm import eGRM, read_trees, write_grm
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -29,6 +29,6 @@ else:
 
 ### 
 trees = read_trees(input + ".trees")
-egrm, egrm_tl = getEK_trees(trees)
+egrm, egrm_tl = eGRM(trees)
 
 write_grm(egrm, egrm_tl, output, mode)
