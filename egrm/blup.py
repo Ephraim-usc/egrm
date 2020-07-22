@@ -44,13 +44,14 @@ def phenotype_impute(simulation, repeats = 100):
       results[key] = []
   
   for i in range(repeats):
+    h2g = simulation["parameters"]["h2g"]
     tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
     tests.sort()
     trains = [i for i in range(N) if i not in tests]
     y_train = y[trains]
     y_test = y[tests]
     for key in Ks.keys():
-      y_ = BLUP(Ks[key], y_train, trains, tests, h2 = 0.9)
+      y_ = BLUP(Ks[key], y_train, trains, tests, h2 = h2g)
       results[key].append(np.corrcoef(y_, y_test)[0, 1])
   
   for key in Ks.keys():
