@@ -11,11 +11,15 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--input', type = str, help='input file prefix')
 parser.add_argument('--output', type = str, help='output file prefix')
 parser.add_argument('--mode', type = str, help='mode of output')
+parser.add_argument('--left', type = int, help='leftmost genomic position to be included')
+parser.add_argument('--right', type = int, help='rightmost genomic position to be included')
 
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 input = args["input"]
+left = args.get("left")
+right = args.get("right")
 
 if args.get("output", None) == None:
   output = input + ".e"
@@ -29,6 +33,10 @@ else:
 
 ### 
 trees = read_trees(input + ".trees")
+
+if left != None and right != None:
+  trees = trees.keep_intervals([[left, right]])
+
 egrm, egrm_tl = eGRM(trees)
 
 write_grm(egrm, egrm_tl, output, mode)
