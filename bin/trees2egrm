@@ -35,7 +35,7 @@ else:
 trees = read_trees(input + ".trees")
 
 if left != None and right != None:
-  trees = trees.keep_intervals([[left, right]])
+  trees = trees.keep_intervals([[left, right]], simplify=False)
 
 egrm, egrm_tl = eGRM(trees)
 
