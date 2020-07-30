@@ -18,8 +18,8 @@ args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 input = args["input"]
-left = args.get("left")
-right = args.get("right")
+left = args.get("left", None)
+right = args.get("right", None)
 
 if args.get("output", None) == None:
   output = input + ".e"
