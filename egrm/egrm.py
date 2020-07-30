@@ -78,7 +78,7 @@ def eGRM(trees, file = None):
                    miniters = trees.num_trees // 100,
                    file = file)
   for tree in trees.trees():
-    if tree.total_branth_length == 0: # especially for trimmed tree sequences
+    if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
@@ -103,7 +103,7 @@ def eGRM_obs(trees, loci, num = -1):
         return buffer/total_tl, total_tl
     while tree.interval[1] < loci[i]:
       tree.next()
-    if tree.total_branth_length == 0:
+    if tree.total_branch_length == 0:
       continue
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
     total_tl += tl
