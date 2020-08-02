@@ -128,7 +128,7 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
   ITYPE i = 0;
   for (; i < mat->n; i++)
   {
-    PyList_Append(py_list, Py_BuildValue("i", data[i]));
+    PyList_Append(py_list, Py_BuildValue("d", data[i]));
   }
   
   return py_list;
