@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
-#include <pthreads.h>
 
 typedef double DTYPE;
 typedef unsigned long ITYPE;
