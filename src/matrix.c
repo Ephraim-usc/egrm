@@ -125,13 +125,13 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
   DTYPE* data = mat->data;
   
   PyObject *py_list = Py_BuildValue("[]");
-  int i = 0;
-  for (i; i < mat->n; i++)
+  ITYPE i = 0;
+  for (; i < mat->n; i++)
   {
     PyList_Append(py_list, Py_BuildValue("i", data[i]));
   }
   
-  return = py_list;
+  return py_list;
 }
 
 static PyMethodDef myMethods[] = 
@@ -139,6 +139,8 @@ static PyMethodDef myMethods[] =
   {"new_matrix", py_new_matrix, METH_VARARGS, "new matrix"},
   {"print_matrix", py_print_matrix, METH_VARARGS, "print matrix"},
   {"add_square", py_add_square, METH_VARARGS, "add_square"},
+  {"destroy_matrix", py_destroy_square, METH_VARARGS, "destroy matrix"},
+  {"export_matrix", py_export_square, METH_VARARGS, "export matrix"},
   {NULL, NULL, 0, NULL},
 };
 
