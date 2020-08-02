@@ -97,10 +97,10 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   PyArg_UnpackTuple(args, NULL, 3, 3, &py_mat, &py_int_seq, &py_q);
   
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
-  ITYPE* idx; ITYPE len_idx;
-  DTYPE q = (ITYPE)PyLong_AsLong(py_q);
+  DTYPE q = (DTYPE)PyFloat_AS_DOUBLE(py_q);
   py_int_seq = PySequence_Fast(py_int_seq, NULL);
   
+  ITYPE* idx; ITYPE len_idx;
   parse_py_int_seq(py_int_seq, &idx, &len_idx);
   add_square(mat, idx, len_idx, q);
   
