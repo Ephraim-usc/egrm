@@ -124,6 +124,21 @@ static PyObject* py_print_matrix(PyObject* self, PyObject* args)
   Py_RETURN_NONE;
 }
 
+static PyObject* py_export_matrix(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat; 
+  PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
+  matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
+  DTYPE* data = mat->data;
+  
+  PyListObject *py_list = (PyListObject *) Py_BuildValue("[]");
+  int i = 0;
+  for (i; i < mat->N; i++)
+    PyList_Append(py_list, Py_BuildValue("i", data[i]));
+  
+  return (PyObject *) py_list;
+}
+
 static PyMethodDef myMethods[] = 
 {
   {"new_matrix", py_new_matrix, METH_VARARGS, "new matrix"},
