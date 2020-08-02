@@ -22,13 +22,7 @@ matrix* new_matrix(ITYPE n)
   return mat;
 }
 
-void destry_matrix(matrix* mat)
-{
-  free(mat->data);
-  free(mat);
-}
-
-void destry_matrix(matrix* mat)
+void destroy_matrix(matrix* mat)
 {
   free(mat->data);
   free(mat);
@@ -130,12 +124,14 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   DTYPE* data = mat->data;
   
-  PyListObject *py_list = (PyListObject *) Py_BuildValue("[]");
+  PyObject *py_list = Py_BuildValue("[]");
   int i = 0;
-  for (i; i < mat->N; i++)
+  for (i; i < mat->n; i++)
+  {
     PyList_Append(py_list, Py_BuildValue("i", data[i]));
+  }
   
-  return (PyObject *) py_list;
+  return = py_list;
 }
 
 static PyMethodDef myMethods[] = 
