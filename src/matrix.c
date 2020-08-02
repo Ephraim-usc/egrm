@@ -98,7 +98,7 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   DTYPE q = (DTYPE)PyFloat_AS_DOUBLE(py_q);
-  print("%lf", q);
+  printf("%lf", q);
   
   py_int_seq = PySequence_Fast(py_int_seq, NULL);
   
