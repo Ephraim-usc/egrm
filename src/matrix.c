@@ -49,12 +49,12 @@ void add_square(matrix* mat, ITYPE* idx, ITYPE len_idx, DTYPE q)
   ITYPE* end = idx + len_idx;
   DTYPE* data = mat->data;
   ITYPE n = mat->n;
-  /*
+  
   for (; x < end; x++)
     for (y=idx; y <= x; y++)
     {
       data[*x * n + *y] += q;
-    }*/
+    }
 }
 
 static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
