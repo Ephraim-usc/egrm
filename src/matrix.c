@@ -22,6 +22,18 @@ matrix* new_matrix(ITYPE n)
   return mat;
 }
 
+void destry_matrix(matrix* mat)
+{
+  free(mat->data);
+  free(mat);
+}
+
+void destry_matrix(matrix* mat)
+{
+  free(mat->data);
+  free(mat);
+}
+
 void print_matrix(matrix* mat)
 {
   ITYPE n = mat->n;
@@ -70,6 +82,17 @@ static PyObject* py_new_matrix(PyObject* self, PyObject* args)
   matrix* mat = new_matrix((ITYPE)n);
   PyObject* mat_py = PyCapsule_New((void *)mat, "matrix._matrix_C_API", NULL);
   return mat_py;
+}
+
+static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat;
+  PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
+  
+  matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
+  destroy_matrix(mat);
+  
+  Py_RETURN_NONE;
 }
 
 static PyObject* py_add_square(PyObject* self, PyObject* args)
