@@ -124,11 +124,11 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
   PyObject* py_mat; 
   PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
-  DTYPE* data = mat->data;
+  DTYPE* data = mat->data; int n = mat->n;
   
   PyObject *py_list = Py_BuildValue("[]");
   ITYPE i = 0;
-  for (; i < mat->n; i++)
+  for (; i < = n*n; i++)
   {
     PyList_Append(py_list, Py_BuildValue("d", data[i]));
   }
