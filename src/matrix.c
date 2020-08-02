@@ -139,8 +139,8 @@ static PyMethodDef myMethods[] =
   {"new_matrix", py_new_matrix, METH_VARARGS, "new matrix"},
   {"print_matrix", py_print_matrix, METH_VARARGS, "print matrix"},
   {"add_square", py_add_square, METH_VARARGS, "add_square"},
-  {"destroy_matrix", py_destroy_square, METH_VARARGS, "destroy matrix"},
-  {"export_matrix", py_export_square, METH_VARARGS, "export matrix"},
+  {"destroy_matrix", py_destroy_matrix, METH_VARARGS, "destroy matrix"},
+  {"export_matrix", py_export_matrix, METH_VARARGS, "export matrix"},
   {NULL, NULL, 0, NULL},
 };
 
