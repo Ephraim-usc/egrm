@@ -134,7 +134,11 @@ def write_grm(grm, M, file, format = "GCTA"):
       iid = "IID{}".format(idx)
       grmfile.write("\t".join([fid, iid]) + os.linesep)
 
-def read_grm(file):
+def read_grm(file, format = "GCTA"):
+  if format == "pickle":
+    grm, M = pickle.load(open(file + ".p", "rb" ))
+    return grm, M
+  
   BinFileName  = file + ".grm.bin"
   NFileName = file + ".grm.N.bin"
   dt = np.dtype('f4')
