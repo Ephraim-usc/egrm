@@ -106,46 +106,51 @@ def eGRM_C(trees, file = None):
 
 
 
-def _eGRM_C_chunk(trees, index, chunk_size, queue):
+def _eGRM_C_chunk(trees, index, chunk_size, name):
   N = trees.num_samples
   start = index * chunk_size
   end = min(N, index * chunk_size + chunk_size)
   
+  total_tl = 0
   tree = trees.first()
   mat_C = matrix.new_matrix(N)
+  pbar = tqdm.tqdm(total = end - start, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   file = open(name + ".log", "a"))
+  
   while tree.index < start:
     tree.next()
   while tree.index > 0 and tree.index < end:
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
-      tree.next()
-      continue
+      tree.next(); continue
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
     zeta_C(tree, mat_C)
-    print(".", end='')
+    pbar.update(1)
     tree.next()
+  
   buffer = mat_C_to_array(mat_C, N)
-  queue.put(buffer)
+  buffer /= total_tl
+  buffer = epsilon(buffer)
+  pbar.close()
+  pickle.dump([buffer, total_tl], open(name + ".p", "wb" ))
+  
 
-def eGRM_C_pll(trees, file = None, cpus = 5):
+def eGRM_C_pll(trees, name, cpus = 5):
   N = trees.num_samples
   total_tl = 0
   mat_C = matrix.new_matrix(N)
   chunk_size = int(trees.num_trees / cpus) + 1
   print("totally " + str(trees.num_trees) + " trees.")
   
-  queue = mp.Queue()
-  p = mp.Pool(cpus)
-  p.map(functools.partial(_eGRM_C_chunk, trees = trees, chunk_size = chunk_size, queue = queue), range(cpus))
+  ps = []
+  for index in range(cpus):
+    p = mp.Process(target = _eGRM_C_chunk, args = (trees, index, chunk_size, name + "_" + str(index)))
+    ps.append(p); p.start()
   
-  results = [queue.get() for i in range(queue.qsize())]
-  return results
-
-'''
-  total_tl = np.array([tree.total_branch_length for tree in trees.trees()]).sum() * trees.sequence_length * 1e-8
+  for p in ps:
+    p.join()
   
-  buffer /= total_tl
-  buffer = epsilon(buffer)
-  print("done")
-  return buffer, total_tl
 '''
 
 
