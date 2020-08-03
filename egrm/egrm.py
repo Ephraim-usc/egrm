@@ -116,9 +116,6 @@ def eGRM_C(trees, file = None):
   pbar.close()
   return buffer, total_tl
 
-
-
-
 def _eGRM_C_chunk(trees, index, chunk_size, name):
   N = trees.num_samples
   start = index * chunk_size
@@ -167,7 +164,7 @@ def eGRM_C_pll(trees, name, cpus = 5):
   
   buffer, total_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
   
-  for file in [name + "_" + str(index) + ".log" for index in range(cpus)] + [name + "_" + str(index) + ".p" for index in range(cpus)]
+  for file in [name + "_" + str(index) + ".log" for index in range(cpus)] + [name + "_" + str(index) + ".p" for index in range(cpus)]:
     os. remove(file)
   
   return buffer, total_tl
