@@ -77,11 +77,12 @@ def eGRM(trees, file = None):
 
 def eGRM_merge(files, N):
   buffer = np.zeros((N, N))
+  total_tl = 0
   for file in files:
     with open(file, "rb") as f:
       buffer_, total_tl_ = pickle.load(f)
     buffer += buffer_ * total_tl_
-    total_tl += total_tl
+    total_tl += total_tl_
   buffer /= total_tl
   return buffer, total_tl
 
@@ -149,8 +150,6 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
 
 def eGRM_C_pll(trees, name, cpus = 5):
   N = trees.num_samples
-  total_tl = 0
-  mat_C = matrix.new_matrix(N)
   chunk_size = int(trees.num_trees / cpus) + 1
   print("totally " + str(trees.num_trees) + " trees.")
   
@@ -162,8 +161,8 @@ def eGRM_C_pll(trees, name, cpus = 5):
   for p in ps:
     p.join()
   
-  buffer, buffer_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
-  return buffer, buffer_tl
+  buffer, total_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
+  return buffer, total_tl
 
 
 
