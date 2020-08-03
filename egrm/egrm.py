@@ -6,6 +6,8 @@ import numpy as np
 import multiprocessing as mp
 import functools
 
+from io import write_grm, read_grm
+
 ### import C extension
 import matrix
 
