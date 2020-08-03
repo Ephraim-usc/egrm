@@ -3,6 +3,9 @@ import tskit
 import tqdm
 import numpy as np
 
+### import C extension
+import matrix
+
 ### coalescent relationship matrix
 def g(p):
   return 1/(p*(1-p))
@@ -21,6 +24,20 @@ def zeta(tree):
   zetas /= tree.total_branch_length
   return zetas
 
+def zeta_C(tree, mat_C):
+  N = tree.num_samples()
+  t = (tree.interval[1] - tree.interval[0]) * 1e-8
+  rel_nodes = list(tree.nodes())
+  zetas = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
+    matrix.add_square(mat_C, descendants, q * t)
+  return None
+
 def epsilon(x):
   N = x.shape[0]
   mean = x.mean()
@@ -32,42 +49,6 @@ def getEK(tree):
   buffer = epsilon(zeta(tree))
   L = tree.total_branch_length
   return buffer/L
-
-'''
-def getEK_trees(trees, flags = None, file = None):
-  if (flags == None):
-    flags = [True] * trees.num_trees
-  elif len(flags) != trees.num_trees:
-    print("incorrect flags length!")
-  idx_trees = np.where(flags)[0].tolist()
-  
-  N = trees.num_samples
-  EK = np.zeros([N, N])
-  total_tl = 0
-  pbar = tqdm.tqdm(total = len(idx_trees), 
-                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
-                   miniters = len(idx_trees) // 100,
-                   file = file)
-  
-  for i in idx_trees:
-    tree = trees.at_index(i)
-    interval = tree.interval
-    tl = (interval[1] - interval[0]) * tree.total_branch_length * 1e-8
-    total_tl += tl
-    EK += getEK(tree) * tl
-    pbar.update(1)
-  EK /= total_tl
-  pbar.close()
-  return (EK, round(total_tl))
-
-def get_flags(trees, variants, file = None):
-    flags = [False] * trees.num_trees
-    for v in tqdm.tqdm(variants, bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
-                       miniters = len(variants) // 100, 
-                       file = file):
-      flags[trees.at(v).index] = True
-    return flags
-'''
 
 def eGRM(trees, file = None):
   N = trees.num_samples
@@ -85,6 +66,32 @@ def eGRM(trees, file = None):
     K = zeta(tree)
     buffer += K * tl
     pbar.update(1)
+  buffer /= total_tl
+  buffer = epsilon(buffer)
+  pbar.close()
+  return buffer, total_tl
+
+def eGRM_C(trees, file = None):
+  N = trees.num_samples
+  total_tl = 0
+  mat_C = matrix.new_matrix(N)
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    if tree.total_branch_length == 0: # especially for trimmed tree sequences
+      continue
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    zeta_C(tree, mat_C)
+    pbar.update(1)
+  
+  # idiom to export matrix from matrix._matrix_C_API
+  buffer = matrix.export_matrix(mat_C)
+  buffer = np.reshape(buffer, (N, N))
+  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
+  
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
@@ -148,6 +155,11 @@ def mTMRCA(trees, file = None):
   buffer /= total_l
   pbar.close()
   return buffer, total_l
+
+
+
+
+
 
 #########
 
