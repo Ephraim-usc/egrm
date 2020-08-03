@@ -12,6 +12,7 @@ parser.add_argument('--input', type = str, help='input file prefix')
 parser.add_argument('--output', type = str, help='output file prefix')
 parser.add_argument('--format', type = str, help='format of output')
 parser.add_argument('--c', help='acceleration by C extension', action='store_true')
+parser.add_argument('--threads', type = int, help='number of threads')
 parser.add_argument('--left', type = int, help='leftmost genomic position to be included')
 parser.add_argument('--right', type = int, help='rightmost genomic position to be included')
 
@@ -21,6 +22,7 @@ args = dict((k,v) for k,v in args.items() if v is not None)
 input = args["input"]
 left = args.get("left", None)
 right = args.get("right", None)
+threads = args.get("threads", None)
 
 if args.get("output", None) == None:
   output = input + ".e"
@@ -43,7 +45,7 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  egrm, egrm_tl = eGRM_C_pll(trees, output)
+  egrm, egrm_tl = eGRM_C_pll(trees, output, cpus = threads)
 else:
   egrm, egrm_tl = eGRM(trees)
 
