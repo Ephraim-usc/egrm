@@ -43,7 +43,7 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  egrm, egrm_tl = eGRM_C(trees)
+  egrm, egrm_tl = eGRM_C_pll(trees)
 else:
   egrm, egrm_tl = eGRM(trees)
 
