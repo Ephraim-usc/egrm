@@ -133,7 +133,7 @@ def eGRM_C_pll(trees, file = None, cpus = 5):
     processes.append(x)
     x.start()
   
-  for process in enumerate(processes):
+  for process in processes:
     process.join()
   pbar.close()
   print("finalizing ...")
