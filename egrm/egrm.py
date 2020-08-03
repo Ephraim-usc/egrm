@@ -2,6 +2,7 @@
 import tskit
 import tqdm
 import numpy as np
+import multiprocessing
 
 ### import C extension
 import matrix
@@ -97,6 +98,59 @@ def eGRM_C(trees, file = None):
   pbar.close()
   return buffer, total_tl
 
+
+def _eGRM_C_chunk(trees, mat_C, start, end, pbar):
+  N = trees.num_samples
+  total_tl = 0
+  tree = trees.first()
+  while tree.index < start:
+    tree.next()
+  while tree.index > 0 and tree.index < end:
+    if tree.total_branch_length == 0: # especially for trimmed tree sequences
+      continue
+    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
+    total_tl += tl
+    zeta_C(tree, mat_C)
+    pbar.update(1)
+    tree.next()
+
+def eGRM_C_pll(trees, file = None, cpus = 5):
+  N = trees.num_samples
+  total_tl = 0
+  mat_C = matrix.new_matrix(N)
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  
+  chunk_size = int(trees.num_trees / cpus) + 1
+  
+  processes = list()
+  for index in range(cpus):
+    start = index * chunk_size
+    end = index * chunk_size + chunk_size
+    x = multiprocessing.Process(target=_eGRM_C_chunk, args=(trees, mat_C, start, end, pbar))
+    processes.append(x)
+    x.start()
+  
+  for process in enumerate(processes):
+    process.join()
+  pbar.close()
+  print("finalizing ...")
+  
+  # idiom to export matrix from matrix._matrix_C_API
+  buffer = matrix.export_matrix(mat_C)
+  buffer = np.reshape(buffer, (N, N))
+  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
+  
+  total_tl = np.array([tree.total_branch_length for tree in trees.trees()]).sum() * trees.sequence_length * 1e-8
+  
+  buffer /= total_tl
+  buffer = epsilon(buffer)
+  print("done")
+  return buffer, total_tl
+
+#####
 def eGRM_obs(trees, loci, num = -1):
   N = trees.num_samples
   total_tl = 0
