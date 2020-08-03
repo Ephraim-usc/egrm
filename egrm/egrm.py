@@ -74,6 +74,16 @@ def eGRM(trees, file = None):
   pbar.close()
   return buffer, total_tl
 
+def eGRM_merge(files, N):
+  buffer = np.zeros((N, N))
+  for file in files:
+    with open(file, "rb") as f:
+      buffer_, total_tl_ = read_grm(f)
+    buffer += buffer_ * total_tl_
+    total_tl += total_tl
+  buffer /= total_tl
+  return buffer, total_tl
+
 def mat_C_to_array(mat_C, N):
   buffer = matrix.export_matrix(mat_C)
   buffer = np.reshape(np.array(buffer), (N, N))
@@ -120,7 +130,7 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
   
   while tree.index < start:
     tree.next()
-  while tree.index > 0 and tree.index < end:
+  while tree.index >= 0 and tree.index < end:
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       tree.next(); continue
     tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
@@ -133,7 +143,7 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
-  pickle.dump([buffer, total_tl], open(name + ".p", "wb" ))
+  write_grm(buffer, total_tl, name, "pickle")
   
 
 def eGRM_C_pll(trees, name, cpus = 5):
@@ -151,11 +161,13 @@ def eGRM_C_pll(trees, name, cpus = 5):
   for p in ps:
     p.join()
   
-  return 1, 2
+  buffer, buffer_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
+  return buffer, buffer_tl
+
+
+
 
 '''
-
-
 #####
 def eGRM_obs(trees, loci, num = -1):
   N = trees.num_samples
