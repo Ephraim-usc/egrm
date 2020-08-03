@@ -119,7 +119,7 @@ def eGRM_C(trees, file = None):
 def _eGRM_C_chunk(trees, index, chunk_size, name):
   N = trees.num_samples
   start = index * chunk_size
-  end = min(N, index * chunk_size + chunk_size)
+  end = min(trees.num_trees, index * chunk_size + chunk_size)
   with open(name + ".log", "a") as f:
     f.write("Computing trees from " + str(start) + " to " + str(end) + "\n")
   
