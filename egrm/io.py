@@ -109,10 +109,10 @@ def write_tsinfer(simulation, idx, file):
 def read_trees(file):
   return tskit.load(file)
 
-def write_grm(grm, M, file, mode = "GCTA"):
+def write_grm(grm, M, file, format = "GCTA"):
   N = grm.shape[0]
   
-  if mode == "pickle":
+  if format == "pickle":
     pickle.dump([grm, M], open(file + ".p", "wb" ))
     return
   
