@@ -112,6 +112,7 @@ def _eGRM_C_chunk(trees, mat_C, start, end, pbar):
     total_tl += tl
     zeta_C(tree, mat_C)
     pbar.update(1)
+    print(tree.index)
     tree.next()
 
 def eGRM_C_pll(trees, file = None, cpus = 5):
@@ -132,6 +133,7 @@ def eGRM_C_pll(trees, file = None, cpus = 5):
     x = multiprocessing.Process(target=_eGRM_C_chunk, args=(trees, mat_C, start, end, pbar))
     processes.append(x)
     x.start()
+    print("New process started - PID" + str(x.pid))
   
   for process in processes:
     process.join()
