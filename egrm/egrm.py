@@ -152,6 +152,7 @@ def eGRM_C_pll(trees, name, cpus = 5):
   N = trees.num_samples
   chunk_size = int(trees.num_trees / cpus) + 1
   print("totally " + str(trees.num_trees) + " trees.")
+  os.mkdir(name + ".egrm_tmp"); os.chdir(name + ".egrm_tmp")
   
   ps = []
   for index in range(cpus):
@@ -167,6 +168,7 @@ def eGRM_C_pll(trees, name, cpus = 5):
   for file in [name + "_" + str(index) + ".log" for index in range(cpus)] + [name + "_" + str(index) + ".p" for index in range(cpus)]:
     os. remove(file)
   
+  os.chdir(".."); os.delete(name + ".egrm_tmp")
   return buffer, total_tl
 
 
