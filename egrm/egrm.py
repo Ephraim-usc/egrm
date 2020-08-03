@@ -106,6 +106,7 @@ def _eGRM_C_chunk(trees, mat_C, start, end):
     tree.next()
   while tree.index > 0 and tree.index < end:
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
+      tree.next()
       continue
     zeta_C(tree, mat_C)
     print(".")
