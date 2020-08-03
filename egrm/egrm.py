@@ -109,7 +109,7 @@ def _eGRM_C_chunk(trees, mat_C, start, end):
       tree.next()
       continue
     zeta_C(tree, mat_C)
-    print(".")
+    print(".", end='')
     tree.next()
 
 def eGRM_C_pll(trees, file = None, cpus = 5):
