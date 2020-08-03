@@ -1,8 +1,10 @@
 ### import packages
 import tskit
 import tqdm
+import math
 import numpy as np
-import multiprocessing
+import multiprocessing as mp
+import functools
 
 ### import C extension
 import matrix
@@ -72,6 +74,13 @@ def eGRM(trees, file = None):
   pbar.close()
   return buffer, total_tl
 
+def mat_C_to_array(mat_C, N):
+  buffer = matrix.export_matrix(mat_C)
+  buffer = np.reshape(np.array(buffer), (N, N))
+  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
+  matrix.destroy_matrix(mat_C)
+  return buffer
+
 def eGRM_C(trees, file = None):
   N = trees.num_samples
   total_tl = 0
@@ -88,20 +97,22 @@ def eGRM_C(trees, file = None):
     zeta_C(tree, mat_C)
     pbar.update(1)
   
-  # idiom to export matrix from matrix._matrix_C_API
-  buffer = matrix.export_matrix(mat_C)
-  buffer = np.reshape(buffer, (N, N))
-  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
-  
+  buffer = mat_C_to_array(mat_C, N)
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
   return buffer, total_tl
 
 
-def _eGRM_C_chunk(trees, mat_C, start, end):
+
+
+def _eGRM_C_chunk(trees, index, chunk_size, queue):
   N = trees.num_samples
+  start = index * chunk_size
+  end = min(N, index * chunk_size + chunk_size)
+  
   tree = trees.first()
+  mat_C = matrix.new_matrix(N)
   while tree.index < start:
     tree.next()
   while tree.index > 0 and tree.index < end:
@@ -111,6 +122,8 @@ def _eGRM_C_chunk(trees, mat_C, start, end):
     zeta_C(tree, mat_C)
     print(".", end='')
     tree.next()
+  buffer = mat_C_to_array(mat_C, N)
+  queue.put(buffer)
 
 def eGRM_C_pll(trees, file = None, cpus = 5):
   N = trees.num_samples
@@ -119,30 +132,22 @@ def eGRM_C_pll(trees, file = None, cpus = 5):
   chunk_size = int(trees.num_trees / cpus) + 1
   print("totally " + str(trees.num_trees) + " trees.")
   
-  processes = list()
-  for index in range(cpus):
-    start = index * chunk_size
-    end = index * chunk_size + chunk_size
-    x = multiprocessing.Process(target=_eGRM_C_chunk, args=(trees, mat_C, start, end))
-    processes.append(x)
-    x.start()
-    print("New process started - PID" + str(x.pid))
+  queue = mp.Queue()
+  p = mp.Pool(cpus)
+  p.map(functools.partial(_eGRM_C_chunk, trees = trees, chunk_size = chunk_size, queue = queue), range(cpus))
   
-  for process in processes:
-    process.join()
-  print("finalizing ...")
-  
-  # idiom to export matrix from matrix._matrix_C_API
-  buffer = matrix.export_matrix(mat_C)
-  buffer = np.reshape(buffer, (N, N))
-  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
-  
+  results = [queue.get() for i in range(queue.qsize())]
+  return results
+
+'''
   total_tl = np.array([tree.total_branch_length for tree in trees.trees()]).sum() * trees.sequence_length * 1e-8
   
   buffer /= total_tl
   buffer = epsilon(buffer)
   print("done")
   return buffer, total_tl
+'''
+
 
 #####
 def eGRM_obs(trees, loci, num = -1):
