@@ -166,9 +166,9 @@ def eGRM_C_pll(trees, name, cpus = 5):
   buffer, total_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
   
   for file in [name + "_" + str(index) + ".log" for index in range(cpus)] + [name + "_" + str(index) + ".p" for index in range(cpus)]:
-    os. remove(file)
+    os.remove(file)
   
-  os.chdir(".."); os.delete(name + ".egrm_tmp")
+  os.chdir(".."); os.rmdir(name + ".egrm_tmp")
   return buffer, total_tl
 
 
