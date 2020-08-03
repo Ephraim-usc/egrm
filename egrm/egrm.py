@@ -5,8 +5,7 @@ import math
 import numpy as np
 import multiprocessing as mp
 import functools
-
-from io import write_grm, read_grm
+import pickle
 
 ### import C extension
 import matrix
@@ -80,7 +79,7 @@ def eGRM_merge(files, N):
   buffer = np.zeros((N, N))
   for file in files:
     with open(file, "rb") as f:
-      buffer_, total_tl_ = read_grm(f)
+      buffer_, total_tl_ = pickle.load(f)
     buffer += buffer_ * total_tl_
     total_tl += total_tl
   buffer /= total_tl
@@ -145,7 +144,7 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
-  write_grm(buffer, total_tl, name, "pickle")
+  pickle.dump([buffer, total_tl], file = open(name + ".p", "wb"))
   
 
 def eGRM_C_pll(trees, name, cpus = 5):
