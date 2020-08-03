@@ -6,6 +6,7 @@ import numpy as np
 import multiprocessing as mp
 import functools
 import pickle
+import os
 
 ### import C extension
 import matrix
@@ -122,6 +123,8 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
   N = trees.num_samples
   start = index * chunk_size
   end = min(N, index * chunk_size + chunk_size)
+  with open(name + ".log", "a") as f:
+    f.write("Computing trees from " + str(start) + " to " + str(end) + "\n")
   
   total_tl = 0
   tree = trees.first()
@@ -157,11 +160,16 @@ def eGRM_C_pll(trees, name, cpus = 5):
   for index in range(cpus):
     p = mp.Process(target = _eGRM_C_chunk, args = (trees, index, chunk_size, name + "_" + str(index)))
     ps.append(p); p.start()
+    print("New process " + str(p.pid) + " with log file " + name + "_" + str(index) + ".log")
   
   for p in ps:
     p.join()
   
   buffer, total_tl = eGRM_merge([name + "_" + str(index) + ".p" for index in range(cpus)], N)
+  
+  for file in [name + "_" + str(index) + ".log" for index in range(cpus)] + [name + "_" + str(index) + ".p" for index in range(cpus)]
+    os. remove(file)
+  
   return buffer, total_tl
 
 
