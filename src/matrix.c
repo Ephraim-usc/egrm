@@ -66,6 +66,7 @@ static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
   {
     PyObject *item = PySequence_Fast_GET_ITEM(py_int_seq, i);
     (*pr)[i] = (ITYPE)PyLong_AsLong(item);
+    Py_DECREF(item);
   }
 }
 
@@ -77,7 +78,6 @@ static PyObject* py_new_matrix(PyObject* self, PyObject* args)
   matrix* mat = new_matrix((ITYPE)n);
   PyObject* py_mat = PyCapsule_New((void *)mat, "matrix._matrix_C_API", NULL);
   
-  Py_INCREF(py_mat);
   return py_mat;
 }
 
@@ -96,14 +96,15 @@ static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
 static PyObject* py_add_square(PyObject* self, PyObject* args)
 {
   PyObject* py_mat;
-  PyObject* py_int_seq;
+  PyObject* py_idx;
   PyObject* py_q;
-  PyArg_UnpackTuple(args, NULL, 3, 3, &py_mat, &py_int_seq, &py_q);
+  PyArg_UnpackTuple(args, NULL, 3, 3, &py_mat, &py_idx, &py_q);
   
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   DTYPE q = (DTYPE)PyFloat_AS_DOUBLE(py_q);
   
-  py_int_seq = PySequence_Fast(py_int_seq, NULL);
+  PyObject* py_int_seq;
+  py_int_seq = PySequence_Fast(py_idx, NULL);
   
   ITYPE* idx; ITYPE len_idx;
   parse_py_int_seq(py_int_seq, &idx, &len_idx);
@@ -111,8 +112,6 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   free(idx);
   
   Py_DECREF(py_int_seq);
-  Py_DECREF(py_q);
-  
   Py_RETURN_NONE;
 }
 
