@@ -76,10 +76,10 @@ static PyObject* py_new_matrix(PyObject* self, PyObject* args)
   PyArg_ParseTuple(args, "k", &n);
   
   matrix* mat = new_matrix((ITYPE)n);
-  PyObject* mat_py = PyCapsule_New((void *)mat, "matrix._matrix_C_API", NULL);
+  PyObject* py_mat = PyCapsule_New((void *)mat, "matrix._matrix_C_API", NULL);
   
-  Py_INCREF(mat_py);
-  return mat_py;
+  Py_INCREF(py_mat);
+  return py_mat;
 }
 
 static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
