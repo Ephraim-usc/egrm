@@ -105,6 +105,7 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   ITYPE* idx; ITYPE len_idx;
   parse_py_int_seq(py_int_seq, &idx, &len_idx);
   add_square(mat, idx, len_idx, q);
+  free(idx);
   
   Py_RETURN_NONE;
 }
