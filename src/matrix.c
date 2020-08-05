@@ -66,7 +66,6 @@ static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
   {
     PyObject *item = PySequence_Fast_GET_ITEM(py_int_seq, i);
     (*pr)[i] = (ITYPE)PyLong_AsLong(item);
-    Py_DECREF(item);
   }
 }
 
