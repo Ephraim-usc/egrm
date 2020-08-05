@@ -139,7 +139,6 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
     PyList_Append(py_list, Py_BuildValue("d", data[i]));
   }
   
-  Py_INCREF(py_list);
   return py_list;
 }
 
