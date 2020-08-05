@@ -91,7 +91,6 @@ def mat_C_to_array(mat_C, N):
   buffer = matrix.export_matrix(mat_C)
   buffer = np.reshape(np.array(buffer), (N, N))
   buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
-  matrix.destroy_matrix(mat_C)
   return buffer
 
 def eGRM_C(trees, file = None):
@@ -142,9 +141,12 @@ def _eGRM_C_chunk(trees, index, chunk_size, name):
     tree.next()
   
   buffer = mat_C_to_array(mat_C, N)
+  matrix.destroy_matrix(mat_C)
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
+  with open(name + ".log", "a") as f:
+    f.write("Done")
   pickle.dump([buffer, total_tl], file = open(name + ".p", "wb"))
   
 
@@ -169,6 +171,7 @@ def eGRM_C_pll(trees, name, cpus = 5):
     os.remove(file)
   
   os.chdir(".."); os.rmdir(name + ".egrm_tmp")
+  print("Done")
   return buffer, total_tl
 
 
