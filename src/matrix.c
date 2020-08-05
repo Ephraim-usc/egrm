@@ -66,6 +66,7 @@ static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
   {
     PyObject *item = PySequence_Fast_GET_ITEM(py_int_seq, i);
     (*pr)[i] = (ITYPE)PyLong_AsLong(item);
+    Py_DECREF(item);
   }
 }
 
@@ -76,6 +77,8 @@ static PyObject* py_new_matrix(PyObject* self, PyObject* args)
   
   matrix* mat = new_matrix((ITYPE)n);
   PyObject* mat_py = PyCapsule_New((void *)mat, "matrix._matrix_C_API", NULL);
+  
+  Py_INCREF(py_mat);
   return mat_py;
 }
 
@@ -86,6 +89,7 @@ static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
   
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   destroy_matrix(mat);
+  Py_DECREF(py_mat);
   
   Py_RETURN_NONE;
 }
@@ -107,6 +111,10 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   add_square(mat, idx, len_idx, q);
   free(idx);
   
+  Py_DECREF(py_mat);
+  Py_DECREF(py_int_seq);
+  Py_DECREF(py_q);
+  
   Py_RETURN_NONE;
 }
 
@@ -117,6 +125,7 @@ static PyObject* py_print_matrix(PyObject* self, PyObject* args)
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   
   print_matrix(mat);
+  Py_DECREF(py_mat);
   Py_RETURN_NONE;
 }
 
@@ -134,6 +143,8 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
     PyList_Append(py_list, Py_BuildValue("d", data[i]));
   }
   
+  py_DECREF(py_mat)
+  py_INCREF(py_list);
   return py_list;
 }
 
