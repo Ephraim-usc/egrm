@@ -89,8 +89,8 @@ static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
   
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   destroy_matrix(mat);
-  Py_DECREF(py_mat);
   
+  Py_DECREF(py_mat);
   Py_RETURN_NONE;
 }
 
@@ -111,7 +111,6 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   add_square(mat, idx, len_idx, q);
   free(idx);
   
-  Py_DECREF(py_mat);
   Py_DECREF(py_int_seq);
   Py_DECREF(py_q);
   
@@ -123,9 +122,8 @@ static PyObject* py_print_matrix(PyObject* self, PyObject* args)
   PyObject* py_mat; 
   PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
-  
   print_matrix(mat);
-  Py_DECREF(py_mat);
+  
   Py_RETURN_NONE;
 }
 
@@ -143,7 +141,6 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
     PyList_Append(py_list, Py_BuildValue("d", data[i]));
   }
   
-  Py_DECREF(py_mat);
   Py_INCREF(py_list);
   return py_list;
 }
