@@ -110,7 +110,7 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   add_square(mat, idx, len_idx, q);
   free(idx);
   
-  Py_INCREF(py_int_seq);
+  Py_DECREF(py_int_seq);
   Py_RETURN_NONE;
 }
 
