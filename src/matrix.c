@@ -88,9 +88,6 @@ static PyObject* py_destroy_matrix(PyObject* self, PyObject* args)
   matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
   destroy_matrix(mat);
   
-  Py_DECREF(py_mat);
-  py_mat = Py_None;
-  Py_INCREF(py_mat);
   Py_RETURN_NONE;
 }
 
