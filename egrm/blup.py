@@ -47,7 +47,7 @@ def phenotype_impute(simulation, repeats = 100):
     h2g = simulation["parameters"]["h2g"]
     tests = np.random.choice(N, math.floor(N * 0.25), replace = False)
     tests.sort()
-    trains = [i for i in range(N) if i not in tests]
+    trains = np.array([i for i in range(N) if i not in tests])
     y_train = y[trains]
     y_test = y[tests]
     for key in Ks.keys():
