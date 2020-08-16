@@ -160,6 +160,7 @@ if run_tsinfer:
   simulation["Ks"]["EK_tsdate"] = EK_tsdate
   simulation["Ks"]["EK_tsdate_tl"] = EK_tsdate_tl
 
+# save before testing performances
 trees = simulation["hapdata"].pop("trees")
 pickle.dump(simulation, open("{}.p".format(name), "wb"))
 trees.dump("{}.trees".format(name))
@@ -171,6 +172,5 @@ print_results("\n" + str(datetime.datetime.now()))
 
 ### save
 pickle.dump(simulation, open("{}.p".format(name), "wb"))
-trees.dump("{}.trees".format(name))
 
 
