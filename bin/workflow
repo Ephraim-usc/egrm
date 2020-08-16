@@ -102,10 +102,12 @@ if run_mtmrca:
   simulation["Ks"]["mTMRCA"] = mtmrca
   simulation["Ks"]["mTMRCA_l"] = mtmrca_l
 
+'''
 print_logs("computing Km ...")
 EK, EK_tl = eGRM_C(trees)
 simulation["Ks"]["EK"] = EK
 simulation["Ks"]["EK_tl"] = EK_tl
+'''
 
 '''
 if run_gcta:
