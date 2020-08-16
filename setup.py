@@ -23,6 +23,6 @@ setup(name='egrm',
       install_requires=[
           'tskit', 'tqdm', 'msprime'
       ],
-      scripts=['bin/trees2egrm', 'bin/workflow', 'bin/workflow_tmp', 'bin/summarize'],
+      scripts=['bin/trees2egrm', 'bin/workflow', 'bin/summarize'],
       ext_modules=[Extension('matrix', ['src/matrix.c'])],
       zip_safe=False)
