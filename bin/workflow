@@ -103,7 +103,7 @@ if run_mtmrca:
   simulation["Ks"]["mTMRCA_l"] = mtmrca_l
 
 print_logs("computing Km ...")
-EK, EK_tl = eGRM_obs(trees, loci)
+EK, EK_tl = eGRM_C(trees)
 simulation["Ks"]["EK"] = EK
 simulation["Ks"]["EK_tl"] = EK_tl
 
@@ -130,7 +130,7 @@ if run_relate:
   trees_relate = tskit.load("observed.trees")
   
   print_logs("computing Km_relate ...")
-  EK_relate, EK_relate_tl = eGRM(trees_relate, file = open(name + ".log", "a"))
+  EK_relate, EK_relate_tl = eGRM_C(trees_relate, file = open(name + ".log", "a"))
   os.chdir("..")
   
   simulation["Ks"]["EK_relate"] = EK_relate
@@ -146,11 +146,11 @@ if run_tsinfer:
   trees_tsinfer = tskit.load("observed.trees")
   
   print_logs("computing Km_tsinfer ...")
-  EK_tsinfer, EK_tsinfer_tl = eGRM(trees_tsinfer, file = open(name + ".log", "a"))
+  EK_tsinfer, EK_tsinfer_tl = eGRM_C(trees_tsinfer, file = open(name + ".log", "a"))
   
   print_logs("computing Km_tsdate ...")
   trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate=1e-8)
-  EK_tsdate, EK_tsdate_tl = eGRM(trees_tsdate, file = open(name + ".log", "a"))
+  EK_tsdate, EK_tsdate_tl = eGRM_C(trees_tsdate, file = open(name + ".log", "a"))
   os.chdir("..")
   
   simulation["Ks"]["EK_tsinfer"] = EK_tsinfer
