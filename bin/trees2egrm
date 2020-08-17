@@ -2,6 +2,7 @@
 
 ### importing packages
 import argparse
+import math
 
 ### importing egrm
 from egrm import eGRM, eGRM_C, eGRM_C_pll, read_trees, write_grm
