@@ -15,6 +15,8 @@ parser.add_argument('--c', help='acceleration by C extension', action='store_tru
 parser.add_argument('--threads', type = int, help='number of threads')
 parser.add_argument('--left', type = int, help='leftmost genomic position to be included')
 parser.add_argument('--right', type = int, help='rightmost genomic position to be included')
+parser.add_argument('--A', type = float, help='most ancient time limit')
+parser.add_argument('--B', type = float, help='most recent time limit')
 
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
@@ -22,6 +24,8 @@ args = dict((k,v) for k,v in args.items() if v is not None)
 input = args["input"]
 left = args.get("left", None)
 right = args.get("right", None)
+A = args.get("A", None)
+B = args.get("B", None)
 threads = args.get("threads", None)
 
 if args.get("output", None) == None:
@@ -39,6 +43,11 @@ c_extension = args.pop("c")
 ### 
 trees = read_trees(input + ".trees")
 
+if A == None:
+  A = math.inf
+if B == None:
+  B = 0
+
 if left != None and right != None:
   left = max(0, left)
   right = min(trees.sequence_length, right)
@@ -47,7 +56,7 @@ if left != None and right != None:
 if c_extension == True and threads != None:
   egrm, egrm_tl = eGRM_C_pll(trees, output, cpus = threads)
 if c_extension == True and threads == None:
-  egrm, egrm_tl = eGRM_C(trees)
+  egrm, egrm_tl = eGRM_C(trees, A, B)
 if c_extension == False:
   egrm, egrm_tl = eGRM(trees)
 
