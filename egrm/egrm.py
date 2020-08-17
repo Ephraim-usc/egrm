@@ -29,19 +29,20 @@ def zeta(tree):
   zetas /= tree.total_branch_length
   return zetas
 
-def zeta_C(tree, mat_C):
+def zeta_C(tree, mat_C, A = math.inf, B = 0):
   N = tree.num_samples()
-  t = (tree.interval[1] - tree.interval[0]) * 1e-8
-  rel_nodes = list(tree.nodes())
+  l = (tree.interval[1] - tree.interval[0])
   zetas = np.zeros([N, N])
-  for c in rel_nodes:
+  total_tl = 0
+  for c in tree.nodes():
     descendants = list(tree.samples(c))
     n = len(descendants)
-    if(n == 0 or n == N):
+    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c))) * 1e-8
+    if (n == 0 or n == N or t == 0):
       continue
-    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
-    matrix.add_square(mat_C, descendants, q * t)
-  return None
+    matrix.add_square(mat_C, descendants, l * t * g(n / N))
+    total_tl += t * l
+  return total_tl
 
 def epsilon(x):
   N = x.shape[0]
@@ -49,11 +50,6 @@ def epsilon(x):
   colmean = np.tile(x.mean(axis = 0), (N, 1))
   rowmean = colmean.T
   return x + mean - colmean - rowmean
-
-def getEK(tree):
-  buffer = epsilon(zeta(tree))
-  L = tree.total_branch_length
-  return buffer/L
 
 def eGRM(trees, file = None):
   N = trees.num_samples
@@ -93,7 +89,7 @@ def mat_C_to_array(mat_C, N):
   buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
   return buffer
 
-def eGRM_C(trees, file = None):
+def eGRM_C(trees, file = None, A = math.inf, B = 0):
   N = trees.num_samples
   total_tl = 0
   mat_C = matrix.new_matrix(N)
@@ -104,9 +100,7 @@ def eGRM_C(trees, file = None):
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    tl = (tree.interval[1] - tree.interval[0]) * tree.total_branch_length * 1e-8
-    total_tl += tl
-    zeta_C(tree, mat_C)
+    total_tl += zeta_C(tree, mat_C)
     pbar.update(1)
   
   buffer = mat_C_to_array(mat_C, N)
