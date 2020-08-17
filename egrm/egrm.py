@@ -100,7 +100,7 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0):
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    total_tl += zeta_C(tree, mat_C)
+    total_tl += zeta_C(tree, mat_C, A, B)
     pbar.update(1)
   
   buffer = mat_C_to_array(mat_C, N)
