@@ -37,8 +37,10 @@ def zeta_C(tree, mat_C, A = math.inf, B = 0):
   for c in tree.nodes():
     descendants = list(tree.samples(c))
     n = len(descendants)
+    if (n == 0 or n == N):
+      continue
     t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c))) * 1e-8
-    if (n == 0 or n == N or t == 0):
+    if (t == 0):
       continue
     matrix.add_square(mat_C, descendants, l * t * g(n / N))
     total_tl += t * l
