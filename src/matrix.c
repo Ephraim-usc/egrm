@@ -57,6 +57,21 @@ void add_square(matrix* mat, ITYPE* idx, ITYPE len_idx, DTYPE q)
     }
 }
 
+void set_square(matrix* mat, ITYPE* idx, ITYPE len_idx, DTYPE q)
+{
+  ITYPE* x = idx;
+  ITYPE* y = idx;
+  ITYPE* end = idx + len_idx;
+  DTYPE* data = mat->data;
+  ITYPE n = mat->n;
+  
+  for (; x < end; x++)
+    for (y=idx; y <= x; y++)
+    {
+      data[*x * n + *y] = q;
+    }
+}
+
 static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
 {
   *len = (ITYPE)PySequence_Fast_GET_SIZE(py_int_seq);
@@ -113,6 +128,28 @@ static PyObject* py_add_square(PyObject* self, PyObject* args)
   Py_RETURN_NONE;
 }
 
+static PyObject* py_set_square(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat;
+  PyObject* py_idx;
+  PyObject* py_q;
+  PyArg_UnpackTuple(args, NULL, 3, 3, &py_mat, &py_idx, &py_q);
+  
+  matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
+  DTYPE q = (DTYPE)PyFloat_AS_DOUBLE(py_q);
+  
+  PyObject* py_int_seq;
+  py_int_seq = PySequence_Fast(py_idx, NULL);
+  
+  ITYPE* idx; ITYPE len_idx;
+  parse_py_int_seq(py_int_seq, &idx, &len_idx);
+  set_square(mat, idx, len_idx, q);
+  free(idx);
+  
+  Py_DECREF(py_int_seq);
+  Py_RETURN_NONE;
+}
+
 static PyObject* py_print_matrix(PyObject* self, PyObject* args)
 {
   PyObject* py_mat; 
@@ -145,6 +182,7 @@ static PyMethodDef myMethods[] =
   {"new_matrix", py_new_matrix, METH_VARARGS, "new matrix"},
   {"print_matrix", py_print_matrix, METH_VARARGS, "print matrix"},
   {"add_square", py_add_square, METH_VARARGS, "add_square"},
+  {"set_square", py_set_square, METH_VARARGS, "set_square"},
   {"destroy_matrix", py_destroy_matrix, METH_VARARGS, "destroy matrix"},
   {"export_matrix", py_export_matrix, METH_VARARGS, "export matrix"},
   {NULL, NULL, 0, NULL},
