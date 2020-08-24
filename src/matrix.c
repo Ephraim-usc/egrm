@@ -72,6 +72,28 @@ void set_square(matrix* mat, ITYPE* idx, ITYPE len_idx, DTYPE q)
     }
 }
 
+void add(matrix* mat_1, matrix* mat_2)
+{
+  ITYPE n = mat_1->n;
+  DTYPE* p = mat_1->data;
+  DTYPE* q = mat_2->data;
+  DTYPE* end = p + n*n;
+  
+  for (; p < end;)
+  {
+    *p += *q;
+    p++; q++;
+  }
+}
+
+void set_zero(matrix* mat_1)
+{
+  ITYPE n = mat_1->n;
+  DTYPE* data = mat_1->data;
+  
+  memset(data, 0, n*n * sizeof(DTYPE));
+}
+
 static void parse_py_int_seq(PyObject *py_int_seq, ITYPE** pr, ITYPE* len)
 {
   *len = (ITYPE)PySequence_Fast_GET_SIZE(py_int_seq);
