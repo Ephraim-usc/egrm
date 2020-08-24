@@ -79,12 +79,10 @@ void add(matrix* mat_1, matrix* mat_2)
   DTYPE* q = mat_2->data;
   ITYPE i;
   
-  /*
   for (i = 0; i < n*n; i++)
   {
     *(p+i) += *(q+i);
   }
-  */
 }
 
 void set_zeros(matrix* mat_1)
@@ -231,7 +229,7 @@ static PyMethodDef myMethods[] =
   {"print_matrix", py_print_matrix, METH_VARARGS, "print matrix"},
   {"add_square", py_add_square, METH_VARARGS, "add_square"},
   {"set_square", py_set_square, METH_VARARGS, "set_square"},
-  {"add", py_add_square, METH_VARARGS, "add"},
+  {"add", py_add, METH_VARARGS, "add"},
   {"set_zeros", py_set_zeros, METH_VARARGS, "set_zeros"},
   {"destroy_matrix", py_destroy_matrix, METH_VARARGS, "destroy matrix"},
   {"export_matrix", py_export_matrix, METH_VARARGS, "export matrix"},
