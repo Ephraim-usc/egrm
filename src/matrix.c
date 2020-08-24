@@ -86,7 +86,7 @@ void add(matrix* mat_1, matrix* mat_2)
   }
 }
 
-void set_zero(matrix* mat_1)
+void set_zeros(matrix* mat_1)
 {
   ITYPE n = mat_1->n;
   DTYPE* data = mat_1->data;
@@ -172,6 +172,31 @@ static PyObject* py_set_square(PyObject* self, PyObject* args)
   Py_RETURN_NONE;
 }
 
+static PyObject* py_add(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat_1;
+  PyObject* py_mat_2;
+  PyArg_UnpackTuple(args, NULL, 2, 2, &py_mat_1, &py_mat_2);
+  
+  matrix* mat_1 = (matrix *)PyCapsule_GetPointer(py_mat_1, "matrix._matrix_C_API");
+  matrix* mat_2 = (matrix *)PyCapsule_GetPointer(py_mat_2, "matrix._matrix_C_API");
+  
+  add(mat_1, mat_2);
+  
+  Py_RETURN_NONE;
+}
+
+static PyObject* py_set_zeros(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat;
+  PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
+  
+  matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
+  set_zeros(mat);
+  
+  Py_RETURN_NONE;
+}
+
 static PyObject* py_print_matrix(PyObject* self, PyObject* args)
 {
   PyObject* py_mat; 
@@ -205,6 +230,8 @@ static PyMethodDef myMethods[] =
   {"print_matrix", py_print_matrix, METH_VARARGS, "print matrix"},
   {"add_square", py_add_square, METH_VARARGS, "add_square"},
   {"set_square", py_set_square, METH_VARARGS, "set_square"},
+  {"add", py_add_square, METH_VARARGS, "add"},
+  {"set_zeros", py_set_zeros, METH_VARARGS, "set_zeros"},
   {"destroy_matrix", py_destroy_matrix, METH_VARARGS, "destroy matrix"},
   {"export_matrix", py_export_matrix, METH_VARARGS, "export matrix"},
   {NULL, NULL, 0, NULL},
