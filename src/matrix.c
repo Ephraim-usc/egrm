@@ -77,12 +77,11 @@ void add(matrix* mat_1, matrix* mat_2)
   ITYPE n = mat_1->n;
   DTYPE* p = mat_1->data;
   DTYPE* q = mat_2->data;
-  DTYPE* end = p + n*n;
+  ITYPE i;
   
-  for (; p < end;)
+  for (i = 0; i < n*n; i++)
   {
-    *p += *q;
-    p++; q++;
+    *(p+i) += *(q+i);
   }
 }
 
