@@ -79,10 +79,12 @@ void add(matrix* mat_1, matrix* mat_2)
   DTYPE* q = mat_2->data;
   ITYPE i;
   
+  /*
   for (i = 0; i < n*n; i++)
   {
     *(p+i) += *(q+i);
   }
+  */
 }
 
 void set_zeros(matrix* mat_1)
