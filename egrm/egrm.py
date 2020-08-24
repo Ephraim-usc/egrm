@@ -31,8 +31,7 @@ def zeta(tree):
 
 def zeta_C(tree, mat_C, A = math.inf, B = 0):
   N = tree.num_samples()
-  l = (tree.interval[1] - tree.interval[0])
-  zetas = np.zeros([N, N])
+  l = tree.interval[1] - tree.interval[0]
   total_tl = 0
   for c in tree.nodes():
     descendants = list(tree.samples(c))
@@ -173,7 +172,7 @@ def eGRM_C_pll(trees, name, cpus = 5):
 
 
 
-'''
+
 #####
 def eGRM_obs(trees, loci, num = -1):
   N = trees.num_samples
@@ -234,10 +233,48 @@ def mTMRCA(trees, file = None):
   pbar.close()
   return buffer, total_l
 
+def TMRCA_C(tree, mat_C_):
+  N = tree.num_samples()
+  l = tree.interval[1] - tree.interval[0]
+  
+  nodes = list(tree.nodes())
+  times = [tree.time(node) for node in nodes]
+  nodes_sorted = np.array(nodes)[np.flip(np.argsort(times))]
+  
+  matrix.set_zeros(mac_C_)
+  for c in nodes_sorted:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0 or n == N):
+      continue
+    q = tree.time(c)
+    matrix.set_square(mat_C_, descendants, float(q * l))
+  return l
+
+def mTMRCA_C(trees, file = None):
+  N = trees.num_samples
+  total_l = 0
+  mat_C = matrix.new_matrix(N)
+  mat_C_ = matrix.new_matrix(N)
+  
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    if tree.total_branch_length == 0:
+      continue
+    total_l += TMRCA_C(tree, mat_C_)
+    matrix.add(mat_C, mat_C_)
+    pbar.update(1)
+  
+  buffer = mat_C_to_array(mat_C, N)
+  buffer /= total_l
+  pbar.close()
+  return buffer, total_l
 
 
 
-'''
 
 #########
 
