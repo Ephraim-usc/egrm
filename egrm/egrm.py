@@ -224,6 +224,8 @@ def mTMRCA(trees, file = None):
                    miniters = trees.num_trees // 100,
                    file = file)
   for tree in trees.trees():
+    if tree.total_branch_length == 0:
+      continue
     l = (tree.interval[1] - tree.interval[0])
     total_l += l
     K = TMRCA(tree)
