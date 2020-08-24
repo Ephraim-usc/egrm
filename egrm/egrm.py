@@ -241,7 +241,7 @@ def TMRCA_C(tree, mat_C_):
   times = [tree.time(node) for node in nodes]
   nodes_sorted = np.array(nodes)[np.flip(np.argsort(times))]
   
-  matrix.set_zeros(mac_C_)
+  matrix.set_zeros(mat_C_)
   for c in nodes_sorted:
     descendants = list(tree.samples(c))
     n = len(descendants)
