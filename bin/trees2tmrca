@@ -5,7 +5,7 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import mTMRCA, mTMRCA_C
+from egrm import mTMRCA, mTMRCA_C, read_trees, write_grm
 
 ### parse arguments
 parser=argparse.ArgumentParser()
