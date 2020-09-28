@@ -19,6 +19,19 @@ def getX(hapdata, idx):
     index += 1
   return X
 
+### simulation
+def write_simulation(simulation, file):
+  trees = simulation["hapdata"].pop("trees")
+  pickle.dump(simulation, open("{}.p".format(file), "wb"))
+  trees.dump("{}.trees".format(file))
+  simulation["hapdata"]["trees"] = trees
+
+def read_simulation(file):
+  simulation = pickle.load(open("{}.p".format(file), "rb"))
+  trees = tskit.load("{}.trees".format(file))
+  simulation["hapdata"]["trees"] = trees
+  return simulation
+
 ### PLINK and GCTA
 def write_plink(simulation, obss, file, samples = None):
   from pyplink import PyPlink
@@ -37,7 +50,7 @@ def write_plink(simulation, obss, file, samples = None):
   X = X[:, idx_samples]
   
   y = simulation["diploid"]["y_diploid"]
-  variants = np.ceil(simulation["hapdata"]["loci"][obss])
+  variants = np.ceil(simulation["hapdata"]["loci"][obss]).astype(int)
   
   with PyPlink(file, "w") as bedfile:
     for v in np.transpose(X):
@@ -77,7 +90,7 @@ def write_plink(simulation, obss, file, samples = None):
 def write_relate(simulation, obss, file): #usually we use obss as idx
   N = int(simulation['parameters']['N'])
   X = getX(simulation["hapdata"], obss)
-  variants = np.ceil(simulation["hapdata"]["loci"][obss])
+  variants = np.ceil(simulation["hapdata"]["loci"][obss]).astype(int)
   
   haps_file = open(file + ".haps", 'a')
   i = 0
@@ -105,7 +118,7 @@ def write_relate(simulation, obss, file): #usually we use obss as idx
 
 def write_tsinfer(simulation, obss, file):
   X = getX(simulation["hapdata"], obss)
-  variants = np.ceil(simulation["hapdata"]["loci"][obss])
+  variants = np.ceil(simulation["hapdata"]["loci"][obss]).astype(int)
   with tsinfer.SampleData(path=file + ".samples", sequence_length=simulation["parameters"]["l"]) as sample_data:
     for idx, obs in enumerate(obss):
       sample_data.add_site(variants[idx], X[:, idx])
