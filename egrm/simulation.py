@@ -5,9 +5,6 @@ import math
 import numpy as np
 
 ### parameters
-out = "tmp"
-log_file = "tmp.log"
-
 l = 32000000
 N = 1000
 mutation_rate = 1e-8
@@ -32,23 +29,23 @@ T_AF = 220e3 / generation_time
 N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
 
 ### simulations
-def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate):
-    population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
-    
-    demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
-                   msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
-                   msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
-    
+def simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate, trees = None):
+  population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
+  
+  demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
+                 msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
+                 msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
+  
+  if trees == None:
     trees = msprime.simulate(length = l, population_configurations = population_configurations, 
-                                     recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
-                                     demographic_events = demo_events)
-    variants = trees.variants()
-    
-    MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
-    loci = np.array([v.position for v in trees.variants()])
-    M = len(loci)
-    
-    return {"trees":trees, "MAFs":MAFs, "loci":loci, "M":M}
+                             recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
+                             demographic_events = demo_events)
+  variants = trees.variants()
+  
+  MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
+  loci = np.array([v.position for v in trees.variants()])
+  M = len(loci)
+  return {"trees":trees, "MAFs":MAFs, "loci":loci, "M":M}
 
 def getX(hapdata, idx):
   N = hapdata["trees"].num_samples
@@ -107,11 +104,11 @@ def simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha
     
     return {"M_cas":M_cas, "cass":cass, "betas":betas, "y":y}
 
-def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate,
+def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate, trees = None,
             h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha,
             obs_ratio = obs_ratio, Beta = Beta):
     parameters = locals()
-    hapdata = simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate)
+    hapdata = simulate_hapdata(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_rate, trees = trees)
     phenotypes = simulate_phenotypes(hapdata, h2g = h2g, cas_ratio = cas_ratio, Alpha = Alpha)
     observations = simulate_observations(hapdata, obs_ratio = obs_ratio, Beta = Beta)
     simulation = {"parameters":parameters, "hapdata":hapdata, "phenotypes":phenotypes, "observations":observations}
