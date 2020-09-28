@@ -131,6 +131,26 @@ def simulate(l = l, N = N, mutation_rate = mutation_rate, recomb_rate = recomb_r
     simulation["Ks"] = Ks
     return simulation
 
+def compute_K_all(simulation):
+  N = simulation["parameters"]["N"]
+  M = simulation["hapdata"]["M"]
+  
+  def chunks(lst, n):
+    for i in range(0, len(lst), n):
+      yield lst[i:i + n]
+  
+  K_all = np.zeros((N, N))
+  for idx in chunks(list(range(M)), 5000):
+    Z = getX(simulation["hapdata"], idx).astype("float")
+    Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
+    K_all += np.dot(Z, np.transpose(Z))
+    del Z
+  K_all /= M
+  
+  simulation["Ks"]["K_all"] = K_all
+  simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
+
+
 def make_diploid(simulation):
     N = simulation['parameters']['N']
     y = simulation["phenotypes"]["y"]
