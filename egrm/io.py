@@ -20,7 +20,7 @@ def getX(hapdata, idx):
   return X
 
 ### PLINK and GCTA
-def write_plink(simulation, samples = None, obss, file):
+def write_plink(simulation, obss, file, samples = None):
   from pyplink import PyPlink
   
   N = int(simulation['parameters']['N'] / 2)
