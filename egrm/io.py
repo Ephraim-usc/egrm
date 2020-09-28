@@ -102,9 +102,9 @@ def write_relate(simulation, obss, file): #usually we use obss as idx
   haps_file.close()
   
   sample_file = open(file + ".sample",'a')
-  sample_file.write("ID_1\tID_2\tmissing\n0\t0\t0\n")
+  sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
   for idx in range(int(N)):
-    string = "ind_" + str(idx+1) + "\tNA" + "\t0\n"
+    string = "ind_" + str(idx+1) + " NA" + " 0\n"
     bytes = sample_file.write(string)
   sample_file.close()
   
