@@ -104,13 +104,12 @@ def write_relate(simulation, obss, file): #usually we use obss as idx
   sample_file = open(file + ".sample",'a')
   sample_file.write("ID_1\tID_2\tmissing\n0\t0\t0\n")
   for idx in range(int(N//2)):
-    string = "ind_" + str(idx+1) + "\tind_" + str(idx) + "\t0\n"
+    string = "ind_" + str(idx+1) + "\tind_" + str(idx+1) + "\t0\n"
     bytes = sample_file.write(string)
   sample_file.close()
   
   map_file = open(file + ".map",'a')
   map_file.write("pos COMBINED_rate Genetic_Map\n")
-  map_file.write("0 1 0\n")
   for idx, obs in enumerate(obss):
     string = str(variants[idx]) + " " + str(1) + " "
     string = string + str(variants[idx]/1000000) + "\n"
