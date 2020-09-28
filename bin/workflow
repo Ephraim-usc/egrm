@@ -17,11 +17,14 @@ parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
 parser.add_argument('--name', type = str, help='output file name')
+
 parser.add_argument('--all', help='run all steps', action='store_true')
-#parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
+parser.add_argument('--relate_phased', help='run relate with phasing', action='store_true')
 parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
+#parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
+
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
@@ -43,11 +46,13 @@ os.chdir(out)
 name = args.pop("name")
 run_all = args.pop("all")
 run_relate = args.pop("relate")
+run_relate_phased = args.pop("relate_phased")
 run_tsinfer = args.pop("tsinfer")
 run_mtmrca = args.pop("mtmrca")
 
 if run_all:
   run_relate = True
+  run_relate_phased = True
   run_tsinfer = True
 
 def print_results(string):
@@ -81,20 +86,7 @@ obss = simulation["observations"]["obss"]
 ### K_all and Km
 print_logs("computing K_all ...")
 
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-K_all = np.zeros((N, N))
-for idx in chunks(list(range(M)), 5000):
-  Z = getX(simulation["hapdata"], idx).astype("float")
-  Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
-  K_all += np.dot(Z, np.transpose(Z))
-  del Z
-
-K_all /= M
-simulation["Ks"]["K_all"] = K_all
-simulation["Ks"]["K_all_M"] = simulation["hapdata"]["M"]
+compute_K_all(simulation)
 
 if run_mtmrca:
   print_logs("computing mTMRCA ...")
@@ -137,7 +129,7 @@ if run_relate:
   
   simulation["Ks"]["EK_relate"] = EK_relate
   simulation["Ks"]["EK_relate_tl"] = EK_relate_tl
-      
+
 if run_tsinfer:
   print_logs("running tsinfer ...")
   os.mkdir(name + "_tsinfer")
