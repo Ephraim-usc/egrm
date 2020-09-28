@@ -110,6 +110,7 @@ def write_relate(simulation, obss, file): #usually we use obss as idx
   
   map_file = open(file + ".map",'a')
   map_file.write("pos COMBINED_rate Genetic_Map\n")
+  map_file.write("0 1 0\n")
   for idx, obs in enumerate(obss):
     string = str(variants[idx]) + " " + str(1) + " "
     string = string + str(variants[idx]/1000000) + "\n"
