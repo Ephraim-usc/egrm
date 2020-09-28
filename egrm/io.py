@@ -20,90 +20,95 @@ def getX(hapdata, idx):
   return X
 
 ### PLINK and GCTA
-def write_plink(simulation, idx, file):
-  idx_diploid = idx * 2; idx_diploid = np.concatenate([idx_diploid, idx_diploid + 1])
-  idx_diploid = np.sort(idx_diploid)
+def write_plink(simulation, samples = None, obss, file):
+  from pyplink import PyPlink
   
   N = int(simulation['parameters']['N'] / 2)
-  M = simulation['hapdata']['M']
   maternals = simulation["diploid"]['maternals']
   paternals = simulation["diploid"]['paternals']
-  genotype_matrix = simulation["hapdata"]["trees"].genotype_matrix()
-  X = np.zeros((N, 2 * M))
-  X[:, ::2] = np.transpose(genotype_matrix[:, maternals])
-  X[:, 1::2] = np.transpose(genotype_matrix[:, paternals])
-  X = X[:, idx_diploid]
+  
+  if samples == None:
+    samples = np.array(list(range(N)))
+  idx_samples = np.concatenate([samples * 2, samples * 2 + 1])
+  idx_samples = np.sort(idx_samples)
+  
+  X = getX(simulation["hapdata"], obss)
+  X = X[maternal] + X[paternal]
+  X = X[:, idx_samples]
   
   y = simulation["diploid"]["y_diploid"]
-  variants = [int(i.position) for i in simulation["hapdata"]["trees"].sites()]
+  variants = np.ceil(simulation["hapdata"]["loci"][obss])
+  
+  with PyPlink(file, "w") as bedfile:
+    for v in np.transpose(X):
+      bedfile.write_genotypes(v)
   
   ped_file = open(file + ".ped", 'a')
-  for i in range(N):
-    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + " "
-    string = string + " ".join(map(str, X[i])) + "\n"
+  for idx, sample in enumerate(samples):
+    string = "FID{}".format(sample+1) + " IID{}".format(sample+1) + " 0 0 0 " + str(y[idx]) + " "
+    string = string + " ".join(map(str, X[idx])) + "\n"
     bytes = ped_file.write(string)
   ped_file.close()
   
   fam_file = open(file + ".fam", 'a')
-  for i in range(N):
-    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " 0 0 0 " + str(y[i]) + "\n"
+  for idx, sample in enumerate(samples):
+    string = "FID{}".format(sample+1) + " IID{}".format(sample+1) + " 0 0 0 " + str(y[idx]) + "\n"
     bytes = fam_file.write(string)
   fam_file.close()
   
   phen_file = open(file + ".phen", 'a')
-  for i in range(N):
-    string = "FID{}".format(i+1) + " IID{}".format(i+1) + " " + str(y[i]) + "\n"
+  for idx, sample in enumerate(samples):
+    string = "FID{}".format(sample+1) + " IID{}".format(sample+1) + " " + str(y[idx]) + "\n"
     bytes = phen_file.write(string)
   phen_file.close()
   
   map_file = open(file + ".map", 'a')
-  for i in idx:
-    string = "1 snp" + str(i+1) + " 0 " + str(variants[i]) + "\n"
+  for idx, obs in enumerate(obss):
+    string = "1 snp" + str(obs+1) + " 0 " + str(variants[idx]) + "\n"
     bytes = map_file.write(string)
   map_file.close()
   
   bim_file = open(file + ".bim", 'a')
-  for i in idx:
-    string = "1 snp" + str(i+1) + " 0 " + str(variants[i]) + " A T\n"
+  for idx, obs in enumerate(obss):
+    string = "1 snp" + str(obs+1) + " 0 " + str(variants[idx]) + " A T\n"
     bytes = bim_file.write(string)
   bim_file.close()
   
-def write_relate(simulation, idx, file): #usually we use obss as idx
-  M = len(idx)
-  X = getX(simulation["hapdata"], idx)
-  loci = simulation["hapdata"]["loci"]
-  N = X.shape[0]
+def write_relate(simulation, obss, file): #usually we use obss as idx
+  N = int(simulation['parameters']['N'])
+  X = getX(simulation["hapdata"], obss)
+  variants = np.ceil(simulation["hapdata"]["loci"][obss])
   
   haps_file = open(file + ".haps", 'a')
   i = 0
-  for index in idx:
-    string = "1 snp" + str(index+1) + " " + str(math.ceil(loci[index])) + " A" + " T "
-    string = string + " ".join(map(str, X[:, i])) + "\n"
+  for idx, obs in enumerate(obss):
+    string = "1 snp" + str(obs+1) + " " + str(variants[idx]) + " A" + " T "
+    string = string + " ".join(map(str, X[:, idx])) + "\n"
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
   
   sample_file = open(file + ".sample",'a')
   sample_file.write("ID_1\tID_2\tmissing\n0\t0\t0\n")
-  for i in range(int(N//2)):
-    string = "ind_" + str(i+1) + "\tind_" + str(i) + "\t0\n"
+  for idx in range(int(N//2)):
+    string = "ind_" + str(idx+1) + "\tind_" + str(idx) + "\t0\n"
     bytes = sample_file.write(string)
   sample_file.close()
   
   map_file = open(file + ".map",'a')
   map_file.write("pos COMBINED_rate Genetic_Map\n")
-  for index in idx:
-    string = str(math.ceil(loci[index])) + " " + str(1) + " "
-    string = string + str(math.ceil(loci[index])/1000000) + "\n"
+  for idx, obs in enumerate(obss):
+    string = str(variants[idx]) + " " + str(1) + " "
+    string = string + str(variants[idx]/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
 
-def write_tsinfer(simulation, idx, file):
-  X = getX(simulation["hapdata"], idx)
-  loci = simulation["hapdata"]["loci"]
+def write_tsinfer(simulation, obss, file):
+  X = getX(simulation["hapdata"], obss)
+  variants = np.ceil(simulation["hapdata"]["loci"][obss])
   with tsinfer.SampleData(path=file + ".samples", sequence_length=simulation["parameters"]["l"]) as sample_data:
-    for index, i in zip(idx, range(len(idx))):
-      sample_data.add_site(loci[index], X[:, i])
+    for idx, obs in enumerate(obss):
+      sample_data.add_site(variants[idx], X[:, idx])
   del X
 
 def read_trees(file):
@@ -134,6 +139,7 @@ def write_grm(grm, M, file, format = "GCTA"):
       iid = "IID{}".format(idx)
       grmfile.write("\t".join([fid, iid]) + os.linesep)
 
+'''
 def read_grm(file, format = "GCTA"):
   if format == "pickle":
     grm, M = pickle.load(open(file + ".p", "rb" ))
@@ -161,7 +167,7 @@ def read_grm(file, format = "GCTA"):
   M_diags = np.diag(M); M = M.T + M
   np.fill_diagonal(M, M_diags)
   return (grm, M)
-  
+'''
   
 '''
 def ReadGRMBin(prefix, AllN = False):
@@ -207,16 +213,13 @@ def ReadGRMBin(prefix, AllN = False):
     return(out)
 '''
 
-      
-      
-
-
 def run_cmd(cmd, log = None):
   if log != None:
     os.system(cmd + " > " + log + " 2>&1")
   else:
     os.system(cmd)
 
+'''
 def gcta64(file, log = None):
   run_cmd("/home/rcf-40/caoqifan/cc2/plink-1.07-x86_64/plink --file " + 
             file + " --make-bed --out " + file + " --noweb", log)
@@ -230,12 +233,13 @@ def gcta64(file, log = None):
 def gcta64reml(file, phen, log = None):
   run_cmd("/home/rcf-40/caoqifan/cc2/gcta_1.93.0beta/gcta64  --reml  --grm " + 
             file + " --out " + file + " --pheno " + phen + ".phen", log)
-  
+'''
+
 def cmd_relate(file, log):
-  run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
+  run_cmd("/home1/caoqifan/project/relate_v1.1.2_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
             file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file, log)
   
-  run_cmd("/home/rcf-40/caoqifan/cc2/relate_v1.0.16_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
+  run_cmd("/home1/caoqifan/project/relate_v1.1.2_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file, log)
 
 def cmd_tsinfer(file, log):
