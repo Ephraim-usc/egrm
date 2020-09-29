@@ -84,7 +84,7 @@ def write_plink(simulation, obss, file, samples = None):
   map_file = open(file + ".eagle.map", 'a')
   map_file.write("chr position COMBINED_rate(cM/Mb) Genetic_Map(cM)\n")
   for idx, obs in enumerate(obss):
-    string = "1 " str(variants[idx]) + " " + str(1) + " "
+    string = "1 " + str(variants[idx]) + " " + str(1) + " "
     string = string + str(variants[idx]/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
