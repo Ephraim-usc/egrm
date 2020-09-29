@@ -113,7 +113,7 @@ def test(simulation, repeats = 100, diploid = False):
   #p_imputation = phenotype_impute(simulation, repeats)
   p_imputation = {}
   
-  if if diploid == True:
+  if diploid == True:
     simulation["tests_diploid"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
   else:
     simulation["tests"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
