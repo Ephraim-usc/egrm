@@ -61,69 +61,6 @@ def phenotype_impute(simulation, repeats = 100):
   
   return results
 
-def K_diploid(K, maternals, paternals):
-  K1 = K[maternals, :][:, maternals]
-  K2 = K[maternals, :][:, paternals]
-  K3 = K[paternals, :][:, maternals]
-  K4 = K[paternals, :][:, paternals]
-  return (K1 + K2 + K3 + K4)/2
-
-'''
-def phenotype_impute_diploid(simulation, repeats = 1000):
-  N = simulation["parameters"]["N"]
-  y_diploid = simulation['diploid']['y_diploid']
-  maternals = simulation['diploid']['maternals']
-  paternals = simulation['diploid']['paternals']
-  
-  K_all = K_diploid(simulation["Ks"]["K_all"], maternals, paternals)
-  K_cas = K_diploid(simulation["Ks"]["K_cas"], maternals, paternals)
-  K_obs = K_diploid(simulation["Ks"]["K_obs"], maternals, paternals)
-  Km = K_diploid(simulation["Ks"]["Km"], maternals, paternals)
-  Km_relate = K_diploid(simulation["Ks"]["Km_relate"], maternals, paternals)
-  Km_tsinfer = K_diploid(simulation["Ks"]["Km_tsinfer"], maternals, paternals)
-  Km_tsdate = K_diploid(simulation["Ks"]["Km_tsdate"], maternals, paternals)
-  
-  a = []
-  b = []
-  c = []
-  d = []
-  e = []
-  f = []
-  g = []
-  for i in range(repeats):
-    #print(i)
-    tests = np.random.choice(int(N/2), math.floor(N * 0.125), replace = False)
-    tests.sort()
-    trains = [i for i in range(int(N/2)) if i not in tests]
-    y_train = y_diploid[trains]
-    y_test = y_diploid[tests]
-    
-    y_ = BLUP(K_all, y_train, trains, tests, h2 = 0.9)
-    a.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(K_cas, y_train, trains, tests, h2 = 0.9)
-    b.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(K_obs, y_train, trains, tests, h2 = 0.9)
-    c.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(Km, y_train, trains, tests, h2 = 0.9)
-    d.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(Km_relate, y_train, trains, tests, h2 = 0.9)
-    e.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(Km_tsinfer, y_train, trains, tests, h2 = 0.9)
-    f.append(np.corrcoef(y_, y_test)[0, 1])
-    y_ = BLUP(Km_tsdate, y_train, trains, tests, h2 = 0.9)
-    g.append(np.corrcoef(y_, y_test)[0, 1])
-  
-  a = np.array(a)
-  b = np.array(b)
-  c = np.array(c)
-  d = np.array(d)
-  e = np.array(e)
-  f = np.array(f)
-  g = np.array(g)
-  blup_diploid = {"K_all":a, "K_cas":b, "K_obs":c, "Km":d, "Km_relate":e, "Km_tsinfer":f, "Km_tsdate":g}
-  simulation["tests"]['blup_diploid'] = blup_diploid
-'''
-
 def h_estimate(K, y):
   N = y.shape[0]
   y_norm = y - y.mean(); y_norm = y_norm / y_norm.std()
@@ -139,10 +76,25 @@ def h_estimate(K, y):
   variance = np.sqrt(tmp) / ((K2 - N) * h2g)
   return h2g, variance #needs change its usage accordingly!!!
 
-def test(simulation, repeats = 100):
+def K_diploid(K, maternals, paternals):
+  K1 = K[maternals, :][:, maternals]
+  K2 = K[maternals, :][:, paternals]
+  K3 = K[paternals, :][:, maternals]
+  K4 = K[paternals, :][:, paternals]
+  return (K1 + K2 + K3 + K4)/2
+
+def test(simulation, repeats = 100, diploid = False):
   N = simulation["parameters"]["N"]
   y = simulation["phenotypes"]["y"]
   Ks = getKs(simulation)
+  
+  if diploid == True:
+    N = int(N/2)
+    maternals = simulation["diploid"]["maternals"]
+    paternals = simulation["diploid"]["paternals"]
+    y = = simulation["diploid"]["y_diploid"]
+    for key, value in Ks.items():
+      Ks[key] = K_diploid(value, maternals, paternals)
   
   diags = np.diag_indices(N)
   non_diags = np.where(~np.eye(N,dtype=bool))
@@ -161,8 +113,10 @@ def test(simulation, repeats = 100):
   #p_imputation = phenotype_impute(simulation, repeats)
   p_imputation = {}
   
-  simulation["tests"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
-
+  if if diploid == True:
+    simulation["tests_diploid"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
+  else:
+    simulation["tests"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
 
 def summary(simulation):
   summ = "==========\nparameters \n==========\n"
@@ -176,10 +130,23 @@ def summary(simulation):
     tmp = simulation["tests"]["h_estimation"][key]
     summ += key + "\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
   
+  '''
   summ += "==========\nBLUP accuracy \n==========\n"
   for key in simulation["tests"]["p_imputation"].keys():
     tmp = simulation["tests"]["p_imputation"][key]
     summ += key + "\t" + str(round(tmp.mean(), 4)) + " +- " + str(round(tmp.std(), 4)) + "\n"
+  '''
+  
+  if "tests_diploid" not in simulation:
+    return(summ)
+  
+  summ += "==========\ndiploid K matrix correlations \n==========\n"
+  summ += str(simulation["tests_diploid"]["corr"]) + "\n"
+  
+  summ += "==========\ndiploid heritability estimation \n==========\n"
+  for key in simulation["tests_diploid"]["h_estimation"].keys():
+    tmp = simulation["tests_diploid"]["h_estimation"][key]
+    summ += key + "\t" + str(round(tmp[0], 4)) + " +- " + str(round(tmp[1], 4)) + "\n"
   
   return(summ)
 
