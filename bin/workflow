@@ -174,14 +174,13 @@ if run_tsinfer:
 
 # save before testing performances
 write_simulation(simulation, name)
-print_results(str(datetime.datetime.now()))
 
 print_logs("testing performances ...")
 test(simulation)
+test(simulation, diploid = True)
 print_results(summary(simulation))
-print_results("\n" + str(datetime.datetime.now()))
 
 ### save
 write_simulation(simulation, name)
-
+print_results("\n" + str(datetime.datetime.now()))
 
