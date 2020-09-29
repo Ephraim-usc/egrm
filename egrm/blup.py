@@ -26,6 +26,8 @@ def getKs(simulation):
     Ks["EK"] = simulation["Ks"]["EK"]
   if "EK_relate" in simulation["Ks"]:
     Ks["EK_relate"] = simulation["Ks"]["EK_relate"]
+  if "EK_relate_phased" in simulation["Ks"]:
+    Ks["EK_relate_phased"] = simulation["Ks"]["EK_relate_phased"]
   if "EK_tsinfer" in simulation["Ks"]:
     Ks["EK_tsinfer"] = simulation["Ks"]["EK_tsinfer"]
   if "EK_tsdate" in simulation["Ks"]:
