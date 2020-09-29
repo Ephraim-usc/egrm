@@ -33,7 +33,7 @@ def read_simulation(file):
   return simulation
 
 ### PLINK and GCTA
-def write_plink(simulation, obss, file, samples = None):
+def write_plink(simulation, obss, file, samples = None): 
   from pyplink import PyPlink
   
   N = int(simulation['parameters']['N'] / 2)
@@ -42,12 +42,10 @@ def write_plink(simulation, obss, file, samples = None):
   
   if samples == None:
     samples = np.array(list(range(N)))
-  idx_samples = np.concatenate([samples * 2, samples * 2 + 1])
-  idx_samples = np.sort(idx_samples)
   
   X = getX(simulation["hapdata"], obss)
   X = X[maternals] + X[paternals]
-  X = X[:, idx_samples]
+  X = X[samples]
   
   y = simulation["diploid"]["y_diploid"]
   variants = np.ceil(simulation["hapdata"]["loci"][obss]).astype(int)
