@@ -92,7 +92,7 @@ def test(simulation, repeats = 100, diploid = False):
     N = int(N/2)
     maternals = simulation["diploid"]["maternals"]
     paternals = simulation["diploid"]["paternals"]
-    y = = simulation["diploid"]["y_diploid"]
+    y = simulation["diploid"]["y_diploid"]
     for key, value in Ks.items():
       Ks[key] = K_diploid(value, maternals, paternals)
   
