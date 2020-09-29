@@ -120,15 +120,35 @@ if run_relate:
   os.chdir(name + "_relate")
   
   write_relate(simulation, obss, "observed")
-  cmd_relate("observed", name + ".log")
+  shell_relate("observed", name + ".log")
   trees_relate = tskit.load("observed.trees")
   
   print_logs("computing Km_relate ...")
   EK_relate, EK_relate_tl = eGRM_C(trees_relate, file = open(name + ".log", "a"))
-  os.chdir("..")
   
   simulation["Ks"]["EK_relate"] = EK_relate
   simulation["Ks"]["EK_relate_tl"] = EK_relate_tl
+  os.chdir("..")
+
+if run_relate_phased:
+  print_logs("running phased relate ...")
+  os.mkdir(name + "_relate_phased")
+  os.chdir(name + "_relate_phased")
+  
+  write_plink(simulation, obss, "observed")
+  shell_eagle("observed", "phased", name + ".log")
+  shell("cp ../" + name + "_relate/observed.sample .")
+  shell("cp ../" + name + "_relate/observed.relate.map .")
+  
+  shell_relate("phased", name + ".log", file_sample = "observed", file_map = "observed")
+  trees_relate_phased = tskit.load("phased.trees")
+  
+  print_logs("computing Km_relate_phased ...")
+  EK_relate_phased, EK_relate_phased_tl = eGRM_C(trees_relate_phased, file = open(name + ".log", "a"))
+  
+  simulation["Ks"]["EK_relate_phased"] = EK_relate_phased
+  simulation["Ks"]["EK_relate_phased_tl"] = EK_relate_phased_tl
+  os.chdir("..")
 
 if run_tsinfer:
   print_logs("running tsinfer ...")
@@ -136,7 +156,7 @@ if run_tsinfer:
   os.chdir(name + "_tsinfer")
   
   write_tsinfer(simulation, obss, "observed")
-  cmd_tsinfer("observed", name + ".log")
+  shell_tsinfer("observed", name + ".log")
   trees_tsinfer = tskit.load("observed.trees")
   
   print_logs("computing Km_tsinfer ...")
@@ -145,17 +165,15 @@ if run_tsinfer:
   print_logs("computing Km_tsdate ...")
   trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate=1e-8)
   EK_tsdate, EK_tsdate_tl = eGRM_C(trees_tsdate, file = open(name + ".log", "a"))
-  os.chdir("..")
   
   simulation["Ks"]["EK_tsinfer"] = EK_tsinfer
   simulation["Ks"]["EK_tsinfer_tl"] = EK_tsinfer_tl
   simulation["Ks"]["EK_tsdate"] = EK_tsdate
   simulation["Ks"]["EK_tsdate_tl"] = EK_tsdate_tl
+  os.chdir("..")
 
 # save before testing performances
-trees = simulation["hapdata"].pop("trees")
-pickle.dump(simulation, open("{}.p".format(name), "wb"))
-trees.dump("{}.trees".format(name))
+write_simulation("simulation", name)
 
 print_logs("testing performances ...")
 test(simulation)
@@ -163,6 +181,6 @@ print_results(summary(simulation))
 print_results("\n" + str(datetime.datetime.now()))
 
 ### save
-pickle.dump(simulation, open("{}.p".format(name), "wb"))
+write_simulation("simulation", name)
 
 
