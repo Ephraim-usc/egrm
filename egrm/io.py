@@ -261,8 +261,13 @@ def shell_relate(file, log, file_sample = None, file_map = None):
   if file_map == None:
     file_map = file
   
+  if os.path.exists(file + ".haps.gz"):
+    file_haps = file + ".haps.gz"
+  else:
+    file_haps = file + ".haps"
+  
   shell("~/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
-            file + ".haps --sample " + file_sample + ".sample --map " + file_map + ".relate.map --seed 1 -o " + file, log)
+            file_haps + " --sample " + file_sample + ".sample --map " + file_map + ".relate.map --seed 1 -o " + file, log)
   
   shell("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file, log)
