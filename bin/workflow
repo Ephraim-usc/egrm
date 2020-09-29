@@ -173,7 +173,7 @@ if run_tsinfer:
   os.chdir("..")
 
 # save before testing performances
-write_simulation("simulation", name)
+write_simulation(simulation, name)
 print_results(str(datetime.datetime.now()))
 
 print_logs("testing performances ...")
@@ -182,6 +182,6 @@ print_results(summary(simulation))
 print_results("\n" + str(datetime.datetime.now()))
 
 ### save
-write_simulation("simulation", name)
+write_simulation(simulation, name)
 
 
