@@ -46,7 +46,7 @@ def write_plink(simulation, obss, file, samples = None):
   idx_samples = np.sort(idx_samples)
   
   X = getX(simulation["hapdata"], obss)
-  X = X[maternal] + X[paternal]
+  X = X[maternals] + X[paternals]
   X = X[:, idx_samples]
   
   y = simulation["diploid"]["y_diploid"]
