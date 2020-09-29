@@ -149,10 +149,9 @@ if run_relate_phased:
   maternals = simulation["diploid"]["maternals"]
   paternals = simulation["diploid"]["paternals"]
   idx = np.zeros(N).astype(int)
-  idx[range(0, N, 2)] = maternals
-  idx[range(1, N, 2)] = paternals
-  EK_relate_phased_ = np.zeros([N, N])
-  EK_relate_phased_[idx, :][:, idx] = EK_relate_phased
+  idx[maternals] = np.array(range(0, N, 2))
+  idx[paternals] = np.array(range(1, N, 2))
+  EK_relate_phased_ = EK_relate_phased[idx, :][:, idx]
   
   simulation["Ks"]["EK_relate_phased"] = EK_relate_phased_
   simulation["Ks"]["EK_relate_phased_tl"] = EK_relate_phased_tl
