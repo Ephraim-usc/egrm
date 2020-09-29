@@ -232,11 +232,11 @@ def ReadGRMBin(prefix, AllN = False):
     return(out)
 '''
 
-def run_cmd(cmd, log = None):
+def shell(command, log = None):
   if log != None:
-    os.system(cmd + " > " + log + " 2>&1")
+    os.system(command + " > " + log + " 2>&1")
   else:
-    os.system(cmd)
+    os.system(command)
 
 '''
 def gcta64(file, log = None):
@@ -254,12 +254,22 @@ def gcta64reml(file, phen, log = None):
             file + " --out " + file + " --pheno " + phen + ".phen", log)
 '''
 
-def cmd_relate(file, log):
-  run_cmd("/home1/caoqifan/project/relate_v1.1.2_x86_64_static/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
-            file + ".haps --sample " + file + ".sample --map " + file + ".map --seed 1 -o " + file, log)
+def shell_relate(file, log, file_sample = None, file_map = None):
+  if file_sample == None:
+    file_sample = file
   
-  run_cmd("/home1/caoqifan/project/relate_v1.1.2_x86_64_static/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
+  if file_map == None:
+    file_map = file
+  
+  shell("~/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + 
+            file + ".haps --sample " + file_sample + ".sample --map " + file_map + ".relate.map --seed 1 -o " + file, log)
+  
+  shell("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + 
             file + " -o " + file, log)
 
-def cmd_tsinfer(file, log):
-  run_cmd("tsinfer infer " + file + ".samples -p -t 4", log)
+def shell_eagle(file, file_out, log):
+  shell("~/bin/eagle --bfile=" + file + 
+           " --geneticMapFile=" + file + ".eagle.map --outPrefix=" + file_out + " --chrom=1", log)
+
+def shell_tsinfer(file, log):
+  shell("~/bin/tsinfer infer " + file + ".samples -p -t 4", log)
