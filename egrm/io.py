@@ -81,6 +81,14 @@ def write_plink(simulation, obss, file, samples = None):
     bytes = map_file.write(string)
   map_file.close()
   
+  map_file = open(file + ".eagle.map", 'a')
+  map_file.write("chr position COMBINED_rate(cM/Mb) Genetic_Map(cM)\n")
+  for idx, obs in enumerate(obss):
+    string = "1 " str(variants[idx]) + " " + str(1) + " "
+    string = string + str(variants[idx]/1000000) + "\n"
+    bytes = map_file.write(string)
+  map_file.close()
+  
   bim_file = open(file + ".bim", 'a')
   for idx, obs in enumerate(obss):
     string = "1 snp" + str(obs+1) + " 0 " + str(variants[idx]) + " A T\n"
@@ -108,7 +116,7 @@ def write_relate(simulation, obss, file): #usually we use obss as idx
     bytes = sample_file.write(string)
   sample_file.close()
   
-  map_file = open(file + ".map",'a')
+  map_file = open(file + ".relate.map",'a')
   map_file.write("pos COMBINED_rate Genetic_Map\n")
   for idx, obs in enumerate(obss):
     string = str(variants[idx]) + " " + str(1) + " "
