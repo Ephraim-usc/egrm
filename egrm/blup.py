@@ -110,8 +110,8 @@ def test(simulation, repeats = 100, diploid = False):
   for key in Ks.keys():
     h_estimation[key] = h_estimate(Ks[key], y)
   
-  #p_imputation = phenotype_impute(simulation, repeats)
-  p_imputation = {}
+  p_imputation = phenotype_impute(simulation, repeats)
+  #p_imputation = {}
   
   if diploid == True:
     simulation["tests_diploid"] = {"corr":corr, 'h_estimation':h_estimation, 'p_imputation':p_imputation}
