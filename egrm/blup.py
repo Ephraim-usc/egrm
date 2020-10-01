@@ -2,18 +2,6 @@ import numpy as np
 import pandas as pd
 import math
 
-def BLUP(K, y_train, trains, tests, h2 = 0.9):
-  N_train = len(trains)
-  
-  I = (1/h2 - h2) * np.identity(N_train)
-  V = K[trains, :][:, trains] + I
-  
-  Kt = K[tests, :][:, trains]
-  
-  Vi = np.linalg.inv(V)
-  y_ = np.dot(Kt, np.dot(Vi, y_train))
-  return y_
-
 def getKs(simulation):
   Ks = {}
   if "K_all" in simulation["Ks"]:
@@ -35,6 +23,18 @@ def getKs(simulation):
   if "mTMRCA" in simulation["Ks"]:
     Ks["mTMRCA"] = simulation["Ks"]["mTMRCA"]
   return Ks
+
+def BLUP(K, y_train, trains, tests, h2 = 0.9):
+  N_train = len(trains)
+  
+  I = (1/h2 - h2) * np.identity(N_train)
+  V = K[trains, :][:, trains] + I
+  
+  Kt = K[tests, :][:, trains]
+  
+  Vi = np.linalg.inv(V)
+  y_ = np.dot(Kt, np.dot(Vi, y_train))
+  return y_
 
 def phenotype_impute(simulation, repeats = 100):
   y = simulation['phenotypes']['y']
