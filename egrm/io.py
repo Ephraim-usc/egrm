@@ -19,6 +19,19 @@ def getX(hapdata, idx):
     index += 1
   return X
 
+### read map into map_func
+def read_map_func(file):
+  table = pd.read_csv(file, sep = None, engine = 'python')
+  pos = table.iloc[:, 0].astype(int)
+  gpos = table.iloc[:, 2].astype(float) * 1e6
+  def buffer(x):
+    for i in range(1, len(pos)):
+      if pos[i] >= x:
+        break
+    return (x - pos[i-1]) * (gpos[i] - gpos[i-1])/(pos[i] - pos[i-1]) + gpos[i-1]
+  return buffer
+
+
 ### simulation
 def write_simulation(simulation, file):
   trees = simulation["hapdata"].pop("trees")
