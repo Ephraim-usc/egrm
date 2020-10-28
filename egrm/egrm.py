@@ -53,6 +53,8 @@ def epsilon(x):
   return x + mean - colmean - rowmean
 
 def eGRM(trees, file = None, map_func = (lambda x:x)):
+  if map_func == None:
+    map_func = (lambda x:x)
   N = trees.num_samples
   buffer = np.zeros([N, N])
   total_tl = 0
@@ -91,6 +93,8 @@ def mat_C_to_array(mat_C, N):
   return buffer
 
 def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
+  if map_func == None:
+    map_func = (lambda x:x)
   N = trees.num_samples
   total_tl = 0
   mat_C = matrix.new_matrix(N)
