@@ -60,11 +60,10 @@ if left != None and right != None:
   right = min(trees.sequence_length, right)
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
-if c_extension == True and threads != None:
-  egrm, egrm_tl = eGRM_C_pll(trees, output, cpus = threads, map_func = map)
+
 if c_extension == True and threads == None:
   egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map)
 if c_extension == False:
-  egrm, egrm_tl = eGRM(trees, map_func = map)
+  egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map)
 
 write_grm(egrm, egrm_tl, output, format)
