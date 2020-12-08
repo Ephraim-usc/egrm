@@ -74,7 +74,7 @@ else:
     egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map)
 
 egrm = epsilon(egrm)
-varegrm = varepsilon(varegrm)
+vargrm = varepsilon(vargrm)
 
 write_grm(egrm, egrm_tl, output, format)
 if var_option == True:
