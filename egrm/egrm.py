@@ -110,8 +110,8 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g =
   return buffer, total_tl
 
 def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
-  egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func)
   vargrm_, tmp = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func, g = (lambda x: pow(1/(x*(1-x)), 2)))
+  egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func)
   e = np.reciprocal(np.random.poisson(lam=egrm_tl, size=10000).astype("float")).mean()
   vargrm = e * (vargrm_ - np.power(egrm, 2))
   return egrm, vargrm, egrm_tl
