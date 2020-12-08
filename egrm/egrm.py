@@ -120,13 +120,6 @@ def epsilon(x):
   rowmean = colmean.T
   return x + mean - colmean - rowmean
 
-def varepsilon(x):
-  N = x.shape[0]
-  mean = x.mean()
-  colmean = np.tile(x.mean(axis = 0), (N, 1))
-  rowmean = colmean.T
-  return x + mean + colmean + rowmean
-
 ############# 
 
 
