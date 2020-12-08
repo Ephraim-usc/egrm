@@ -61,9 +61,8 @@ if left != None and right != None:
   right = min(trees.sequence_length, right)
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
-egrm, vargrm, egrm_tl = None, None, None
 
-if var_option == True:
+if var_option == False:
   if c_extension == True:
     egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map)
   else:
@@ -75,7 +74,7 @@ else:
     egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map)
 
 write_grm(egrm, egrm_tl, output, format)
-if vargrm is not None:
+if var_option == True:
   write_grm(vargrm, egrm_tl, output + "_var", format)
 
 
