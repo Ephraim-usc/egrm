@@ -73,6 +73,13 @@ def eGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (
   pbar.close()
   return buffer, total_tl
 
+def varGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
+  egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map_func)
+  vargrm_, tmp = eGRM(trees, file = None, A = A, B = B, map_func = map_func, g = (lambda x: pow(1/(x*(1-x)), 2)))
+  e = np.reciprocal(np.random.poisson(lam=egrm_tl, size=10000).astype("float")).mean()
+  vargrm = e * (vargrm_ - np.power(egrm, 2))
+  return egrm, vargrm, egrm_tl
+
 
 def mat_C_to_array(mat_C, N):
   buffer = matrix.export_matrix(mat_C)
