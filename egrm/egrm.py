@@ -112,15 +112,23 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
   vargrm = e * (vargrm_ - np.power(egrm, 2))
   return egrm, vargrm, egrm_tl
 
-
-############# 
-
+##############
 def epsilon(x):
   N = x.shape[0]
   mean = x.mean()
   colmean = np.tile(x.mean(axis = 0), (N, 1))
   rowmean = colmean.T
   return x + mean - colmean - rowmean
+
+def varepsilon(x):
+  N = x.shape[0]
+  mean = x.mean()
+  colmean = np.tile(x.mean(axis = 0), (N, 1))
+  rowmean = colmean.T
+  return x + mean + colmean + rowmean
+
+############# 
+
 
 def eGRM_merge(files, N):
   buffer = np.zeros((N, N))
