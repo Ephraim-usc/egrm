@@ -155,7 +155,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
   
   e = np.reciprocal(np.random.poisson(lam=total_mu, size=10000).astype("float")).mean()
   egrm_final = epsilon(egrm)
-  vargrm_final = e * (egrm2 - np.tile(tmp1, (N, 1)) - np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm, 2))
+  vargrm_final = e * (egrm2 - np.tile(tmp1, (N, 1)) - np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
   
   pbar.close()
   return egrm_final, vargrm_final, total_mu
