@@ -12,24 +12,22 @@ import os
 import matrix
 
 ### coalescent relationship matrix
-def g(p):
-  return 1/(p*(1-p))
-
-def zeta(tree):
+def zeta(tree, A = math.inf, B = 0, g = (lambda x: 1/(x*(1-x)))):
   N = tree.num_samples()
-  rel_nodes = list(tree.nodes())
   zetas = np.zeros([N, N])
-  for c in rel_nodes:
+  total_t = 0
+  for c in tree.nodes():
     descendants = list(tree.samples(c))
     n = len(descendants)
     if(n == 0 or n == N):
       continue
-    q = (tree.time(tree.parent(c)) - tree.time(c)) * g(n / N)
-    zetas[np.ix_(descendants, descendants)] += q
+    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c))) * 1e-8
+    zetas[np.ix_(descendants, descendants)] += t * g(n / N)
+    total_t += t
   zetas /= tree.total_branch_length
-  return zetas
+  return zetas, total_t
 
-def zeta_C(tree, mat_C, A = math.inf, B = 0, map_func = (lambda x:x)):
+def zeta_C(tree, mat_C, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
   N = tree.num_samples()
   l = map_func(tree.interval[1]) - map_func(tree.interval[0])
   total_tl = 0
@@ -52,7 +50,7 @@ def epsilon(x):
   rowmean = colmean.T
   return x + mean - colmean - rowmean
 
-def eGRM(trees, file = None, map_func = (lambda x:x)):
+def eGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
   if map_func == None:
     map_func = (lambda x:x)
   N = trees.num_samples
@@ -65,26 +63,16 @@ def eGRM(trees, file = None, map_func = (lambda x:x)):
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    tl = (map_func(tree.interval[1]) - map_func(tree.interval[0])) * tree.total_branch_length * 1e-8
-    total_tl += tl
-    K = zeta(tree)
-    buffer += K * tl
+    K, total_t = zeta(tree, A, B, g)
+    l = map_func(tree.interval[1]) - map_func(tree.interval[0])
+    total_tl += total_t * l
+    buffer += K * total_t * l
     pbar.update(1)
   buffer /= total_tl
   buffer = epsilon(buffer)
   pbar.close()
   return buffer, total_tl
 
-def eGRM_merge(files, N):
-  buffer = np.zeros((N, N))
-  total_tl = 0
-  for file in files:
-    with open(file, "rb") as f:
-      buffer_, total_tl_ = pickle.load(f)
-    buffer += buffer_ * total_tl_
-    total_tl += total_tl_
-  buffer /= total_tl
-  return buffer, total_tl
 
 def mat_C_to_array(mat_C, N):
   buffer = matrix.export_matrix(mat_C)
@@ -92,7 +80,7 @@ def mat_C_to_array(mat_C, N):
   buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
   return buffer
 
-def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
+def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
   if map_func == None:
     map_func = (lambda x:x)
   N = trees.num_samples
@@ -105,7 +93,7 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    total_tl += zeta_C(tree, mat_C, A, B, map_func)
+    total_tl += zeta_C(tree, mat_C, A, B, map_func, g)
     pbar.update(1)
   
   buffer = mat_C_to_array(mat_C, N)
@@ -114,10 +102,27 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
   pbar.close()
   return buffer, total_tl
 
-
+def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
+  egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func)
+  vargrm_, tmp = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func, g = (lambda x: pow(1/(x*(1-x)), 2)))
+  e = np.reciprocal(np.random.poisson(lam=egrm_tl, size=10000).astype("float")).mean()
+  vargrm = e * (vargrm_ - np.power(egrm, 2))
+  return egrm, vargrm, egrm_tl
 
 
 ############# 
+
+def eGRM_merge(files, N):
+  buffer = np.zeros((N, N))
+  total_tl = 0
+  for file in files:
+    with open(file, "rb") as f:
+      buffer_, total_tl_ = pickle.load(f)
+    buffer += buffer_ * total_tl_
+    total_tl += total_tl_
+  buffer /= total_tl
+  return buffer, total_tl
+
 
 def _eGRM_C_chunk(trees, index, chunk_size, name):
   N = trees.num_samples
