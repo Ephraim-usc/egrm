@@ -14,48 +14,46 @@ import matrix
 ### coalescent relationship matrix
 def zeta(tree, A = math.inf, B = 0, g = (lambda x: 1/(x*(1-x)))):
   N = tree.num_samples()
+  l = map_func(tree.interval[1]) - map_func(tree.interval[0])
   zetas = np.zeros([N, N])
-  total_t = 0
+  total_mu = 0
   for c in tree.nodes():
     descendants = list(tree.samples(c))
     n = len(descendants)
     if(n == 0 or n == N):
       continue
-    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c))) * 1e-8
-    zetas[np.ix_(descendants, descendants)] += t * g(n / N)
-    total_t += t
+    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c)))
+    mu = l * t * 1e-8
+    zetas[np.ix_(descendants, descendants)] += mu * g(n / N)
+    total_mu += mu
   zetas /= tree.total_branch_length
-  return zetas, total_t
+  return zetas, total_mu
 
 def zeta_C(tree, mat_C, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
   N = tree.num_samples()
   l = map_func(tree.interval[1]) - map_func(tree.interval[0])
-  total_tl = 0
+  total_mu = 0
   for c in tree.nodes():
     descendants = list(tree.samples(c))
     n = len(descendants)
     if (n == 0 or n == N):
       continue
-    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c))) * 1e-8
+    t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c)))
+    mu = l * t * 1e-8
     if (t == 0):
       continue
-    matrix.add_square(mat_C, descendants, l * t * g(n / N))
-    total_tl += t * l
-  return total_tl
+    matrix.add_square(mat_C, descendants, mu * g(n / N))
+    total_mu += mu
+  return total_mu
 
-def epsilon(x):
-  N = x.shape[0]
-  mean = x.mean()
-  colmean = np.tile(x.mean(axis = 0), (N, 1))
-  rowmean = colmean.T
-  return x + mean - colmean - rowmean
+
 
 def eGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
   if map_func == None:
     map_func = (lambda x:x)
   N = trees.num_samples
   buffer = np.zeros([N, N])
-  total_tl = 0
+  total_mu = 0
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
                    miniters = trees.num_trees // 100,
@@ -63,15 +61,14 @@ def eGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    K, total_t = zeta(tree, A, B, g)
-    l = map_func(tree.interval[1]) - map_func(tree.interval[0])
-    total_tl += total_t * l
-    buffer += K * total_t * l
+    K, total_mu_ = zeta(tree, A, B, g)
+    total_mu += total_mu_
+    buffer += K * total_mu_
     pbar.update(1)
-  buffer /= total_tl
+  buffer /= total_mu
   buffer = epsilon(buffer)
   pbar.close()
-  return buffer, total_tl
+  return buffer, total_mu
 
 def varGRM(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
   egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map_func)
@@ -91,7 +88,7 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g =
   if map_func == None:
     map_func = (lambda x:x)
   N = trees.num_samples
-  total_tl = 0
+  total_mu = 0
   mat_C = matrix.new_matrix(N)
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
@@ -100,14 +97,13 @@ def eGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g =
   for tree in trees.trees():
     if tree.total_branch_length == 0: # especially for trimmed tree sequences
       continue
-    total_tl += zeta_C(tree, mat_C, A, B, map_func, g)
+    total_mu += zeta_C(tree, mat_C, A, B, map_func, g)
     pbar.update(1)
   
   buffer = mat_C_to_array(mat_C, N)
-  buffer /= total_tl
-  buffer = epsilon(buffer)
+  buffer /= total_mu
   pbar.close()
-  return buffer, total_tl
+  return buffer, total_mu
 
 def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
   vargrm_, tmp = eGRM_C(trees, file = None, A = A, B = B, map_func = map_func, g = (lambda x: pow(1/(x*(1-x)), 2)))
@@ -118,6 +114,13 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x)):
 
 
 ############# 
+
+def epsilon(x):
+  N = x.shape[0]
+  mean = x.mean()
+  colmean = np.tile(x.mean(axis = 0), (N, 1))
+  rowmean = colmean.T
+  return x + mean - colmean - rowmean
 
 def eGRM_merge(files, N):
   buffer = np.zeros((N, N))
