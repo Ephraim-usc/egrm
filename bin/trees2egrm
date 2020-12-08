@@ -5,7 +5,7 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import eGRM, eGRM_C, varGRM, varGRM_C, read_trees, write_grm, read_map_func
+from egrm import epsilon, varepsilon, eGRM, eGRM_C, varGRM, varGRM_C, read_trees, write_grm, read_map_func
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -72,6 +72,9 @@ else:
     egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = map)
   else:
     egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map)
+
+egrm = epsilon(egrm)
+varegrm = varepsilon(varegrm)
 
 write_grm(egrm, egrm_tl, output, format)
 if var_option == True:
