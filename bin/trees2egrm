@@ -5,16 +5,16 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import eGRM, eGRM_C, eGRM_C_pll, read_trees, write_grm, read_map_func
+from egrm import eGRM, eGRM_C, read_trees, write_grm, read_map_func
 
 ### parse arguments
 parser=argparse.ArgumentParser()
 parser.add_argument('--input', type = str, help='input file prefix')
 parser.add_argument('--output', type = str, help='output file prefix')
+parser.add_argument('--var', help='compute varGRM instead of eGRM', action='store_true')
 parser.add_argument('--map', type = str, help='map file fullname')
 parser.add_argument('--format', type = str, help='format of output')
 parser.add_argument('--c', help='acceleration by C extension', action='store_true')
-parser.add_argument('--threads', type = int, help='number of threads')
 parser.add_argument('--left', type = int, help='leftmost genomic position to be included')
 parser.add_argument('--right', type = int, help='rightmost genomic position to be included')
 parser.add_argument('--A', type = float, help='most ancient time limit')
@@ -45,6 +45,7 @@ if args.get("format", None) == None:
 else:
   format = "pickle"
 
+var_option = args.pop("var")
 c_extension = args.pop("c")
 
 ### 
@@ -60,10 +61,15 @@ if left != None and right != None:
   right = min(trees.sequence_length, right)
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
-
-if c_extension == True and threads == None:
-  egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map)
-if c_extension == False:
-  egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map)
+if var_option == True:
+  if c_extension == True:
+    egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map)
+  else:
+    egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map)
+else:
+  if c_extension == True:
+    egrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = map)
+  else:
+    egrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map)
 
 write_grm(egrm, egrm_tl, output, format)
