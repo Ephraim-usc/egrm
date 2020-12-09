@@ -140,7 +140,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
       mu = l * t * 1e-8
       p = float(n/N)
       matrix.add_square(egrm_C, descendants, mu * g(p))
-      matrix.add_square(egrm2_C, descendants, mu * np.power(g(p), 2)) * np.power((1 - 2*p), 2)
+      matrix.add_square(egrm2_C, descendants, mu * np.power(g(p), 2) * np.power((1 - 2*p), 2))
       tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
       tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
