@@ -138,10 +138,11 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
       if(n == 0 or n == N): continue
       t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c)))
       mu = l * t * 1e-8
-      matrix.add_square(egrm_C, descendants, mu * g(n/N))
-      matrix.add_square(egrm2_C, descendants, mu * np.power(g(n/N), 2))
-      tmp1[descendants] += mu * np.power((n/N) * g(n/N), 2)
-      tmp2 += mu * np.power((n/N) * (n/N) * g(n/N), 2)
+      p = float(n/N)
+      matrix.add_square(egrm_C, descendants, mu * g(p))
+      matrix.add_square(egrm2_C, descendants, mu * np.power(g(p), 2)) * np.power((1 - 2*p), 2)
+      tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
+      tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
     pbar.update(1)
   
@@ -155,7 +156,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
   
   e = np.reciprocal(np.random.poisson(lam=total_mu, size=10000).astype("float")).mean()
   egrm_final = epsilon(egrm)
-  vargrm_final = e * (egrm2 - np.tile(tmp1, (N, 1)) - np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
+  vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
   
   pbar.close()
   return egrm_final, vargrm_final, total_mu
