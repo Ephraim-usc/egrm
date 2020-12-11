@@ -8,8 +8,10 @@ import functools
 import pickle
 import os
 
+
 ### import C extension
 import matrix
+
 
 ### epsilon function
 def epsilon(x):
@@ -18,6 +20,7 @@ def epsilon(x):
   colmean = np.tile(x.mean(axis = 0), (N, 1))
   rowmean = colmean.T
   return x + mean - colmean - rowmean
+
 
 ### main function
 def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
@@ -65,3 +68,31 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
   
   pbar.close()
   return egrm_final, vargrm_final, total_mu
+
+
+def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
+  if map_func == None: map_func = (lambda x:x)
+  N = trees.num_samples
+  mtmrca_C = matrix.new_matrix(N)
+  total_l = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  
+  for tree in trees.trees():
+    l = map_func(tree.interval[1]) - map_func(tree.interval[0])
+    if tree.total_branch_length == 0: continue
+    for c in tree.nodes():
+      descendants = list(tree.samples(c))
+      n = len(descendants)
+      if(n == 0 or n == N): continue
+      t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c)))
+      matrix.add_square(egrm_C, descendants, t * l)
+      total_l += l
+    pbar.update(1)
+  
+  mtmrca = mat_C_to_array(mtmrca_C, N)
+  mtmrca /= total_l
+  pbar.close()
+  return mtmrca, total_l
