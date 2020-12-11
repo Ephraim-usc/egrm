@@ -28,7 +28,6 @@ left = args.get("left", None)
 right = args.get("right", None)
 A = args.get("A", None)
 B = args.get("B", None)
-threads = args.get("threads", None)
 
 if args.get("output", None) == None:
   output = input + ".e"
