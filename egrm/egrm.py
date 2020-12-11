@@ -3,8 +3,6 @@ import tskit
 import tqdm
 import math
 import numpy as np
-import pickle
-import os
 
 
 ### import C extension
