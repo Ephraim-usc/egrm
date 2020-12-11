@@ -76,6 +76,7 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
   if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
   mtmrca_C = matrix.new_matrix(N)
+  tmp = 0
   total_l = 0
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
