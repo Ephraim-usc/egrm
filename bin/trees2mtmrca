@@ -39,7 +39,6 @@ if args.get("format", None) == None:
 else:
   format = "pickle"
 
-var_option = args.pop("var")
 c_extension = args.pop("c")
 
 ### 
