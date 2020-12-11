@@ -29,8 +29,8 @@ c_extension = args.pop("c")
 trees = read_trees(input + ".trees")
 
 if c_extension == True:
-  tmrca, tmrca_l = mTMRCA_C(trees, file = None)
+  mtmrca, mtmrca_l = mTMRCA_C(trees, file = None)
 if c_extension == False:
-  tmrca, tmrca_l = mTMRCA(trees)
+  mtmrca, mtmrca_l = mTMRCA(trees)
 
-write_grm(tmrca, tmrca_l, output, format = "pickle")
+write_grm(mtmrca, mtmrca_l, output, format = "pickle")
