@@ -5,7 +5,7 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import eGRM, eGRM_C, varGRM, varGRM_C, read_trees, write_grm, read_map_func
+from egrm import varGRM, varGRM_C, read_trees, write_grm, read_map_func
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -61,17 +61,11 @@ if left != None and right != None:
   right = min(trees.sequence_length, right)
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
-
-if var_option == False:
-  if c_extension == True:
-    egrm, egrm_tl = eGRM_C(trees, file = None, A = A, B = B, map_func = map)
-  else:
-    egrm, egrm_tl = eGRM(trees, file = None, A = A, B = B, map_func = map)
+if c_extension == True:
+  egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = map, var = var_option)
 else:
-  if c_extension == True:
-    egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = map)
-  else:
-    egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map)
+  egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map, var = var_option)
+
 
 write_grm(egrm, egrm_tl, output, format)
 if var_option == True:
