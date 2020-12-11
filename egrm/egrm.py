@@ -83,15 +83,15 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
   for tree in trees.trees():
     l = map_func(tree.interval[1]) - map_func(tree.interval[0])
     if tree.total_branch_length == 0: continue
-    tmp_ = 0
+    height = 0
     for c in tree.nodes():
       descendants = list(tree.samples(c))
       n = len(descendants)
       if(n == 0 or n == N): continue
       t = tree.time(tree.parent(c)) - tree.time(c)
-      tmp_ = max(tmp_, tree.time(tree.parent(c)))
+      height = max(height, tree.time(tree.parent(c)))
       matrix.add_square(egrm_C, descendants, t * l)
-    tmp = tmp_ * l
+    tmp += height * l
     total_l += l
     pbar.update(1)
   
