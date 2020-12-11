@@ -50,8 +50,8 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  mtmrca, mtmrca_l = mTMRCA_C(trees, file = None, A = A, B = B, map_func = map)
+  mtmrca, mtmrca_l = mTMRCA_C(trees, file = None, map_func = map)
 else:
-  mtmrca, mtmrca_l = mTMRCA(trees, file = None, A = A, B = B, map_func = map)
+  mtmrca, mtmrca_l = mTMRCA(trees, file = None, map_func = map)
 
 write_grm(mtmrca, mtmrca_l, output, format)
