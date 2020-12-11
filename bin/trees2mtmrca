@@ -44,11 +44,6 @@ c_extension = args.pop("c")
 ### 
 trees = read_trees(input + ".trees")
 
-if A == None:
-  A = math.inf
-if B == None:
-  B = 0
-
 if left != None and right != None:
   left = max(0, left)
   right = min(trees.sequence_length, right)
