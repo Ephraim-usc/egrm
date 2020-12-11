@@ -13,6 +13,13 @@ import os
 import matrix
 
 
+def mat_C_to_array(mat_C, N):
+  buffer = matrix.export_matrix(mat_C)
+  buffer = np.reshape(np.array(buffer), (N, N))
+  buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
+  return buffer
+
+
 ### epsilon function
 def epsilon(x):
   N = x.shape[0]
@@ -24,8 +31,7 @@ def epsilon(x):
 
 ### main function
 def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x)))):
-  if map_func == None:
-    map_func = (lambda x:x)
+  if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
   egrm2_C = matrix.new_matrix(N)
@@ -100,3 +106,8 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
   mtmrca /= total_l
   pbar.close()
   return mtmrca, total_l
+
+
+### without C extension (to be added)
+varGRM = varGRM_C
+mTMRCA = mTMRCA_C
