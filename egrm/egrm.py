@@ -92,7 +92,7 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
       if(n == 0 or n == N): continue
       t = tree.time(tree.parent(c)) - tree.time(c)
       height = max(height, tree.time(tree.parent(c)))
-      matrix.add_square(egrm_C, descendants, t * l)
+      matrix.add_square(mtmrca_C, descendants, t * l)
     tmp += height * l
     total_l += l
     pbar.update(1)
