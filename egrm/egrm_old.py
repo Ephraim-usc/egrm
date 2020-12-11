@@ -1,3 +1,4 @@
+'''
 ### import packages
 import tskit
 import tqdm
@@ -344,7 +345,7 @@ def mTMRCA_C(trees, file = None):
   pbar.close()
   return buffer, total_l
 
-
+'''
 
 
 #########
