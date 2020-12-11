@@ -3,8 +3,6 @@ import tskit
 import tqdm
 import math
 import numpy as np
-import multiprocessing as mp
-import functools
 import pickle
 import os
 
