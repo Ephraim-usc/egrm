@@ -19,17 +19,28 @@ def getX(hapdata, idx):
     index += 1
   return X
 
-### read map into map_func
-def read_map_func(file):
-  table = pd.read_csv(file, sep = None, engine = 'python')
-  pos = table.iloc[:, 0].astype(int)
-  gpos = table.iloc[:, 2].astype(float) * 1e6
-  def buffer(x):
-    for i in range(1, len(pos)):
-      if pos[i] >= x:
-        break
-    return (x - pos[i-1]) * (gpos[i] - gpos[i-1])/(pos[i] - pos[i-1]) + gpos[i-1]
-  return buffer
+### read map file into gmap callable object
+class gmap:
+  def __init__(self, filename):
+    self.table = pd.read_csv(filename, sep = None, engine = 'python')
+    self.pos = self.table.iloc[:, 0].astype(int)
+    self.gpos = self.table.iloc[:, 2].astype(float) * 1e6
+    self.max = self.table.shape[0]
+    self.i = 0
+  
+  def __call__(self, pos):
+    while (self.i > 0 and pos < self.pos[self.i - 1]):
+      self.i -= 1
+    while (self.i < self.max and pos > self.pos[self.i]):
+      self.i += 1
+    if self.i == 0:
+      return 0
+    if self.i >= self.max:
+      return self.gpos[self.max - 1]
+    A = pos - self.pos[self.i-1]
+    B = (self.gpos[self.i] - self.gpos[self.i-1])/(self.pos[self.i] - self.pos[self.i-1])
+    C = self.gpos[self.i-1]
+    return A*B + C
 
 
 ### simulation
