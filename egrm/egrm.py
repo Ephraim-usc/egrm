@@ -40,7 +40,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
                    file = file)
   
   for tree in trees.trees():
-    l = map_func(tree.interval[1]) - map_func(tree.interval[0])
+    l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
     for c in tree.nodes():
       descendants = list(tree.samples(c))
@@ -84,7 +84,7 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
                    file = file)
   
   for tree in trees.trees():
-    l = map_func(tree.interval[1]) - map_func(tree.interval[0])
+    l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
     height = 0
     for c in tree.nodes():
