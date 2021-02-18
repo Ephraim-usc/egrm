@@ -5,7 +5,7 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import varGRM, varGRM_C, read_trees, write_grm, read_map_func
+from egrm import varGRM, varGRM_C, read_trees, write_grm, gmap
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -37,7 +37,7 @@ else:
 if args.get("map", None) == None:
   map = None
 else:
-  map = read_map_func(args["map"])
+  map = gmap(args["map"])
 
 if args.get("format", None) == None:
   format = "GCTA"
