@@ -9,19 +9,20 @@ import datetime
 import tsinfer
 import tsdate
 
-### parse arguments
+### parse arguments ###
 parser=argparse.ArgumentParser()
 
 parser.add_argument('--out', type = str, help='output directory')
 parser.add_argument('--name', type = str, help='output file name')
 
+# workflow control
 parser.add_argument('--all', help='run all steps', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
 parser.add_argument('--relate_phased', help='run relate with phasing', action='store_true')
 parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
-#parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
 
+# simulation arguments
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
@@ -32,4 +33,118 @@ parser.add_argument('--h2g', type = float, help='heritability')
 parser.add_argument('--Alpha', type = float, help='Alpha -- causal probability parameter')
 parser.add_argument('--Beta', type = float, help='Beta -- observation probability parameter')
 
-###
+args = vars(parser.parse_args())
+args = dict((k,v) for k,v in args.items() if v is not None)
+
+out = args.pop("out")
+if not os.path.exists(out):
+  os.mkdir(out)
+os.chdir(out)
+
+name = args.pop("name")
+run_all = args.pop("all")
+run_relate = args.pop("relate")
+run_relate_phased = args.pop("relate_phased")
+run_tsinfer = args.pop("tsinfer")
+run_mtmrca = args.pop("mtmrca")
+
+if run_all:
+  run_relate = True
+  run_relate_phased = True
+  run_tsinfer = True
+  run_mtmrca = True
+
+def print_results(string):
+  out_file = open(name + ".report", "a")
+  out_file.write(str(string) + "\n")
+  out_file.close()
+
+def print_logs(string):
+  out_file = open(name + ".log", "a")
+  out_file.write(str(string) + "\n")
+  out_file.close()
+
+### default arguments ###
+l = args.get("l", 32000000)
+N = args.get("N", 1000)
+mutation_rate = args.get("mutation_rate", 1e-8)
+recomb_rate = args.get("recomb_rate", 1e-8)
+cas_ratio = args.get("cas_ratio", 0.1)
+obs_ratio = args.get("obs_ratio", 0.2)
+h2g = args.get("h2g", 1.0)
+Alpha = args.get("Alpha", -1)
+Beta = args.get("Beta", 1)
+
+N_B = 2100
+N_EU0 = 1000
+N_AF = 12300
+N_A = 7300
+r_EU = 0.004
+generation_time = 25
+T_EU_AS = 21.2e3 / generation_time
+T_B = 140e3 / generation_time
+T_AF = 220e3 / generation_time
+N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
+
+### simulate ###
+print_results(str(datetime.datetime.now()))
+print_results(args)
+
+# tree sequence
+population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
+
+demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
+               msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
+               msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
+
+trees = msprime.simulate(length = l, population_configurations = population_configurations, 
+                         recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
+                         demographic_events = demo_events)
+
+variants = trees.variants()
+MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
+loci = np.array([v.position for v in trees.variants()])
+M = loci.shape[0]
+
+# observation
+idx_5 = MAFs >= 0.005
+M_5 = idx_5.sum()
+MAFs_5 = MAFs[idx_5]
+
+loci_ceil = np.ceil(loci)
+overlapped = np.insert(loci_ceil[:-1] == loci_ceil[1:], 1, False)
+non_overlapped = np.logical_not(overlapped)
+
+observable =  np.logical_and(idx_5, non_overlapped)
+M_observable = observable.sum()
+
+weights = np.multiply(np.power(MAFs, Beta), np.power(1-MAFs, Beta))
+weights = np.multiply(weights, observable)
+weights /= weights.sum()
+
+M_obs = int(round(M_observable * obs_ratio))
+obss = np.random.choice(np.where(observable)[0], M_obs, replace = False, p = weights[observable]); obss.sort()
+
+# phenotype
+M_cas = int(round(M * cas_ratio))
+weights = np.multiply(np.power(MAFs, Alpha), np.power(1-MAFs, Alpha))
+weights /= weights.sum()
+cass = np.random.choice(range(M), M_cas, replace = False, p = weights); cass.sort()
+X_cas = getX(hapdata, cass).astype("float")
+    
+betas = np.random.normal(scale = np.sqrt(h2g / M_cas), size = (M_cas, 1))
+    
+G = np.dot(X_cas, betas); G.shape = (N, )
+s2g = np.var(G, ddof = 1)
+s2e = s2g * (1/h2g - 1)
+
+e = np.random.normal(scale=np.sqrt(s2e), size=N)
+y = G + e
+
+### compute K_all ###
+
+
+
+
+
+
