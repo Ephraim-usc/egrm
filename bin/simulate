@@ -9,6 +9,29 @@ import datetime
 import tsinfer
 import tsdate
 
+### ad-hoc functions ###
+def getX(trees, idx):
+  N = trees.num_samples
+  M = idx.shape[0]
+  X = np.zeros((N, M)).astype("int")
+  index = 0; num = 0
+  for v in trees.variants():
+    if i in idx:
+      X[:, num] = v.genotypes; num += 1
+    i += 1
+  return X
+
+def getK(trees, idx):
+  N = trees.num_samples
+  M = idx.shape[0]
+  K_all = np.zeros((N, N))
+  for idx_ in np.split(idx, range(1000, M, 1000)):
+    Z = getX(trees, idx_).astype("float")
+    Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
+    K_all += np.dot(Z, np.transpose(Z))
+    del Z
+  K_all /= M
+
 ### parse arguments ###
 parser=argparse.ArgumentParser()
 
@@ -87,8 +110,8 @@ T_AF = 220e3 / generation_time
 N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
 
 ### simulate ###
-print_results(str(datetime.datetime.now()))
 print_results(args)
+print_results(str(datetime.datetime.now()))
 
 # tree sequence
 population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
@@ -130,10 +153,10 @@ M_cas = int(round(M * cas_ratio))
 weights = np.multiply(np.power(MAFs, Alpha), np.power(1-MAFs, Alpha))
 weights /= weights.sum()
 cass = np.random.choice(range(M), M_cas, replace = False, p = weights); cass.sort()
-X_cas = getX(hapdata, cass).astype("float")
-    
+X_cas = getX(trees, cass).astype("float")
+
 betas = np.random.normal(scale = np.sqrt(h2g / M_cas), size = (M_cas, 1))
-    
+
 G = np.dot(X_cas, betas); G.shape = (N, )
 s2g = np.var(G, ddof = 1)
 s2e = s2g * (1/h2g - 1)
@@ -141,10 +164,39 @@ s2e = s2g * (1/h2g - 1)
 e = np.random.normal(scale=np.sqrt(s2e), size=N)
 y = G + e
 
-### compute K_all ###
+### compute Ks ###
+K_obs = getK(trees, obss)
+K_cas = getK(trees, cass)
+K_all = getK(trees, np.arrange(M))
 
-
-
+### running relate ###
+if run_relate:
+  X_obs = getX(trees, obss)
+  variants = np.ceil(simulation["hapdata"]["loci"][obss]).astype(int)
+  
+  haps_file = open(file + ".haps", 'a')
+  i = 0
+  for idx, obs in enumerate(obss):
+    string = "1 snp" + str(obs+1) + " " + str(variants[idx]) + " A" + " T "
+    string = string + " ".join(map(str, X[:, idx])) + "\n"
+    bytes = haps_file.write(string)
+    i += 1
+  haps_file.close()
+  
+  sample_file = open(file + ".sample",'a')
+  sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
+  for idx in range(int(N)):
+    string = "ind_" + str(idx+1) + " NA" + " 0\n"
+    bytes = sample_file.write(string)
+  sample_file.close()
+  
+  map_file = open(file + ".relate.map",'a')
+  map_file.write("pos COMBINED_rate Genetic_Map\n")
+  for idx, obs in enumerate(obss):
+    string = str(variants[idx]) + " " + str(1) + " "
+    string = string + str(variants[idx]/1000000) + "\n"
+    bytes = map_file.write(string)
+  map_file.close()
 
 
 
