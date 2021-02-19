@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+### importing packages
+import argparse
+import os
+import pandas as pd
+import pickle
+import datetime
+import tsinfer
+import tsdate
+
+### parse arguments
+parser=argparse.ArgumentParser()
+
+parser.add_argument('--out', type = str, help='output directory')
+parser.add_argument('--name', type = str, help='output file name')
+
+parser.add_argument('--all', help='run all steps', action='store_true')
+parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
+parser.add_argument('--relate_phased', help='run relate with phasing', action='store_true')
+parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
+parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
+#parser.add_argument('--gcta', help='run gcta analysis', action='store_true')
+
+parser.add_argument('--l', type = int, help='chromosome length')
+parser.add_argument('--N', type = int, help='population size')
+parser.add_argument('--mutation_rate', type = float, help='mutation rate')
+parser.add_argument('--recomb_rate', type = float, help='recombination rate')
+parser.add_argument('--cas_ratio', type = float, help='M_cas / M')
+parser.add_argument('--obs_ratio', type = float, help='M_obs / M_5')
+parser.add_argument('--h2g', type = float, help='heritability')
+parser.add_argument('--Alpha', type = float, help='Alpha -- causal probability parameter')
+parser.add_argument('--Beta', type = float, help='Beta -- observation probability parameter')
+
+###
