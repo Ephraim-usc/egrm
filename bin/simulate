@@ -182,7 +182,7 @@ if run_relate:
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
-  os.system("gzip " + name + ".haps > " + name + ".haps.gz && rm " + name + ".haps"
+  os.system("gzip " + name + ".haps > " + name + ".haps.gz && rm " + name + ".haps")
   
   sample_file = open(name + ".sample",'a')
   sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
