@@ -40,13 +40,12 @@ def getK(trees, idx):
 ### parse arguments ###
 parser=argparse.ArgumentParser()
 
-parser.add_argument('--out', type = str, help='output directory')
+# name of simulation
 parser.add_argument('--name', type = str, help='output file name')
 
 # workflow control
 parser.add_argument('--all', help='run all steps', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
-parser.add_argument('--relate_phased', help='run relate with phasing', action='store_true')
 parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 
@@ -64,21 +63,16 @@ parser.add_argument('--Beta', type = float, help='Beta -- observation probabilit
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
-out = args.pop("out")
-if not os.path.exists(out):
-  os.mkdir(out)
-os.chdir(out)
-
 name = args.pop("name")
+os.system("rm -r -f " + name + " && mkdir " + name " && cd " + name)
+
 run_all = args.pop("all")
 run_relate = args.pop("relate")
-run_relate_phased = args.pop("relate_phased")
 run_tsinfer = args.pop("tsinfer")
 run_mtmrca = args.pop("mtmrca")
 
 if run_all:
   run_relate = True
-  run_relate_phased = True
   run_tsinfer = True
   run_mtmrca = True
 
@@ -212,11 +206,33 @@ if run_tsinfer:
   os.chdir("tsinfer")
   X_obs = getX(trees, obss)
   loci_obs = np.ceil(loci[obss]).astype(int)
-  with tsinfer.SampleData(path = name + ".tsinfer.samples", sequence_length = l) as sample_data:
+  with tsinfer.SampleData(path = name + ".samples", sequence_length = l) as sample_data:
     for idx, obs in enumerate(obss):
       sample_data.add_site(loci_obs[idx], X_obs[:, idx])
   
-  os.system("~/bin/tsinfer infer " + name + ".tsinfer.samples -p -t 4")
+  os.system("~/bin/tsinfer infer " + name + ".samples -p -t 4")
+  
+  trees_tsinfer = tskit.load(name + ".trees")
+  EK_tsinfer, _, EK_tsinfer_mu = varGRM_C(trees_tsinfer)
   
   os.chdir("..")
+
+### output ###
+args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
+        "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
+
+Ks = {"K_all":K_all, "K_obs":K_obs, "K_cas":K_cas}
+if run_relate:
+  Ks["EK_relate"] = EK_relate
+if run_tsinfer:
+  Ks["EK_tsinfer"] = EK_tsinfer
+if run_mtmrca:
+  Ks["mtmrca"] = mtmrca
+
+result = {"args":args, "Ks":Ks}
+
+with open("results.p", 'wb') as f:
+  pickle.dump(results, f)
+
+
 
