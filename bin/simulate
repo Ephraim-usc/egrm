@@ -199,7 +199,7 @@ if run_relate:
     bytes = map_file.write(string)
   map_file.close()
   
-  os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map -o " + name)
+  os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map " + name)
   
   trees_relate = tskit.load(name + ".trees")
   EK_relate, _, EK_relate_mu = eGRM_C(trees_relate, file = open(name + ".log", "a"))
