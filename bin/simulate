@@ -168,6 +168,9 @@ mtmrca, _ = mTMRCA_C(trees)
 
 ### running relate ###
 if run_relate:
+  os.mkdir("relate")
+  os.chdir("relate")
+  
   X_obs = getX(trees, obss)
   loci_obs = np.ceil(loci[obss]).astype(int)
   
@@ -179,6 +182,7 @@ if run_relate:
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
+  os.system("gzip " + name + ".haps > " + name + ".haps.gz && rm " + name + ".haps"
   
   sample_file = open(name + ".sample",'a')
   sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
@@ -195,16 +199,17 @@ if run_relate:
     bytes = map_file.write(string)
   map_file.close()
   
-  os.system("~/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + \
-            name + ".haps --sample " + name + ".sample --map " + name + ".relate.map --seed 1 -o " + name)
+  os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map -o" + name)
   
-  os.system("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + name + " -o " + name + ".relate")
-  
-  trees_relate = tskit.load(name + ".relate.trees")
+  trees_relate = tskit.load(name + ".trees")
   EK_relate, _, EK_relate_mu = eGRM_C(trees_relate, file = open(name + ".log", "a"))
+  
+  os.chdir("..")
 
 ### running tsinfer
 if run_tsinfer:
+  os.mkdir("tsinfer")
+  os.chdir("tsinfer")
   X_obs = getX(trees, obss)
   loci_obs = np.ceil(loci[obss]).astype(int)
   with tsinfer.SampleData(path = name + ".tsinfer.samples", sequence_length = l) as sample_data:
@@ -212,5 +217,6 @@ if run_tsinfer:
       sample_data.add_site(loci_obs[idx], X_obs[:, idx])
   
   os.system("~/bin/tsinfer infer " + name + ".tsinfer.samples -p -t 4")
- 
+  
+  os.chdir("..")
 
