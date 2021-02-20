@@ -65,8 +65,8 @@ args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
 
 name = args.pop("name")
-os.system("rm -r -f " + name + " && mkdir " + name + " && cd " + name)
-os.system("pwd")
+os.system("rm -r -f " + name + " && mkdir " + name)
+os.chdir(name)
 
 run_all = args.pop("all")
 run_relate = args.pop("relate")
