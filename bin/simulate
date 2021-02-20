@@ -182,7 +182,7 @@ if run_relate:
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
-  os.system("gzip -f " + name + ".haps > " + name + ".haps.gz && rm " + name + ".haps")
+  os.system("gzip -f " + name + ".haps > " + name + ".haps.gz && rm -f " + name + ".haps")
   
   sample_file = open(name + ".sample",'a')
   sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
@@ -202,7 +202,7 @@ if run_relate:
   os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map " + name)
   
   trees_relate = tskit.load(name + ".trees")
-  EK_relate, _, EK_relate_mu = eGRM_C(trees_relate, file = open(name + ".log", "a"))
+  EK_relate, _, EK_relate_mu = varGRM_C(trees_relate, file = open(name + ".log", "a"))
   
   os.chdir("..")
 
