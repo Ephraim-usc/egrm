@@ -86,11 +86,6 @@ def print_results(string):
   out_file.write(str(string) + "\n")
   out_file.close()
 
-def print_logs(string):
-  out_file = open(name + ".log", "a")
-  out_file.write(str(string) + "\n")
-  out_file.close()
-
 ### default arguments ###
 l = args.get("l", 32000000)
 N = args.get("N", 1000)
@@ -205,10 +200,7 @@ if run_relate:
   map_file.close()
   
   os.system("~/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + \
-            name + ".haps --sample " + name + ".sample --map " + name + ".relate.map --seed 1 -o " + name + \
-            " > " + name + ".log 2>&1")
+            name + ".haps --sample " + name + ".sample --map " + name + ".relate.map --seed 1 -o " + name)
   
-  os.system("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + \
-            name + " -o " + name + \
-            " > " + name + ".log 2>&1")
+  os.system("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + name + " -o " + name)
 
