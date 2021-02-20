@@ -203,6 +203,12 @@ if run_relate:
     string = string + str(loci_obs[idx]/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
-
-
+  
+  os.system("~/bin/Relate --mode All -m 1e-8 -N 30000 --memory 10 --haps " + \
+            name + ".haps --sample " + name + ".sample --map " + name + ".relate.map --seed 1 -o " + name + \
+            " > " + name + ".log 2>&1")
+  
+  os.system("~/bin/RelateFileFormats --mode ConvertToTreeSequence -i " + \
+            name + " -o " + name + \
+            " > " + name + ".log 2>&1")
 
