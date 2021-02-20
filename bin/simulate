@@ -36,6 +36,7 @@ def getK(trees, idx):
     K_all += np.dot(Z, np.transpose(Z))
     del Z
   K_all /= M
+  return K_all
 
 ### parse arguments ###
 parser=argparse.ArgumentParser()
