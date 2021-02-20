@@ -11,6 +11,7 @@ import tsinfer
 import tsdate
 import math
 import msprime
+from egrm import varGRM_C, mTMRCA_C
 
 ### ad-hoc functions ###
 def getX(trees, idx):
@@ -171,6 +172,8 @@ y = G + e
 K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
 K_all = getK(trees, np.arange(M))
+EK, _, EK_mu = varGRM_C(trees, var = False)
+mtmrca, _ = mTMRCA_C(trees)
 
 ### running relate ###
 if run_relate:
