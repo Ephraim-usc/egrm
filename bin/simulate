@@ -3,18 +3,21 @@
 ### importing packages
 import argparse
 import os
+import numpy as np
 import pandas as pd
 import pickle
 import datetime
 import tsinfer
 import tsdate
+import math
+import msprime
 
 ### ad-hoc functions ###
 def getX(trees, idx):
   N = trees.num_samples
   M = idx.shape[0]
   X = np.zeros((N, M)).astype("int")
-  index = 0; num = 0
+  i = 0; num = 0
   for v in trees.variants():
     if i in idx:
       X[:, num] = v.genotypes; num += 1
@@ -167,7 +170,7 @@ y = G + e
 ### compute Ks ###
 K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
-K_all = getK(trees, np.arrange(M))
+K_all = getK(trees, np.arange(M))
 
 ### running relate ###
 if run_relate:
