@@ -229,7 +229,7 @@ if run_tsinfer:
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
 
-result = {"args":args, "Ks":Ks}
+results = {"args":args, "Ks":Ks}
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
