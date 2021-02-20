@@ -202,7 +202,7 @@ if run_relate:
   os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map " + name)
   
   trees_relate = tskit.load(name + ".trees")
-  EK_relate, _, EK_relate_mu = varGRM_C(trees_relate, file = open(name + ".log", "a"))
+  EK_relate, _, EK_relate_mu = varGRM_C(trees_relate)
   
   os.chdir("..")
 
