@@ -183,7 +183,7 @@ if run_relate:
   sample_file = open(name + ".sample",'a')
   sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
   for idx in range(int(N)):
-    string = "ind_" + str(idx+1) + " NA" + " 0\n"
+    string = "UNR" + str(idx+1) + " NA" + " 0\n"
     bytes = sample_file.write(string)
   sample_file.close()
   
