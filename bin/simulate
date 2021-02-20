@@ -221,10 +221,7 @@ if run_tsinfer:
   
   os.chdir("..")
 
-### output ###
-args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
-        "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
-
+### collect Ks and compute correlation ###
 Ks = {"K_all":K_all, "K_obs":K_obs, "K_cas":K_cas, "EK":EK}
 if run_relate:
   Ks["EK_relate"] = EK_relate
@@ -233,7 +230,21 @@ if run_tsinfer:
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
 
-results = {"args":args, "Ks":Ks}
+diags = np.diag_indices(N)
+non_diags = np.where(~np.eye(N,dtype=bool))
+
+table = {}
+for key in Ks.keys():
+  table[key] = Ks[key][non_diags].flatten()
+  
+table = pd.DataFrame(data=table)
+corr = table.corr(method ='pearson')
+
+### output ###
+args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
+        "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
+
+results = {"args":args, "Ks":Ks, "corr":corr}
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
