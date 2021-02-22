@@ -230,21 +230,32 @@ if run_tsinfer:
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
 
-maternals = np.array(range(0, N, 2))
-paternals = np.array(range(1, N, 2))
-for key in Ks.keys():
-  Ks[key] = 0.5 * (Ks[key][maternals, :][:, maternals] + Ks[key][maternals, :][:, paternals] + \
-                   Ks[key][paternals, :][:, maternals] + Ks[key][paternals, :][:, paternals])
-
-diags = np.diag_indices(int(N/2))
-non_diags = np.where(~np.eye(int(N/2),dtype=bool))
-
+# haploid
+diags = np.diag_indices(int(N))
+non_diags = np.where(~np.eye(int(N),dtype=bool))
 table = {}
 for key in Ks.keys():
   table[key] = Ks[key][non_diags].flatten()
   
 table = pd.DataFrame(data=table)
 corr = table.corr(method ='pearson')
+
+# diploid
+maternals = np.array(range(0, N, 2))
+paternals = np.array(range(1, N, 2))
+Ks_dip = {}
+for key in Ks.keys():
+  Ks_dip[key] = 0.5 * (Ks[key][maternals, :][:, maternals] + Ks[key][maternals, :][:, paternals] + \
+                       Ks[key][paternals, :][:, maternals] + Ks[key][paternals, :][:, paternals])
+
+diags = np.diag_indices(int(N/2))
+non_diags = np.where(~np.eye(int(N/2),dtype=bool))
+table_dip = {}
+for key in Ks_dip.keys():
+  table_dip[key] = Ks_dip[key][non_diags].flatten()
+  
+table_dip = pd.DataFrame(data=table_dip)
+corr_dip = table_dip.corr(method ='pearson')
 
 ### output ###
 args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
