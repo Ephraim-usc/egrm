@@ -230,8 +230,14 @@ if run_tsinfer:
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
 
-diags = np.diag_indices(N)
-non_diags = np.where(~np.eye(N,dtype=bool))
+maternals = np.array(range(0, N, 2))
+paternals = np.array(range(1, N, 2))
+for key in Ks.keys():
+  Ks[key] = 0.5 * (Ks[key][maternals, :][:, maternals] + Ks[key][maternals, :][:, paternals] + \
+                   Ks[key][paternals, :][:, maternals] + Ks[key][paternals, :][:, paternals])
+
+diags = np.diag_indices(int(N/2))
+non_diags = np.where(~np.eye(int(N/2),dtype=bool))
 
 table = {}
 for key in Ks.keys():
