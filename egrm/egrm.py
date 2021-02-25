@@ -106,5 +106,79 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
 
 
 ### without C extension (to be added)
-varGRM = varGRM_C
-mTMRCA = mTMRCA_C
+def TMRCA(tree):
+  N = tree.num_samples()
+  rel_nodes = list(tree.nodes())
+  times = [tree.time(node) for node in rel_nodes]
+  rel_nodes = np.array(rel_nodes)[np.flip(np.argsort(times))]
+  tmrca = np.zeros([N, N])
+  for c in rel_nodes:
+    descendants = list(tree.samples(c))
+    n = len(descendants)
+    if(n == 0):
+      continue
+    q = tree.time(c)
+    tmrca[np.ix_(descendants, descendants)] = q
+  return tmrca
+
+def mTMRCA(trees, file = None):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_l = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    if tree.total_branch_length == 0:
+      continue
+    l = (tree.interval[1] - tree.interval[0])
+    total_l += l
+    K = TMRCA(tree)
+    buffer += K * l
+    pbar.update(1)
+  buffer /= total_l
+  pbar.close()
+  return buffer, total_l
+
+def gmTMRCA(trees, file = None):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_l = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    if tree.total_branch_length == 0:
+      continue
+    l = (tree.interval[1] - tree.interval[0])
+    total_l += l
+    K = TMRCA(tree); np.fill_diagonal(K, 1)
+    buffer += np.log(K) * l
+    pbar.update(1)
+  buffer /= total_l
+  buffer = np.exp(buffer); np.fill_diagonal(buffer, 0)
+  pbar.close()
+  return buffer, total_l
+
+def hmTMRCA(trees, file = None):
+  N = trees.num_samples
+  buffer = np.zeros([N, N])
+  total_l = 0
+  pbar = tqdm.tqdm(total = trees.num_trees, 
+                   bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
+                   miniters = trees.num_trees // 100,
+                   file = file)
+  for tree in trees.trees():
+    if tree.total_branch_length == 0:
+      continue
+    l = (tree.interval[1] - tree.interval[0])
+    total_l += l
+    K = TMRCA(tree); np.fill_diagonal(K, 1)
+    buffer += np.power(K, -1) * l
+    pbar.update(1)
+  buffer /= total_l
+  buffer = np.power(buffer, -1); np.fill_diagonal(buffer, 0)
+  pbar.close()
+  return buffer, total_l
