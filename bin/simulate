@@ -12,7 +12,7 @@ import tsdate
 import math
 import msprime
 import tskit
-from egrm import varGRM_C, mTMRCA_C
+from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
 
 ### ad-hoc functions ###
 def getX(trees, idx):
@@ -162,7 +162,10 @@ K_all = getK(trees, np.arange(M))
 EK, _, EK_mu = varGRM_C(trees, var = False)
 
 if run_mtmrca:
-  mtmrca, _ = mTMRCA_C(trees)
+  mtmrca_c, _ = mTMRCA_C(trees)
+  mtmrca, _ = mTMRCA(trees)
+  gmtmrca, _ = gmTMRCA_C(trees)
+  hmtmrca, _ = hmTMRCA_C(trees)
 
 ### running relate ###
 if run_relate:
@@ -228,7 +231,10 @@ if run_relate:
 if run_tsinfer:
   Ks["EK_tsinfer"] = EK_tsinfer
 if run_mtmrca:
+  Ks["mtmrca_c"] = mtmrca_c
   Ks["mtmrca"] = mtmrca
+  Ks["gmtmrca"] = gmtmrca
+  Ks["hmtmrca"] = hmtmrca
 
 # haploid
 diags = np.diag_indices(int(N))
@@ -261,10 +267,11 @@ corr_dip = table_dip.corr(method ='pearson')
 args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
         "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
 
-results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip}
+results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "obss":obss}
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
 
+trees.dump("simulation.trees")
 
 
