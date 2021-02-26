@@ -164,8 +164,8 @@ EK, _, EK_mu = varGRM_C(trees, var = False)
 if run_mtmrca:
   mtmrca_c, _ = mTMRCA_C(trees)
   mtmrca, _ = mTMRCA(trees)
-  gmtmrca, _ = gmTMRCA_C(trees)
-  hmtmrca, _ = hmTMRCA_C(trees)
+  gmtmrca, _ = gmTMRCA(trees)
+  hmtmrca, _ = hmTMRCA(trees)
 
 ### running relate ###
 if run_relate:
