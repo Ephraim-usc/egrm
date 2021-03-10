@@ -38,6 +38,32 @@ def getK(trees, idx):
   K_all /= M
   return K_all
 
+def step_mig_mat(m,n):
+  n2 = n ** 2
+  pmat=np.arange(0, n2).reshape(n,n)
+  mmat=np.zeros(shape=[n2,n2])
+  
+  def contain(ix,max_ix):
+    if ix<0:
+      return(0)
+    if ix>(max_ix-1):
+      return(max_ix-1)
+    else:
+      return(ix)
+  
+  for ii in range(n2):
+    center_ix=np.where(pmat==ii)
+    top_ix=pmat[contain(center_ix[0]-1,n),contain(center_ix[1],n)]
+    bottom_ix=pmat[contain(center_ix[0]+1,n),contain(center_ix[1],n)]
+    left_ix=pmat[contain(center_ix[0],n),contain(center_ix[1]-1,n)]
+    right_ix=pmat[contain(center_ix[0],n),contain(center_ix[1]+1,n)]
+    
+    mmat[ii,top_ix]=mmat[ii,bottom_ix]=mmat[ii,left_ix]=mmat[ii,right_ix]=m
+    mmat[top_ix,ii]=mmat[bottom_ix,ii]=mmat[left_ix,ii]=mmat[right_ix,ii]=m
+    mmat[ii,ii]=0
+  
+  return(mmat)
+
 ### parse arguments ###
 parser=argparse.ArgumentParser()
 
@@ -51,8 +77,13 @@ parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action=
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 
 # simulation arguments
+
+parser.add_argument('--N_per_pop', type = int, help='population size')
+parser.add_argument('--n', type = int, help='grid size')
+parser.add_argument('--migration_rate', type = float, help='migration rate')
+parser.add_argument('--time_move', type = float, help='move time')
+
 parser.add_argument('--l', type = int, help='chromosome length')
-parser.add_argument('--N', type = int, help='population size')
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
 parser.add_argument('--recomb_rate', type = float, help='recombination rate')
 parser.add_argument('--cas_ratio', type = float, help='M_cas / M')
@@ -79,8 +110,12 @@ if run_all:
   run_mtmrca = True
 
 ### default arguments ###
+N_per_pop = args.get("N_per_pop", 100)
+n = args.get("n", 3)
+migration_rate = args.get("migration_rate", 0.05)
+time_move = args.get("time_move", 100)
+
 l = args.get("l", 32000000)
-N = args.get("N", 1000)
 mutation_rate = args.get("mutation_rate", 1e-8)
 recomb_rate = args.get("recomb_rate", 1e-8)
 cas_ratio = args.get("cas_ratio", 0.1)
@@ -105,14 +140,21 @@ print(args)
 print(str(datetime.datetime.now()))
 
 # tree sequence
-population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
+N = N_per_pop * n * n
 
-demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
-               msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
-               msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
+migration_matrix = step_mig_mat(migration_rate, n)
+migration_matrix = np.append(migration_matrix, np.zeros( (1, n*n) ), axis = 0)
+migration_matrix = np.append(migration_matrix, np.zeros(( (n*n+1) ,1)), axis = 1)
 
-trees = msprime.simulate(length = l, population_configurations = population_configurations, 
-                         recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
+population_configurations = [msprime.PopulationConfiguration(sample_size=N_per_pop)] * n * n
+population_configurations.append(msprime.PopulationConfiguration(sample_size = 0))
+
+demo_events=[msprime.MassMigration(time=time_move, source=i, destination= n*n, proportion=1.0) 
+                          for i in range(n * n)]
+demo_events.append(msprime.MigrationRateChange(time=time_move,rate=0))
+
+trees = msprime.simulate(population_configurations = population_configurations, migration_matrix=migration_matrix,
+                         length = l, recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
                          demographic_events = demo_events)
 
 variants = trees.variants()
