@@ -77,7 +77,6 @@ parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action=
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 
 # simulation arguments
-
 parser.add_argument('--N_per_pop', type = int, help='population size')
 parser.add_argument('--n', type = int, help='grid size')
 parser.add_argument('--migration_rate', type = float, help='migration rate')
