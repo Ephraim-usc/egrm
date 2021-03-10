@@ -304,11 +304,25 @@ for key in Ks_dip.keys():
 table_dip = pd.DataFrame(data=table_dip)
 corr_dip = table_dip.corr(method ='pearson')
 
+### PCA ###
+PCA = {}
+for key in Ks_dip.keys():
+  K = Ks_dip[key]
+  w, v = np.linalg.eig(K)
+  idx = w.argsort()[::-1]
+  w = w[idx]; v = v[:, idx]
+  pc = np.dot(v[:, :10], np.diag(np.power(w[:10], 0.5)))
+  PCA[key] = pc
+
 ### output ###
 args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
         "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
 
-results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "obss":obss}
+results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "obss":obss}
+
+for key in PCA.keys():
+  pc = PCA[key]
+  np.savetxt("pc_." + key + ".txt", pc, delimiter='\t')
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
