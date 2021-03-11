@@ -322,7 +322,7 @@ results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "o
 
 for key in PCA.keys():
   pc = PCA[key]
-  np.savetxt("pc_." + key + ".txt", pc, delimiter='\t')
+  np.savetxt("pc_" + key + ".txt", pc, delimiter='\t')
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
