@@ -204,9 +204,9 @@ EK, _, EK_mu = varGRM_C(trees, var = False)
 
 if run_mtmrca:
   mtmrca_c, _ = mTMRCA_C(trees)
-  mtmrca, _ = mTMRCA(trees)
+  #mtmrca, _ = mTMRCA(trees)
   gmtmrca, _ = gmTMRCA(trees)
-  hmtmrca, _ = hmTMRCA(trees)
+  #hmtmrca, _ = hmTMRCA(trees)
 
 ### running relate ###
 if run_relate:
@@ -273,9 +273,9 @@ if run_tsinfer:
   Ks["EK_tsinfer"] = EK_tsinfer
 if run_mtmrca:
   Ks["mtmrca_c"] = mtmrca_c
-  Ks["mtmrca"] = mtmrca
+  #Ks["mtmrca"] = mtmrca
   Ks["gmtmrca"] = gmtmrca
-  Ks["hmtmrca"] = hmtmrca
+  #Ks["hmtmrca"] = hmtmrca
 
 # haploid
 diags = np.diag_indices(int(N))
