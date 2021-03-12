@@ -311,6 +311,9 @@ corr_dip = table_dip.corr(method ='pearson')
 
 ### PCA ###
 PCA = {}
+SI = {}
+true_labels = np.repeat(np.arange(nrow * ncol), int(n/2))
+
 for key in Ks_dip.keys():
   K = Ks_dip[key]
   w, v = np.linalg.eig(K)
@@ -318,12 +321,13 @@ for key in Ks_dip.keys():
   w = w[idx]; v = v[:, idx]
   pc = np.dot(v[:, :10], np.diag(np.power(w[:10], 0.5)))
   PCA[key] = pc
+  SI[key] = separation_index(pc, true_labels)
 
 ### output ###
 args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
         "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
 
-results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "obss":obss}
+results = {"args":args, "obss":obss, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "SI":SI}
 
 for key in PCA.keys():
   pc = PCA[key]
