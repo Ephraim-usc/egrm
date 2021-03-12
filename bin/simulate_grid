@@ -63,6 +63,21 @@ def step_mig_mat(m, nrow, ncol):
   
   return(mmat)
 
+def separation_index(pc, true_labels):
+  dmat = distance_matrix(pc, pc)
+  omat = dmat.argsort(axis=-1)
+  
+  scores = []
+  for i in np.arange(int(N/2)):
+    fellows = np.where(true_labels == true_labels[i])[0]
+    neighbors = omat[i, :fellows.shape[0]]
+    intersects = np.intersect1d(neighbors, fellows)
+    score = intersects.shape[0] / fellows.shape[0]
+    scores.append(score)
+  
+  scores = np.array(scores)
+  return(scores)
+
 ### parse arguments ###
 parser=argparse.ArgumentParser()
 
