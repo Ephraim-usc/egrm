@@ -12,7 +12,7 @@ import tsdate
 import math
 import msprime
 import tskit
-from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
+from egrm import varGRM_C, mTMRCA_C, gmTMRCA
 
 ### ad-hoc functions ###
 def getX(trees, idx):
@@ -38,10 +38,9 @@ def getK(trees, idx):
   K_all /= M
   return K_all
 
-def step_mig_mat(m,n):
-  n2 = n ** 2
-  pmat=np.arange(0, n2).reshape(n,n)
-  mmat=np.zeros(shape=[n2,n2])
+def step_mig_mat(m, nrow, ncol):
+  pmat = np.arange(0, nrow * ncol).reshape(nrow, ncol)
+  mmat = np.zeros(shape = [nrow * ncol, nrow * ncol])
   
   def contain(ix,max_ix):
     if ix<0:
@@ -51,12 +50,12 @@ def step_mig_mat(m,n):
     else:
       return(ix)
   
-  for ii in range(n2):
+  for ii in range(nrow * ncol):
     center_ix=np.where(pmat==ii)
-    top_ix=pmat[contain(center_ix[0]-1,n),contain(center_ix[1],n)]
-    bottom_ix=pmat[contain(center_ix[0]+1,n),contain(center_ix[1],n)]
-    left_ix=pmat[contain(center_ix[0],n),contain(center_ix[1]-1,n)]
-    right_ix=pmat[contain(center_ix[0],n),contain(center_ix[1]+1,n)]
+    top_ix=pmat[contain(center_ix[0]-1,nrow),contain(center_ix[1],ncol)]
+    bottom_ix=pmat[contain(center_ix[0]+1,nrow),contain(center_ix[1],ncol)]
+    left_ix=pmat[contain(center_ix[0],nrow),contain(center_ix[1]-1,ncol)]
+    right_ix=pmat[contain(center_ix[0],nrow),contain(center_ix[1]+1,ncol)]
     
     mmat[ii,top_ix]=mmat[ii,bottom_ix]=mmat[ii,left_ix]=mmat[ii,right_ix]=m
     mmat[top_ix,ii]=mmat[bottom_ix,ii]=mmat[left_ix,ii]=mmat[right_ix,ii]=m
@@ -77,8 +76,9 @@ parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action=
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 
 # simulation arguments
-parser.add_argument('--N_per_pop', type = int, help='population size')
-parser.add_argument('--n', type = int, help='grid size')
+parser.add_argument('--n', type = int, help='population size in each population')
+parser.add_argument('--nrow', type = int, help='number of rows of populations')
+parser.add_argument('--ncol', type = int, help='number of columns of populations')
 parser.add_argument('--migration_rate', type = float, help='migration rate')
 parser.add_argument('--time_move', type = float, help='move time')
 
@@ -109,9 +109,10 @@ if run_all:
   run_mtmrca = True
 
 ### default arguments ###
-N_per_pop = args.get("N_per_pop", 100)
-n = args.get("n", 3)
-migration_rate = args.get("migration_rate", 0.05)
+n = args.get("n", 200)
+nrow = args.get("nrow", 5)
+ncol = args.get("ncol", 5)
+migration_rate = args.get("migration_rate", 0.01)
 time_move = args.get("time_move", 100)
 
 l = args.get("l", 32000000)
@@ -123,33 +124,22 @@ h2g = args.get("h2g", 1.0)
 Alpha = args.get("Alpha", -1)
 Beta = args.get("Beta", 1)
 
-N_B = 2100
-N_EU0 = 1000
-N_AF = 12300
-N_A = 7300
-r_EU = 0.004
-generation_time = 25
-T_EU_AS = 21.2e3 / generation_time
-T_B = 140e3 / generation_time
-T_AF = 220e3 / generation_time
-N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
-
 ### simulate ###
 print(args)
 print(str(datetime.datetime.now()))
 
 # tree sequence
-N = N_per_pop * n * n
+N = n * ncol * nrow
 
-migration_matrix = step_mig_mat(migration_rate, n)
-migration_matrix = np.append(migration_matrix, np.zeros( (1, n*n) ), axis = 0)
-migration_matrix = np.append(migration_matrix, np.zeros(( (n*n+1) ,1)), axis = 1)
+migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
+migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
+migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow+1) ,1)), axis = 1)
 
-population_configurations = [msprime.PopulationConfiguration(sample_size=N_per_pop, initial_size = 1000)] * n * n
-population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = 1000 * n * n))
+population_configurations = [msprime.PopulationConfiguration(sample_size=n, initial_size = n)] * ncol * nrow
+population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = n * ncol * nrow))
 
-demo_events=[msprime.MassMigration(time=time_move, source=i, destination= n*n, proportion=1.0) 
-                          for i in range(n * n)]
+demo_events=[msprime.MassMigration(time=time_move, source=i, destination= ncol * nrow, proportion=1.0) 
+                          for i in range(ncol * nrow)]
 demo_events.append(msprime.MigrationRateChange(time=time_move,rate=0))
 
 trees = msprime.simulate(population_configurations = population_configurations, migration_matrix=migration_matrix,
