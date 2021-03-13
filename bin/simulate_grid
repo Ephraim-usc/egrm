@@ -12,7 +12,9 @@ import tsdate
 import math
 import msprime
 import tskit
-from egrm import varGRM_C, mTMRCA_C, gmTMRCA
+
+from scipy.spatial import distance_matrix
+from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
 
 ### ad-hoc functions ###
 def getX(trees, idx):
