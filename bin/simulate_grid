@@ -127,7 +127,7 @@ if run_all:
   run_mtmrca = True
 
 ### default arguments ###
-n = args.get("n", 200)
+n = args.get("n", 100)
 nrow = args.get("nrow", 5)
 ncol = args.get("ncol", 5)
 migration_rate = args.get("migration_rate", 0.01)
