@@ -267,7 +267,7 @@ corr_dip = table_dip.corr(method ='pearson')
 args = {"l":l, "N":N, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
         "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
 
-results = {"args":args, "Ks":Ks, "corr":corr, "corr_dip":corr_dip, "obss":obss}
+results = {"args":args, "obss":obss, "Ks":Ks, "Ks_dip":Ks_dip, "corr":corr, "corr_dip":corr_dip}
 
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
