@@ -166,8 +166,13 @@ trees = msprime.simulate(population_configurations = population_configurations, 
 
 variants = trees.variants()
 MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
+MACs = np.array([v.genotypes.sum() for v in trees.variants()])
 loci = np.array([v.position for v in trees.variants()])
 M = loci.shape[0]
+
+# commons and rares
+commons = np.where(MAFs >= 0.05)[0]
+rares = np.where(np.logical_and(MACs >=2, MACs <= 5))[0]
 
 # observation
 idx_5 = MAFs >= 0.005
@@ -205,6 +210,8 @@ e = np.random.normal(scale=np.sqrt(s2e), size=N)
 y = G + e
 
 ### compute Ks ###
+K_common = getK(trees, commons)
+K_rare = getK(trees, rares)
 K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
 K_all = getK(trees, np.arange(M))
@@ -274,7 +281,7 @@ if run_tsinfer:
   os.chdir("..")
 
 ### collect Ks and compute correlation ###
-Ks = {"K_all":K_all, "K_obs":K_obs, "K_cas":K_cas, "EK":EK}
+Ks = {"K_common":K_common, "K_rare":K_rare, "K_all":K_all, "K_obs":K_obs, "K_cas":K_cas, "EK":EK}
 if run_relate:
   Ks["EK_relate"] = EK_relate
 if run_tsinfer:
