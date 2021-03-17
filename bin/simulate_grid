@@ -153,8 +153,8 @@ migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
 migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow+1) ,1)), axis = 1)
 
-population_configurations = [msprime.PopulationConfiguration(sample_size=n, initial_size = n)] * ncol * nrow
-population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = n * ncol * nrow))
+population_configurations = [msprime.PopulationConfiguration(sample_size=n, initial_size = 10000)] * ncol * nrow
+population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = 10000 * ncol * nrow))
 
 demo_events=[msprime.MassMigration(time=time_move, source=i, destination= ncol * nrow, proportion=1.0) 
                           for i in range(ncol * nrow)]
