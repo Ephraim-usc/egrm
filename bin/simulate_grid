@@ -97,6 +97,7 @@ parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 parser.add_argument('--n', type = int, help='population size in each population')
 parser.add_argument('--nrow', type = int, help='number of rows of populations')
 parser.add_argument('--ncol', type = int, help='number of columns of populations')
+parser.add_argument('--pop_size', type = int, help='population size')
 parser.add_argument('--migration_rate', type = float, help='migration rate')
 parser.add_argument('--time_move', type = float, help='move time')
 
@@ -130,6 +131,7 @@ if run_all:
 n = args.get("n", 100)
 nrow = args.get("nrow", 5)
 ncol = args.get("ncol", 5)
+pop_size = args.get("pop_size", 1000)
 migration_rate = args.get("migration_rate", 0.01)
 time_move = args.get("time_move", 100)
 
@@ -153,8 +155,8 @@ migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
 migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow+1) ,1)), axis = 1)
 
-population_configurations = [msprime.PopulationConfiguration(sample_size=n, initial_size = 10000)] * ncol * nrow
-population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = 10000))
+population_configurations = [msprime.PopulationConfiguration(sample_size=n, initial_size = pop_size)] * ncol * nrow
+population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
 
 demo_events=[msprime.MassMigration(time=time_move, source=i, destination= ncol * nrow, proportion=1.0) 
                           for i in range(ncol * nrow)]
