@@ -49,6 +49,7 @@ parser.add_argument('--all', help='run all steps', action='store_true')
 parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
 parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
+parser.add_argument('--impute', help='compute K_imputed', action='store_true')
 
 # simulation arguments
 parser.add_argument('--l', type = int, help='chromosome length')
@@ -75,6 +76,7 @@ run_all = args.pop("all")
 run_relate = args.pop("relate")
 run_tsinfer = args.pop("tsinfer")
 run_mtmrca = args.pop("mtmrca")
+run_impute = args.pop("impute")
 
 if run_all:
   run_relate = True
@@ -110,7 +112,7 @@ print(args)
 print(str(datetime.datetime.now()))
 
 # tree sequence
-population_configurations = [msprime.PopulationConfiguration(sample_size = N, initial_size = N_EU, growth_rate = r_EU)]
+population_configurations = [msprime.PopulationConfiguration(sample_size = N + N_ref, initial_size = N_EU, growth_rate = r_EU)]
 
 demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
                msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
@@ -119,6 +121,9 @@ demo_events = [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N
 trees = msprime.simulate(length = l, population_configurations = population_configurations, 
                          recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
                          demographic_events = demo_events)
+
+trees_ref = trees.simplify(np.arange(N, N + N_ref))
+trees = trees.simplify(np.arange(N))
 
 variants = trees.variants()
 MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
