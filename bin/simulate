@@ -82,6 +82,7 @@ if run_all:
   run_relate = True
   run_tsinfer = True
   run_mtmrca = True
+  run_impute = True
 
 ### default arguments ###
 l = args.get("l", 32000000)
@@ -176,6 +177,46 @@ if run_mtmrca:
   mtmrca, _ = mTMRCA(trees)
   gmtmrca, _ = gmTMRCA(trees)
   hmtmrca, _ = hmTMRCA(trees)
+
+### running impute ###
+if run_impute:
+  os.mkdir("impute")
+  os.chdir("impute")
+  
+  X_obs = getX(trees, obss)
+  loci_obs = np.ceil(loci[obss]).astype(int)
+  
+  haps_file = open(name + ".haps", 'a')
+  i = 0
+  for idx, obs in enumerate(obss):
+    string = "chr snp" + str(obs+1) + " " + str(loci_obs[idx]) + " A" + " T "
+    string = string + " ".join(map(str, X_obs[:, idx])) + "\n"
+    bytes = haps_file.write(string)
+    i += 1
+  haps_file.close()
+  
+  X_ref = getX(trees_ref, np.arange(trees_ref.num_mutations))
+  loci_ref = np.array([v.position for v in trees_ref.variants()])
+  loci_ref = np.ceil(loci_ref).astype(int)
+  
+  haps_file = open(name + "_ref.haps", 'a')
+  i = 0
+  for idx, obs in enumerate(np.arange(trees_ref.num_mutations)):
+    string = "1 snp" + str(obs+1) + " " + str(loci_ref[idx]) + " A" + " T "
+    string = string + " ".join(map(str, X_ref[:, idx])) + "\n"
+    bytes = haps_file.write(string)
+    i += 1
+  haps_file.close()
+  
+  map_file = open(name + ".map",'a')
+  map_file.write("pos COMBINED_rate Genetic_Map\n")
+  for idx, obs in enumerate(obss):
+    string = str(loci_obs[idx]) + " " + str(1) + " "
+    string = string + str(loci_obs[idx]/1000000) + "\n"
+    bytes = map_file.write(string)
+  map_file.close()
+  
+  os.chdir("..")
 
 ### running relate ###
 if run_relate:
