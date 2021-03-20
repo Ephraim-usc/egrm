@@ -26,8 +26,6 @@ def epsilon(x):
 
 
 ### main function
-varGRM = varGRM_C
-
 def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), var = True):
   if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
@@ -108,6 +106,8 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
 
 
 ### without C extension (to be added)
+varGRM = varGRM_C
+
 def TMRCA(tree):
   N = tree.num_samples()
   rel_nodes = list(tree.nodes())
