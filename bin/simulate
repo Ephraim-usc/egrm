@@ -28,7 +28,7 @@ def remove_monomorphic(trees):
            if k > 0 and k < n:
                if not visited:
                    visited = True
-                   site_id = tables.sites.add_row(site.position, site.ancestral_state, metadata=s.metadata)
+                   site_id = tables.sites.add_row(site.position, site.ancestral_state, metadata=site.metadata)
                tables.mutations.add_row(site_id, mutation.node, mutation.derived_state, parent=-1, metadata=None)
   tables.compute_mutation_parents()
   return tables.tree_sequence()
