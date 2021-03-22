@@ -24,7 +24,7 @@ def remove_monomorphic(trees):
      for site in tree.sites():
         visited = False
         for mutation in site.mutations:
-           k = tree.num_samples(m.node)
+           k = tree.num_samples(mutation.node)
            if k > 0 and k < n:
                if not visited:
                    visited = True
