@@ -346,7 +346,7 @@ for key in Ks.keys():
   Ks_dip[key] = 0.5 * (Ks[key][maternals, :][:, maternals] + Ks[key][maternals, :][:, paternals] + \
                        Ks[key][paternals, :][:, maternals] + Ks[key][paternals, :][:, paternals])
 
-if run_imputed:
+if run_impute:
   Ks_dip['K_imputed'] = K_imputed
 
 diags = np.diag_indices(int(N/2))
