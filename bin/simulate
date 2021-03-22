@@ -179,31 +179,50 @@ if run_mtmrca:
   hmtmrca, _ = hmTMRCA(trees)
 
 ### running impute ###
+def X2gen(X):
+  n, m = X.shape
+  maternals = np.array(range(0, n, 2))
+  paternals = np.array(range(1, n, 2))
+  X_dip = X[maternals, :] + X[paternals, :]
+  
+  tmp1 = (X_dip == 2).astype(int)
+  tmp2 = (X_dip == 1).astype(int)
+  tmp3 = (X_dip == 0).astype(int)
+  
+  n_gen = int(n * 3 / 2)
+  buffer = np.zeros([n_gen, m]).astype(int)
+  buffer[np.arange(0, n_gen, 3), :] = tmp1
+  buffer[np.arange(1, n_gen, 3), :] = tmp2
+  buffer[np.arange(2, n_gen, 3), :] = tmp3
+  return buffer
+
 if run_impute:
   os.mkdir("impute")
   os.chdir("impute")
   
   X_obs = getX(trees, obss)
+  gen_obs = X2gen(X_obs)
   loci_obs = np.ceil(loci[obss]).astype(int)
   
-  haps_file = open(name + ".haps", 'a')
+  haps_file = open(name + ".gen", 'a')
   i = 0
   for idx, obs in enumerate(obss):
     string = "chr snp" + str(obs+1) + " " + str(loci_obs[idx]) + " A" + " T "
-    string = string + " ".join(map(str, X_obs[:, idx])) + "\n"
+    string = string + " ".join(map(str, gen_obs[:, idx])) + "\n"
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
   
   X_ref = getX(trees_ref, np.arange(trees_ref.num_mutations))
+  gen_ref = X2gen(X_ref)
   loci_ref = np.array([v.position for v in trees_ref.variants()])
   loci_ref = np.ceil(loci_ref).astype(int)
   
-  haps_file = open(name + "_ref.haps", 'a')
+  haps_file = open(name + "_ref.gen", 'a')
   i = 0
   for idx, obs in enumerate(np.arange(trees_ref.num_mutations)):
     string = "1 snp" + str(obs+1) + " " + str(loci_ref[idx]) + " A" + " T "
-    string = string + " ".join(map(str, X_ref[:, idx])) + "\n"
+    string = string + " ".join(map(str, gen_ref[:, idx])) + "\n"
     bytes = haps_file.write(string)
     i += 1
   haps_file.close()
