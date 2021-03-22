@@ -196,6 +196,13 @@ def X2gen(X):
   buffer[np.arange(2, n_gen, 3), :] = tmp3
   return buffer
 
+def gen2X(gen):
+  n, m = gen.shape
+  tmp1 = gen[np.arange(0, n, 3), :]
+  tmp2 = gen[np.arange(1, n, 3), :]
+  buffer = tmp1 * 2 + tmp2
+  return buffer
+
 if run_impute:
   os.mkdir("impute")
   os.chdir("impute")
@@ -221,7 +228,7 @@ if run_impute:
   haps_file = open(name + "_ref.gen", 'a')
   i = 0
   for idx, obs in enumerate(np.arange(trees_ref.num_mutations)):
-    string = "1 snp" + str(obs+1) + " " + str(loci_ref[idx]) + " A" + " T "
+    string = "1 refsnp" + str(obs+1) + " " + str(loci_ref[idx]) + " A" + " T "
     string = string + " ".join(map(str, gen_ref[:, idx])) + "\n"
     bytes = haps_file.write(string)
     i += 1
@@ -234,6 +241,21 @@ if run_impute:
     string = string + str(loci_obs[idx]/1000000) + "\n"
     bytes = map_file.write(string)
   map_file.close()
+  
+  os.system("~/bin/impute2 " + \
+            "-g_ref " + name + "_ref.gen " + \
+            "-m " + name + ".map " + \
+            "-g " + name + ".gen " + \
+            "-int 0 " + str(l) + " -allow_large_regions " + \
+            "-o out.gen")
+  
+  gen_imputed = pd.read_table('out.gen', sep = ' ', header = None).iloc[:, 5:]
+  gen_imputed = np.transpose(gen_imputed.values)
+  X_imputed = gen2X(gen_imputed)
+  
+  Z_imputed = X_imputed
+  Z_imputed -= Z_imputed.mean(axis=0); Z_imputed /= Z_imputed.std(axis=0)
+  K_imputed = np.dot(Z_imputed, np.transpose(Z_imputed))
   
   os.chdir("..")
 
@@ -323,6 +345,9 @@ Ks_dip = {}
 for key in Ks.keys():
   Ks_dip[key] = 0.5 * (Ks[key][maternals, :][:, maternals] + Ks[key][maternals, :][:, paternals] + \
                        Ks[key][paternals, :][:, maternals] + Ks[key][paternals, :][:, paternals])
+
+if run_imputed:
+  Ks_dip['K_imputed'] = K_imputed
 
 diags = np.diag_indices(int(N/2))
 non_diags = np.where(~np.eye(int(N/2),dtype=bool))
