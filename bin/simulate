@@ -15,6 +15,24 @@ import tskit
 from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
 
 ### ad-hoc functions ###
+def remove_monomorphic(trees):
+  tables = trees.tables
+  tables.sites.clear()
+  tables.mutations.clear()
+  n = trees.num_samples
+  for tree in trees.trees():
+     for site in tree.sites():
+        visited = False
+        for mutation in site.mutations:
+           k = tree.num_samples(m.node)
+           if k > 0 and k < n:
+               if not visited:
+                   visited = True
+                   site_id = tables.sites.add_row(site.position, site.ancestral_state, metadata=s.metadata)
+               tables.mutations.add_row(site_id, mutation.node, mutation.derived_state, parent=-1, metadata=None)
+  tables.compute_mutation_parents()
+  return tables.tree_sequence()
+
 def getX(trees, idx):
   N = trees.num_samples
   M = idx.shape[0]
@@ -123,8 +141,8 @@ trees = msprime.simulate(length = l, population_configurations = population_conf
                          recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
                          demographic_events = demo_events)
 
-trees_ref = trees.simplify(np.arange(N, N + N_ref))
-trees = trees.simplify(np.arange(N))
+trees_ref = remove_monomorphic(trees.simplify(np.arange(N, N + N_ref)))
+trees = remove_monomorphic(trees.simplify(np.arange(N)))
 
 variants = trees.variants()
 MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
