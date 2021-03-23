@@ -75,6 +75,9 @@ parser.add_argument('--demo', type = int, help='demography model')
 parser.add_argument('--l', type = int, help='chromosome length')
 parser.add_argument('--N', type = int, help='total sample size')
 parser.add_argument('--n', type = int, help='sample size of each population')
+parser.add_argument('--nrow', type = int, help='number of rows of populations')
+parser.add_argument('--ncol', type = int, help='number of columns of populations')
+
 parser.add_argument('--pop_ref', type = int, help='from which population the reference panel is sampled')
 parser.add_argument('--N_ref', type = int, help='reference panel sample size')
 
@@ -86,9 +89,6 @@ parser.add_argument('--obs_ratio', type = float, help='M_obs / M_5')
 parser.add_argument('--h2g', type = float, help='heritability')
 parser.add_argument('--Alpha', type = float, help='Alpha -- causal probability parameter')
 parser.add_argument('--Beta', type = float, help='Beta -- observation probability parameter')
-
-# reference panel
-parser.add_argument('--N_ref', type = int, help='reference panel sample size')
 
 args = vars(parser.parse_args())
 args = dict((k,v) for k,v in args.items() if v is not None)
@@ -109,8 +109,14 @@ if run_all:
   run_mtmrca = True
   run_impute = True
 
+if args.keys() >= {'N', 'nrow', 'ncol'}:
+  args['n'] = int(args['N'] /args['nrow'] / args['ncol'])
+
+if args.keys() >= {'n', 'nrow', 'ncol'}:
+  args['N'] = args['n'] * args['nrow'] * args['ncol']
 
 ### default arguments ###
+demo = args.get("demo", "ooa")
 l = args.get("l", 32000000)
 N = args.get("N", 1000)
 mutation_rate = args.get("mutation_rate", 1e-8)
@@ -123,6 +129,8 @@ Beta = args.get("Beta", 1)
 
 N_ref = args.get("N_ref", 0)
 
+
+### simulate tree sequence ###
 N_B = 2100
 N_EU0 = 1000
 N_AF = 12300
