@@ -55,3 +55,50 @@ def getK(trees, idx):
     del Z
   K_all /= M
   return K_all
+
+
+### parse arguments ###
+parser=argparse.ArgumentParser()
+
+# name of simulation
+parser.add_argument('--name', type = str, help='output file name')
+
+# workflow control
+parser.add_argument('--all', help='run all steps', action='store_true')
+parser.add_argument('--relate', help='run relate tree reconstruction', action='store_true')
+parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action='store_true')
+parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
+parser.add_argument('--impute', help='compute K_imputed', action='store_true')
+
+# simulation arguments
+parser.add_argument('--l', type = int, help='chromosome length')
+parser.add_argument('--N', type = int, help='sample size')
+parser.add_argument('--mutation_rate', type = float, help='mutation rate')
+parser.add_argument('--recomb_rate', type = float, help='recombination rate')
+parser.add_argument('--cas_ratio', type = float, help='M_cas / M')
+parser.add_argument('--obs_ratio', type = float, help='M_obs / M_5')
+parser.add_argument('--h2g', type = float, help='heritability')
+parser.add_argument('--Alpha', type = float, help='Alpha -- causal probability parameter')
+parser.add_argument('--Beta', type = float, help='Beta -- observation probability parameter')
+
+# reference panel
+parser.add_argument('--N_ref', type = int, help='reference panel sample size')
+
+args = vars(parser.parse_args())
+args = dict((k,v) for k,v in args.items() if v is not None)
+
+name = args.pop("name")
+os.system("rm -r -f " + name + " && mkdir " + name)
+os.chdir(name)
+
+run_all = args.pop("all")
+run_relate = args.pop("relate")
+run_tsinfer = args.pop("tsinfer")
+run_mtmrca = args.pop("mtmrca")
+run_impute = args.pop("impute")
+
+if run_all:
+  run_relate = True
+  run_tsinfer = True
+  run_mtmrca = True
+  run_impute = True
