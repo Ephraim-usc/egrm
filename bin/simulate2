@@ -70,9 +70,15 @@ parser.add_argument('--tsinfer', help='run tsinfer tree reconstruction', action=
 parser.add_argument('--mtmrca', help='compute mean TMRCA', action='store_true')
 parser.add_argument('--impute', help='compute K_imputed', action='store_true')
 
-# simulation arguments
+# population structure arguments
+parser.add_argument('--demo', type = int, help='demography model')
 parser.add_argument('--l', type = int, help='chromosome length')
-parser.add_argument('--N', type = int, help='sample size')
+parser.add_argument('--N', type = int, help='total sample size')
+parser.add_argument('--n', type = int, help='sample size of each population')
+parser.add_argument('--pop_ref', type = int, help='from which population the reference panel is sampled')
+parser.add_argument('--N_ref', type = int, help='reference panel sample size')
+
+# genetics arguments
 parser.add_argument('--mutation_rate', type = float, help='mutation rate')
 parser.add_argument('--recomb_rate', type = float, help='recombination rate')
 parser.add_argument('--cas_ratio', type = float, help='M_cas / M')
@@ -102,3 +108,28 @@ if run_all:
   run_tsinfer = True
   run_mtmrca = True
   run_impute = True
+
+
+### default arguments ###
+l = args.get("l", 32000000)
+N = args.get("N", 1000)
+mutation_rate = args.get("mutation_rate", 1e-8)
+recomb_rate = args.get("recomb_rate", 1e-8)
+cas_ratio = args.get("cas_ratio", 0.1)
+obs_ratio = args.get("obs_ratio", 0.2)
+h2g = args.get("h2g", 1.0)
+Alpha = args.get("Alpha", -1)
+Beta = args.get("Beta", 1)
+
+N_ref = args.get("N_ref", 0)
+
+N_B = 2100
+N_EU0 = 1000
+N_AF = 12300
+N_A = 7300
+r_EU = 0.004
+generation_time = 25
+T_EU_AS = 21.2e3 / generation_time
+T_B = 140e3 / generation_time
+T_AF = 220e3 / generation_time
+N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
