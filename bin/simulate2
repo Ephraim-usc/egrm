@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+### importing packages
+import argparse
+import os
+import numpy as np
+import pandas as pd
+import pickle
+import datetime
+import tsinfer
+import tsdate
+import math
+import msprime
+import tskit
+from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
+
+### ad-hoc functions ###
+def remove_monomorphic(trees):
+  tables = trees.tables
+  tables.sites.clear()
+  tables.mutations.clear()
+  n = trees.num_samples
+  for tree in trees.trees():
+     for site in tree.sites():
+        visited = False
+        for mutation in site.mutations:
+           k = tree.num_samples(mutation.node)
+           if k > 0 and k < n:
+               if not visited:
+                   visited = True
+                   site_id = tables.sites.add_row(site.position, site.ancestral_state, metadata=site.metadata)
+               tables.mutations.add_row(site_id, mutation.node, mutation.derived_state, parent=-1, metadata=None)
+  tables.compute_mutation_parents()
+  return tables.tree_sequence()
+
+def getX(trees, idx):
+  N = trees.num_samples
+  M = idx.shape[0]
+  X = np.zeros((N, M)).astype("int")
+  i = 0; num = 0
+  for v in trees.variants():
+    if i in idx:
+      X[:, num] = v.genotypes; num += 1
+    i += 1
+  return X
+
+def getK(trees, idx):
+  N = trees.num_samples
+  M = idx.shape[0]
+  K_all = np.zeros((N, N))
+  for idx_ in np.split(idx, range(1000, M, 1000)):
+    Z = getX(trees, idx_).astype("float")
+    Z -= Z.mean(axis=0); Z /= Z.std(axis=0)
+    K_all += np.dot(Z, np.transpose(Z))
+    del Z
+  K_all /= M
+  return K_all
