@@ -489,10 +489,6 @@ for key in PCA.keys():
 SI = pd.DataFrame(SI)
 
 ### output ###
-args = {"n":n, "nrow":nrow, "ncol":ncol, "migration_rate":migration_rate, "time_move":time_move, 
-        "l":l, "mutation_rate":mutation_rate, "recomb_rate":recomb_rate,
-        "cas_ratio":cas_ratio, "obs_ratio":obs_ratio, "h2g":h2g, "Alpha":Alpha, "Beta":Beta}
-
 results = {"args":args, "obss":obss, "Ks":Ks, "Ks_dip":Ks_dip, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "SI":SI}
 
 for key in PCA.keys():
