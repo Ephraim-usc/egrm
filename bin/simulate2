@@ -128,8 +128,8 @@ parser.add_argument('--run_impute', '--impute', action='store_true', help='compu
 
 # demography and population structure
 parser.add_argument('--demo', type = str, default = 'ooa', help='demography model')
-parser.add_argument('--nrow', type = int, default = '1', help='number of rows of populations')
-parser.add_argument('--ncol', type = int, default = '1', help='number of columns of populations')
+parser.add_argument('--nrow', type = int, default = 1, help='number of rows of populations')
+parser.add_argument('--ncol', type = int, default = 1, help='number of columns of populations')
 parser.add_argument('--migration_rate', type = float, default = 0.01, help='migration rate')
 parser.add_argument('--time_move', type = float, default = 100, help='move time')
 parser.add_argument('--pop_size', type = int, default = 1000, help='population size (only applies when using constant demo)')
