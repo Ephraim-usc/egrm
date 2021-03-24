@@ -14,7 +14,33 @@ import msprime
 import tskit
 from egrm import varGRM_C, mTMRCA_C, mTMRCA, gmTMRCA, hmTMRCA
 
+
 ### ad-hoc functions ###
+def step_mig_mat(m, nrow, ncol):
+  pmat = np.arange(0, nrow * ncol).reshape(nrow, ncol)
+  mmat = np.zeros(shape = [nrow * ncol, nrow * ncol])
+  
+  def contain(ix,max_ix):
+    if ix<0:
+      return(0)
+    if ix>(max_ix-1):
+      return(max_ix-1)
+    else:
+      return(ix)
+  
+  for ii in range(nrow * ncol):
+    center_ix=np.where(pmat==ii)
+    top_ix=pmat[contain(center_ix[0]-1,nrow),contain(center_ix[1],ncol)]
+    bottom_ix=pmat[contain(center_ix[0]+1,nrow),contain(center_ix[1],ncol)]
+    left_ix=pmat[contain(center_ix[0],nrow),contain(center_ix[1]-1,ncol)]
+    right_ix=pmat[contain(center_ix[0],nrow),contain(center_ix[1]+1,ncol)]
+    
+    mmat[ii,top_ix]=mmat[ii,bottom_ix]=mmat[ii,left_ix]=mmat[ii,right_ix]=m
+    mmat[top_ix,ii]=mmat[bottom_ix,ii]=mmat[left_ix,ii]=mmat[right_ix,ii]=m
+    mmat[ii,ii]=0
+  
+  return(mmat)
+
 def remove_monomorphic(trees):
   tables = trees.tables
   tables.sites.clear()
@@ -56,6 +82,22 @@ def getK(trees, idx):
   K_all /= M
   return K_all
 
+def separation_index(true_labels, x, dmat = None):
+  if dmat is None: 
+    dmat = distance_matrix(x, x)
+  omat = dmat.argsort(axis=1)
+  
+  scores = []
+  for i in np.arange(int(N/2)):
+    fellows = np.where(true_labels == true_labels[i])[0]
+    neighbors = omat[i, :fellows.shape[0]]
+    intersects = np.intersect1d(neighbors, fellows)
+    score = intersects.shape[0] / fellows.shape[0]
+    scores.append(score)
+  
+  scores = np.array(scores)
+  return(scores)
+
 
 ### parse arguments ###
 parser=argparse.ArgumentParser()
@@ -70,21 +112,21 @@ parser.add_argument('--run_tsinfer', '--tsinfer', action='store_true', help='run
 parser.add_argument('--run_mtmrca', '--mtmrca', action='store_true', help='compute mean TMRCA')
 parser.add_argument('--run_impute', '--impute', action='store_true', help='compute K_imputed')
 
-# population structure arguments
+# demography and population structure
 parser.add_argument('--demo', type = str, default = 'ooa', help='demography model')
 parser.add_argument('--nrow', type = int, default = '1', help='number of rows of populations')
 parser.add_argument('--ncol', type = int, default = '1', help='number of columns of populations')
 parser.add_argument('--migration_rate', type = float, default = 0.01, help='migration rate')
 parser.add_argument('--time_move', type = float, default = 100, help='move time')
+parser.add_argument('--pop_size', type = int, default = 1000, help='population size (only applies when using constant demo)')
 
-# sample sizes arguments
+# sample sizes
 parser.add_argument('--N', type = int, help='total sample size')
 parser.add_argument('--n', type = int, help='sample size in each population')
 parser.add_argument('--ns', type = int, nargs='*', help='list of sample sizes in each population')
-
 parser.add_argument('--ns_ref', type = int, nargs='*', help='list of sample sizes in each population')
 
-# genetics arguments
+# genetics
 parser.add_argument('--l', type = int, default = 3e7, help='chromosome length')
 parser.add_argument('--mutation_rate', default = 1e-8, type = float, help='mutation rate')
 parser.add_argument('--recomb_rate', default = 1e-8, type = float, help='recombination rate')
@@ -129,23 +171,45 @@ if (ns is not None):
     sys.exit()
   N = sum(ns)
 
-if (N_ref is not None) + (ns_ref is not None) != 1:
-  print("one among N, n and ns should be specified")
-  sys.exit()
+if (ns_ref is not None):
+  if len(ns_ref) != nrow * ncol:
+    print("length of ns_ref should equal nrow * ncol")
+    sys.exit()
 
 if (ns_ref is None):
   ns_ref = [0] * nrow * ncol
 
+N_ref = sum(ns_ref)
 
-### simulate tree sequence ###
-N_B = 2100
-N_EU0 = 1000
-N_AF = 12300
-N_A = 7300
-r_EU = 0.004
-generation_time = 25
-T_EU_AS = 21.2e3 / generation_time
-T_B = 140e3 / generation_time
-T_AF = 220e3 / generation_time
-N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
+del n
+
+### simulate constant ###
+migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
+migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
+migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow + 1) ,1)), axis = 1)
+
+population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
+population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
+
+demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = 1.0) for i in range(ncol * nrow)]
+demo_events.append(msprime.MigrationRateChange(time = time_move, rate=0))
+
+trees = msprime.simulate(population_configurations = population_configurations, migration_matrix = migration_matrix,
+                         length = l, recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
+                         demographic_events = demo_events)
+
+study_ids = []
+reference_ids = []
+start = 0
+for i in range(ncol * nrow):
+  study_ids += list(range(start, start + ns[i]))
+  reference_ids += list(range(start + ns[i], start + ns[i] + ns_ref[i]))
+  start += ns[i] + ns_ref[i]
+
+trees = remove_monomorphic(trees.simplify(study_ids))
+trees_ref = remove_monomorphic(trees.simplify(reference_ids))
+
+
+
+
 
