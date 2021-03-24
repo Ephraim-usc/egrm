@@ -41,6 +41,20 @@ def step_mig_mat(m, nrow, ncol):
   
   return(mmat)
 
+def Fst(trees, ns):
+  ns = np.array(ns)
+  labels = np.repeat(np.arange(ns.shape[0]), ns_total)
+  buffer = []
+  for v in trees.variants():
+    genotypes = v.genotypes
+    p = genotypes.mean()
+    q = p * (1-p)
+    ps = np.array([genotypes[labels == i].mean() for i in range(ns.shape[0])])
+    qs = ps * (1 - ps) * ns / ns.sum()
+    fst = (q - qs.sum()) / q
+    buffer.append(fst)
+  return np.array(buffer).mean()
+
 def remove_monomorphic(trees):
   tables = trees.tables
   tables.sites.clear()
@@ -218,6 +232,9 @@ if demo == "ooa":
 trees = msprime.simulate(population_configurations = population_configurations, migration_matrix = migration_matrix,
                          length = l, recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
                          demographic_events = demo_events)
+
+ns_total = [x+y for x,y in zip(ns, ns_ref)]
+fst = Fst(trees, ns_total)
 
 study_ids = []
 reference_ids = []
@@ -488,7 +505,7 @@ for key in PCA.keys():
 SI = pd.DataFrame(SI)
 
 ### output ###
-results = {"args":args, "obss":obss, "Ks":Ks, "Ks_dip":Ks_dip, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "SI":SI}
+results = {"args":args, "fst":fst, "obss":obss, "Ks":Ks, "Ks_dip":Ks_dip, "corr":corr, "corr_dip":corr_dip, "PCA":PCA, "SI":SI}
 
 for key in PCA.keys():
   pc = PCA[key]
