@@ -184,15 +184,36 @@ N_ref = sum(ns_ref)
 del n
 
 ### simulate constant ###
+N_B = 2100
+N_EU0 = 1000
+N_AF = 12300
+N_A = 7300
+r_EU = 0.004
+generation_time = 25
+T_EU_AS = 21.2e3 / generation_time
+T_B = 140e3 / generation_time
+T_AF = 220e3 / generation_time
+N_EU = N_EU0 / math.exp(-r_EU * T_EU_AS)
+
 migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
 migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow + 1) ,1)), axis = 1)
 
-population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
-population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
+if demo == "ooa":
+  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = N_EU, growth_rate = r_EU) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = N_EU, growth_rate = r_EU))
+else:
+  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
 
 demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = 1.0) for i in range(ncol * nrow)]
 demo_events.append(msprime.MigrationRateChange(time = time_move, rate=0))
+
+if demo == "ooa":
+  demo_events += [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
+                  msprime.PopulationParametersChange(time=T_B, initial_size = N_AF, growth_rate=0),
+                  msprime.PopulationParametersChange(time=T_AF, initial_size = N_A, growth_rate=0)]
+  demo_events.sort(key=lambda x: x.time)
 
 trees = msprime.simulate(population_configurations = population_configurations, migration_matrix = migration_matrix,
                          length = l, recombination_rate = recomb_rate, mutation_rate = mutation_rate, 
