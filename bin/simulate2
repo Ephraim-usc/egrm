@@ -249,6 +249,7 @@ trees_ref = remove_monomorphic(trees.simplify(reference_ids))
 
 variants = trees.variants()
 MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
+MACs = np.array([v.genotypes.sum() for v in trees.variants()])
 loci = np.array([v.position for v in trees.variants()])
 M = loci.shape[0]
 
