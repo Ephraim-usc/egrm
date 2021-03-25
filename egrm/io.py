@@ -30,7 +30,7 @@ class gmap:
     self.gpos = self.table.iloc[:, 2].astype(float) * 1e6
     self.max = self.table.shape[0]
     self.i = 0
-    self.mapped == True
+    self.mapped = True
   
   def __call__(self, pos):
     if self.mapped == False:
