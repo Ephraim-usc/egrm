@@ -22,6 +22,9 @@ def getX(hapdata, idx):
 ### read map file into gmap callable object
 class gmap:
   def __init__(self, filename):
+    if filename is None:
+      self.mapped = False
+      return
     self.table = pd.read_csv(filename, sep = None, engine = 'python')
     self.pos = self.table.iloc[:, 0].astype(int)
     self.gpos = self.table.iloc[:, 2].astype(float) * 1e6
@@ -29,6 +32,8 @@ class gmap:
     self.i = 0
   
   def __call__(self, pos):
+    if self.mapped == False:
+      return pos
     while (self.i > 0 and pos < self.pos[self.i - 1]):
       self.i -= 1
     while (self.i < self.max and pos > self.pos[self.i]):
