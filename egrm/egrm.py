@@ -26,7 +26,7 @@ def epsilon(x):
 
 
 ### main function
-def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), var = True):
+def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), var = True, sft = False):
   if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
@@ -39,7 +39,10 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
                    miniters = trees.num_trees // 100,
                    file = file)
   
-  for tree in trees.trees():
+  trees_ = trees.trees()
+  if sft: next(trees_)
+  
+  for tree in trees_:
     l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
     for c in tree.nodes():
@@ -72,7 +75,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
   return egrm_final, vargrm_final, total_mu
 
 
-def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
+def mTMRCA_C(trees, file = None, map_func = (lambda x:x), sft = False):
   if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
   mtmrca_C = matrix.new_matrix(N)
@@ -83,7 +86,10 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x)):
                    miniters = trees.num_trees // 100,
                    file = file)
   
-  for tree in trees.trees():
+  trees_ = trees.trees()
+  if sft: next(trees_)
+  
+  for tree in trees_:
     l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
     height = 0
