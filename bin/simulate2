@@ -382,6 +382,9 @@ if run_impute:
   gen_imputed = np.transpose(gen_imputed.values)
   X_imputed = gen2X(gen_imputed)
   
+  keep = np.logical_and(X_imputed.mean(axis = 0) > 0, X_imputed.mean(axis = 0) < 1)
+  X_imputed = X_imputed[:, keep]
+  
   Z_imputed = X_imputed
   Z_imputed -= Z_imputed.mean(axis=0); Z_imputed /= Z_imputed.std(axis=0)
   K_imputed = np.dot(Z_imputed, np.transpose(Z_imputed))
