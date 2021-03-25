@@ -9,51 +9,28 @@ from egrm import varGRM, varGRM_C, read_trees, write_grm, gmap
 
 ### parse arguments
 parser=argparse.ArgumentParser()
-parser.add_argument('--input', type = str, help='input file prefix')
-parser.add_argument('--output', type = str, help='output file prefix')
-parser.add_argument('--var', help='compute varGRM instead of eGRM', action='store_true')
-parser.add_argument('--map', type = str, help='map file fullname')
-parser.add_argument('--format', type = str, help='format of output')
-parser.add_argument('--c', help='acceleration by C extension', action='store_true')
-parser.add_argument('--left', type = int, help='leftmost genomic position to be included')
-parser.add_argument('--right', type = int, help='rightmost genomic position to be included')
-parser.add_argument('--A', type = float, help='most ancient time limit')
-parser.add_argument('--B', type = float, help='most recent time limit')
+parser.add_argument('--input', '--i', type = str, help='input file prefix')
+parser.add_argument('--output', '--o', default = None, type = str, help='output file prefix')
+parser.add_argument('--format', '--f', default = "pickle", type = str, help='format of output')
+parser.add_argument('--c_extension', '--c', help='acceleration by C extension', action='store_true')
+
+parser.add_argument('--skip_first_tree', '--sft', help='discard the first tree in the tree sequence', action='store_true')
+parser.add_argument('--run_var', '--var', help='compute varGRM instead of eGRM', action='store_true')
+parser.add_argument('--genetic_map', '--map', type = str, default = None, help='map file fullname')
+
+parser.add_argument('--left', '--l', type = int, default = None, help='leftmost genomic position to be included')
+parser.add_argument('--right', '--r', type = int, default = None, help='rightmost genomic position to be included')
+parser.add_argument('--A', type = float, default = math.inf, help='most ancient time limit')
+parser.add_argument('--B', type = float, default = 0, help='most recent time limit')
 
 args = vars(parser.parse_args())
-args = dict((k,v) for k,v in args.items() if v is not None)
+locals().update(args)
 
-input = args["input"]
-left = args.get("left", None)
-right = args.get("right", None)
-A = args.get("A", None)
-B = args.get("B", None)
-
-if args.get("output", None) == None:
-  output = input + ".e"
-else:
-  output = args["output"]
-
-if args.get("map", None) == None:
-  map = None
-else:
-  map = gmap(args["map"])
-
-if args.get("format", None) == None:
-  format = "GCTA"
-else:
-  format = "pickle"
-
-var_option = args.pop("var")
-c_extension = args.pop("c")
+if output == None:
+  output = input + ".egrm"
 
 ### 
 trees = read_trees(input + ".trees")
-
-if A == None:
-  A = math.inf
-if B == None:
-  B = 0
 
 if left != None and right != None:
   left = max(0, left)
@@ -61,13 +38,12 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = map, var = var_option)
+  egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = gmap(genetic_map), var = run_var, sft = skip_first_tree)
 else:
-  egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = map, var = var_option)
-
+  egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = gmap(genetic_map), var = run_var, sft = skip_first_tree)
 
 write_grm(egrm, egrm_tl, output, format)
-if var_option == True:
+if run_var == True:
   write_grm(vargrm, egrm_tl, output + "_var", format)
 
 
