@@ -104,7 +104,7 @@ def separation_index(true_labels, x, dmat = None):
   omat = dmat.argsort(axis=1)
   
   scores = []
-  for i in np.arange(int(N/2)):
+  for i in np.arange(true_labels.shape[0]):
     fellows = np.where(true_labels == true_labels[i])[0]
     neighbors = omat[i, :fellows.shape[0]]
     intersects = np.intersect1d(neighbors, fellows)
@@ -504,7 +504,7 @@ for key in Ks_dip.keys():
   pc = np.dot(v[:, :10], np.diag(np.power(w[:10], 0.5)))
   PCA[key] = pc
 
-true_labels = np.repeat(np.arange(len(ns)), ns)
+true_labels = np.repeat(np.arange(len(ns)), (np.array(ns)/2).astype(int))
 SI = {}
 for key in PCA.keys():
   SI[key] = np.array([separation_index(true_labels, PCA[key][:, :i]).mean() for i in range(1, 11)])
