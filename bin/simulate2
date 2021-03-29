@@ -45,7 +45,7 @@ def step_mig_mat(m, nrow, ncol):
 
 def Fst(trees, ns):
   ns = np.array(ns)
-  labels = np.repeat(np.arange(ns.shape[0]), ns_total)
+  labels = np.repeat(np.arange(ns.shape[0]), ns)
   buffer = []
   for v in trees.variants():
     genotypes = v.genotypes
