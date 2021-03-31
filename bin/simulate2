@@ -202,6 +202,8 @@ N_ref = sum(ns_ref)
 del n
 
 ### simulate genotypes ###
+print("simulating genotypes")
+
 N_B = 2100
 N_EU0 = 1000
 N_AF = 12300
@@ -299,6 +301,8 @@ y = G + e
 
 
 ### compute Ks ###
+print("computing Ks")
+
 K_all = getK(trees, np.arange(M))
 K_common = getK(trees, commons)
 K_rare = getK(trees, rares)
@@ -306,9 +310,11 @@ K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
 
 if run_egrm:
+  print("computing EK")
   EK, _, EK_mu = varGRM_C(trees, var = False)
 
 if run_mtmrca:
+  print("computing mTMRCA and gmTMRCA")
   mtmrca, _ = mTMRCA_C(trees)
   gmtmrca, _ = gmTMRCA(trees)
 
@@ -339,6 +345,7 @@ def gen2X(gen):
   return buffer
 
 if run_impute:
+  print("computing K_imputed")
   os.mkdir("impute")
   os.chdir("impute")
   
@@ -400,6 +407,7 @@ if run_impute:
 
 ### running relate ###
 if run_relate:
+  print("computing EK_relate")
   os.mkdir("relate")
   os.chdir("relate")
   
@@ -441,8 +449,10 @@ if run_relate:
 
 ### running tsinfer
 if run_tsinfer:
+  print("computing EK_tsinfer")
   os.mkdir("tsinfer")
   os.chdir("tsinfer")
+  
   X_obs = getX(trees, obss)
   loci_obs = np.ceil(loci[obss]).astype(int)
   with tsinfer.SampleData(path = name + ".samples", sequence_length = l) as sample_data:
@@ -501,6 +511,8 @@ corr_dip = table_dip.corr(method ='pearson')
 
 
 ### PCA and SI ###
+print("computing PCA and SI")
+
 PCA = {}
 for key in Ks_dip.keys():
   K = Ks_dip[key]
