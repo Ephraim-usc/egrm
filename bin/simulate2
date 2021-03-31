@@ -123,6 +123,7 @@ parser.add_argument('--name', default = 'tmp', type = str, help='output file nam
 
 # workflow control
 parser.add_argument('--run_all', '--all', action='store_true', help='run all steps')
+parser.add_argument('--run_egrm', '--egrm', action='store_true', help='run egrm on the true tree sequence')
 parser.add_argument('--run_relate', '--relate', action='store_true', help='run relate tree reconstruction')
 parser.add_argument('--run_tsinfer', '--tsinfer', action='store_true', help='run tsinfer tree reconstruction')
 parser.add_argument('--run_mtmrca', '--mtmrca', action='store_true', help='compute mean TMRCA')
@@ -160,6 +161,7 @@ os.system("rm -r -f " + name + " && mkdir " + name)
 os.chdir(name)
 
 if run_all:
+  run_egrm = True
   run_relate = True
   run_tsinfer = True
   run_mtmrca = True
@@ -302,7 +304,9 @@ K_common = getK(trees, commons)
 K_rare = getK(trees, rares)
 K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
-EK, _, EK_mu = varGRM_C(trees, var = False)
+
+if run_egrm:
+  EK, _, EK_mu = varGRM_C(trees, var = False)
 
 if run_mtmrca:
   mtmrca, _ = mTMRCA_C(trees)
