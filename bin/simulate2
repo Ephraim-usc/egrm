@@ -458,7 +458,9 @@ if run_tsinfer:
 
 
 ### collect Ks and compute correlation ###
-Ks = {"K_all":K_all, "K_common":K_common, "K_rare":K_rare, "K_obs":K_obs, "K_cas":K_cas, "EK":EK}
+Ks = {"K_all":K_all, "K_common":K_common, "K_rare":K_rare, "K_obs":K_obs, "K_cas":K_cas}
+if run_egrm:
+  Ks['EK'] = EK
 if run_relate:
   Ks["EK_relate"] = EK_relate
 if run_tsinfer:
