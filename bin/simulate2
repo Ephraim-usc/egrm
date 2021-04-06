@@ -257,6 +257,8 @@ trees = msprime.simulate(population_configurations = population_configurations, 
 
 
 ### compute Fst and then split study and reference
+print("computing FST")
+
 study_ids = []
 reference_ids = []
 start = 0
