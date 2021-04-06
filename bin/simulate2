@@ -273,7 +273,7 @@ for i in np.arange(100):
   reference_ids_ = np.random.choice(reference_ids, 20, replace=False)
   fst_ = Fst2(trees, study_ids_, reference_ids_)
   fst_subsample.append(fst_)
-fst = {"fst_direct":fst_direct, "fst_subsample":fst_subsample}
+fst = {"fst_direct":fst_direct, "fst_subsample":np.array(fst_subsample)}
 
 trees = remove_monomorphic(trees.simplify(study_ids))
 trees_ref = remove_monomorphic(trees.simplify(reference_ids))
