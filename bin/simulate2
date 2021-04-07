@@ -278,8 +278,8 @@ for i in np.arange(100):
   fst_subsample.append(fst_)
 fst = {"fst_direct":fst_direct, "fst_subsample":np.array(fst_subsample)}
 
-trees = remove_monomorphic(trees.simplify(study_ids))
 trees_ref = remove_monomorphic(trees.simplify(reference_ids))
+trees = remove_monomorphic(trees.simplify(study_ids))
 
 variants = trees.variants()
 MAFs = np.array([v.genotypes.mean() for v in trees.variants()])
