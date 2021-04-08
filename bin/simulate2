@@ -344,7 +344,7 @@ if run_egrm:
 if run_mtmrca:
   print("computing mTMRCA and gmTMRCA")
   mtmrca, _ = mTMRCA_C(trees)
-  gmtmrca, _ = gmTMRCA(trees)
+  #gmtmrca, _ = gmTMRCA(trees)
 
 
 ### running impute ###
@@ -505,7 +505,7 @@ if run_tsinfer:
   Ks["EK_tsinfer"] = EK_tsinfer
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
-  Ks["gmtmrca"] = gmtmrca
+  #Ks["gmtmrca"] = gmtmrca
 
 # haploid
 diags = np.diag_indices(int(N))
