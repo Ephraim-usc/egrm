@@ -211,7 +211,7 @@ if (ns_ref is not None):
     sys.exit()
 
 if (ns_ref is None):
-  ns_ref = [0] * nrow * ncol
+  ns_ref = [20] * nrow * ncol
 
 N_ref = sum(ns_ref)
 
