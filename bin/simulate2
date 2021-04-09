@@ -211,7 +211,7 @@ if (ns_ref is not None):
     sys.exit()
 
 if (ns_ref is None):
-  ns_ref = [20] * nrow * ncol
+  ns_ref = [0] * nrow * ncol
 
 N_ref = sum(ns_ref)
 
@@ -269,14 +269,17 @@ for i in range(ncol * nrow):
 study_ids = np.array(study_ids).astype(int)
 reference_ids = np.array(reference_ids).astype(int)
 
-fst_direct = Fst2(trees, study_ids, reference_ids)
-fst_subsample = []
-for i in np.arange(100):
-  study_ids_ = np.random.choice(study_ids, 20, replace=False)
-  reference_ids_ = np.random.choice(reference_ids, 20, replace=False)
-  fst_ = Fst2(trees, study_ids_, reference_ids_)
-  fst_subsample.append(fst_)
-fst = {"fst_direct":fst_direct, "fst_subsample":np.array(fst_subsample)}
+if study_ids.shape[0] >= 20 and reference_ids.shape[0] >= 20:
+  fst_direct = Fst2(trees, study_ids, reference_ids)
+  fst_subsample = []
+  for i in np.arange(100):
+    study_ids_ = np.random.choice(study_ids, 20, replace=False)
+    reference_ids_ = np.random.choice(reference_ids, 20, replace=False)
+    fst_ = Fst2(trees, study_ids_, reference_ids_)
+    fst_subsample.append(fst_)
+  fst = {"fst_direct":fst_direct, "fst_subsample":np.array(fst_subsample)}
+else:
+  fst = {}
 
 trees_ref = remove_monomorphic(trees.simplify(reference_ids))
 trees = remove_monomorphic(trees.simplify(study_ids))
