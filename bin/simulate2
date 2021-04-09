@@ -64,7 +64,7 @@ def Fst2(trees, study_ids, reference_ids):
   buffer = []
   for v in trees.variants():
     genotypes = v.genotypes
-    p = genotypes[np.union1d(study_ids, reference_ids).astype(int)].mean(); q = p * (1-p)
+    p = genotypes[np.union1d(study_ids, reference_ids)].mean(); q = p * (1-p)
     if p == 0 or p == 1: continue
     p1 = genotypes[study_ids].mean(); q1 = p1 * (1-p1)
     p2 = genotypes[reference_ids].mean(); q2 = p2 * (1-p2)
@@ -266,8 +266,8 @@ for i in range(ncol * nrow):
   study_ids += list(range(start, start + ns[i]))
   reference_ids += list(range(start + ns[i], start + ns[i] + ns_ref[i]))
   start += ns[i] + ns_ref[i]
-study_ids = np.array(study_ids)
-reference_ids = np.array(reference_ids)
+study_ids = np.array(study_ids).astype(int)
+reference_ids = np.array(reference_ids).astype(int)
 
 fst_direct = Fst2(trees, study_ids, reference_ids)
 fst_subsample = []
