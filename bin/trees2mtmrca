@@ -44,7 +44,6 @@ parser.add_argument('--output', '--o', default = None, type = str, help='output 
 parser.add_argument('--c_extension', '--c', help='acceleration by C extension', action='store_true')
 
 parser.add_argument('--skip_first_tree', '--sft', help='discard the first tree in the tree sequence', action='store_true')
-parser.add_argument('--run_var', '--var', help='compute varGRM instead of eGRM', action='store_true')
 parser.add_argument('--genetic_map', '--map', type = str, default = None, help='map file fullname')
 
 parser.add_argument('--left', '--l', type = int, default = 0, help='leftmost genomic position to be included')
