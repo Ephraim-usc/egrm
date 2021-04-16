@@ -190,3 +190,33 @@ def hmTMRCA(trees, file = None):
   buffer = np.power(buffer, -1); np.fill_diagonal(buffer, 0)
   pbar.close()
   return buffer, total_l
+
+
+### read map file into gmap callable object
+class read_gmap:
+  def __init__(self, filename):
+    if filename is None:
+      self.mapped = False
+      return
+    self.table = pd.read_csv(filename, sep = None, engine = 'python')
+    self.pos = self.table.iloc[:, 0].astype(int)
+    self.gpos = self.table.iloc[:, 2].astype(float) * 1e6
+    self.max = self.table.shape[0]
+    self.i = 0
+    self.mapped = True
+  
+  def __call__(self, pos):
+    if self.mapped == False:
+      return pos
+    while (self.i > 0 and pos < self.pos[self.i - 1]):
+      self.i -= 1
+    while (self.i < self.max and pos > self.pos[self.i]):
+      self.i += 1
+    if self.i == 0:
+      return 0
+    if self.i >= self.max:
+      return self.gpos[self.max - 1]
+    A = pos - self.pos[self.i-1]
+    B = (self.gpos[self.i] - self.gpos[self.i-1])/(self.pos[self.i] - self.pos[self.i-1])
+    C = self.gpos[self.i-1]
+    return A*B + C
