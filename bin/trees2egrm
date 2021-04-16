@@ -5,7 +5,7 @@ import argparse
 import math
 
 ### importing egrm
-from egrm import varGRM, varGRM_C, read_trees, write_grm, gmap
+from egrm import varGRM, varGRM_C, read_gmap
 
 ### parse arguments
 parser=argparse.ArgumentParser()
@@ -31,6 +31,7 @@ if output == None:
 
 ### 
 trees = read_trees(input + ".trees")
+gmap = read_gmap(genetic_map)
 
 if left != None and right != None:
   left = max(0, left)
@@ -38,9 +39,9 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = gmap(genetic_map), var = run_var, sft = skip_first_tree)
+  egrm, vargrm, egrm_tl = varGRM_C(trees, file = None, A = A, B = B, map_func = gmap, var = run_var, sft = skip_first_tree)
 else:
-  egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = gmap(genetic_map), var = run_var, sft = skip_first_tree)
+  egrm, vargrm, egrm_tl = varGRM(trees, file = None, A = A, B = B, map_func = gmap, var = run_var, sft = skip_first_tree)
 
 write_grm(egrm, egrm_tl, output, format)
 if run_var == True:
