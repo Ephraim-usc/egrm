@@ -25,7 +25,7 @@ def center(x):
   return x + mean - colmean - rowmean
 
 
-### main function
+### main functions
 def varGRM_C(trees, log = None, 
              rlim = 0, alim = math.inf, 
              left = 0, right = math.inf, 
@@ -182,7 +182,7 @@ def varGRM(trees, log = None,
   return egrm_final, vargrm_final, total_mu
 
 
-def mTMRCA_C(trees, log = None, 
+def mTMRCA(trees, log = None, 
              left = 0, right = math.inf, 
              map_func = (lambda x:x), sft = False):
   if map_func == None or map_func.mapped == False:
