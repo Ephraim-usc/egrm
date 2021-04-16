@@ -61,9 +61,9 @@ trees = read_trees(input + ".trees")
 gmap = read_gmap(genetic_map)
 
 if c_extension == True:
-  mtmrca, mtmrca_mu = mTMRCA_C(trees, log = None, left = left, right = right, map_func = gmap, sft = skip_first_tree)
+  mtmrca, mtmrca_l = mTMRCA_C(trees, log = None, left = left, right = right, map_func = gmap, sft = skip_first_tree)
 else:
-  mtmrca, mtmrca_mu = mTMRCA(trees, log = None, left = left, right = right, map_func = gmap, sft = skip_first_tree)
+  mtmrca, mtmrca_l = mTMRCA(trees, log = None, left = left, right = right, map_func = gmap, sft = skip_first_tree)
 
 np.save(output + ".npy", egrm)
 np.save(output + "_l.npy", egrm_mu)
