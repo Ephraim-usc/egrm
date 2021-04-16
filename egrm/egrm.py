@@ -16,8 +16,8 @@ def mat_C_to_array(mat_C, N):
   return buffer
 
 
-### epsilon function
-def epsilon(x):
+### centering function
+def center(x):
   N = x.shape[0]
   mean = x.mean()
   colmean = np.tile(x.mean(axis = 0), (N, 1))
@@ -28,10 +28,13 @@ def epsilon(x):
 ### main function
 def varGRM_C(trees, log = None, 
              rlim = 0, alim = math.inf, 
-             left = None, right = None, 
+             left = 0, right = math.inf, 
              map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), 
              var = True, sft = False):
-  if map_func == None: map_func = (lambda x:x)
+  if map_func == None:
+    map_func = (lambda x:x)
+  
+  
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
   egrm2_C = matrix.new_matrix(N)
@@ -47,8 +50,10 @@ def varGRM_C(trees, log = None,
   if sft: next(trees_)
   
   for tree in trees_:
-    l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
+    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    if l == 0: continue
+    
     for c in tree.nodes():
       descendants = list(tree.samples(c))
       n = len(descendants)
@@ -73,7 +78,7 @@ def varGRM_C(trees, log = None,
   tmp2 /= total_mu
   
   e = np.reciprocal(np.random.poisson(lam=total_mu, size=10000).astype("float")).mean()
-  egrm_final = epsilon(egrm)
+  egrm_final = center(egrm)
   vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
   
   pbar.close()
