@@ -8,16 +8,6 @@ import struct
 import tsinfer
 import pickle
 
-def getX(hapdata, idx):
-  N = hapdata["trees"].num_samples
-  X = np.zeros((N, len(idx))).astype("int")
-  variants = hapdata["trees"].variants()
-  index = 0; num = 0
-  for v in variants:
-    if index in idx:
-      X[:, num] = v.genotypes; num += 1
-    index += 1
-  return X
 
 ### read map file into gmap callable object
 class gmap:
@@ -49,18 +39,6 @@ class gmap:
     return A*B + C
 
 
-### simulation
-def write_simulation(simulation, file):
-  trees = simulation["hapdata"].pop("trees")
-  pickle.dump(simulation, open("{}.p".format(file), "wb"))
-  trees.dump("{}.trees".format(file))
-  simulation["hapdata"]["trees"] = trees
-
-def read_simulation(file):
-  simulation = pickle.load(open("{}.p".format(file), "rb"))
-  trees = tskit.load("{}.trees".format(file))
-  simulation["hapdata"]["trees"] = trees
-  return simulation
 
 ### PLINK and GCTA
 def write_plink(simulation, obss, file, samples = None): 
