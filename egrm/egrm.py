@@ -161,9 +161,9 @@ def varGRM(trees, log = None,
       t = max(0, min(alim, tree.time(tree.parent(c))) - max(rlim, tree.time(c)))
       mu = l * t * 1e-8
       p = float(n/N)
-      egrm[np._ix(descendants, descendants)] += mu * g(p)
+      egrm[np.ix_(descendants, descendants)] += mu * g(p)
       if var:
-        egrm2[np._ix(descendants, descendants)] += mu * np.power(g(p), 2) * np.power((1 - 2*p), 2)
+        egrm2[np.ix_(descendants, descendants)] += mu * np.power(g(p), 2) * np.power((1 - 2*p), 2)
         tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
         tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
@@ -212,7 +212,7 @@ def mTMRCA(trees, log = None,
       if(n == 0 or n == N): continue
       t = tree.time(tree.parent(c)) - tree.time(c)
       height = max(height, tree.time(tree.parent(c)))
-      mtmrca[np._ix(descendants, descendants)] += t * l
+      mtmrca[np.ix_(descendants, descendants)] += t * l
     tmp += height * l
     total_l += l
     pbar.update(1)
