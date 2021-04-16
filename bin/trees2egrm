@@ -62,11 +62,6 @@ if output == None:
 trees = read_trees(input + ".trees")
 gmap = read_gmap(genetic_map)
 
-if left != None and right != None:
-  left = max(0, left)
-  right = min(trees.sequence_length, right)
-  trees = trees.keep_intervals([[left, right]], simplify=False)
-
 if c_extension == True:
   egrm, vargrm, egrm_mu = varGRM_C(trees, log = None, rlim = rlim, alim = alim, left = left, right = right, map_func = gmap, var = run_var, sft = skip_first_tree)
 else:
