@@ -14,7 +14,7 @@ import msprime
 import tskit
 
 from scipy.spatial import distance_matrix
-from egrm import varGRM_C, mTMRCA_C, gmTMRCA
+from egrm import varGRM_C, mTMRCA_C
 
 
 ### ad-hoc functions ###
@@ -345,9 +345,8 @@ if run_egrm:
   EK, _, EK_mu = varGRM_C(trees, var = False)
 
 if run_mtmrca:
-  print("computing mTMRCA and gmTMRCA")
+  print("computing mTMRCA")
   mtmrca, _ = mTMRCA_C(trees)
-  #gmtmrca, _ = gmTMRCA(trees)
 
 
 ### running impute ###
@@ -508,7 +507,6 @@ if run_tsinfer:
   Ks["EK_tsinfer"] = EK_tsinfer
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
-  #Ks["gmtmrca"] = gmtmrca
 
 # haploid
 diags = np.diag_indices(int(N))
