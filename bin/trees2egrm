@@ -47,8 +47,8 @@ parser.add_argument('--skip_first_tree', '--sft', help='discard the first tree i
 parser.add_argument('--run_var', '--var', help='compute varGRM instead of eGRM', action='store_true')
 parser.add_argument('--genetic_map', '--map', type = str, default = None, help='map file fullname')
 
-parser.add_argument('--left', '--l', type = int, default = None, help='leftmost genomic position to be included')
-parser.add_argument('--right', '--r', type = int, default = None, help='rightmost genomic position to be included')
+parser.add_argument('--left', '--l', type = int, default = 0, help='leftmost genomic position to be included')
+parser.add_argument('--right', '--r', type = int, default = math.inf, help='rightmost genomic position to be included')
 parser.add_argument('--rlim', type = float, default = 0, help='most recent time limit')
 parser.add_argument('--alim', type = float, default = math.inf, help='most ancient time limit')
 
