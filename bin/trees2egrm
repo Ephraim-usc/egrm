@@ -68,11 +68,11 @@ if left != None and right != None:
   trees = trees.keep_intervals([[left, right]], simplify=False)
 
 if c_extension == True:
-  egrm, vargrm, egrm_tl = varGRM_C(trees, log = None, rlim = rlim, alim = alim, map_func = gmap, var = run_var, sft = skip_first_tree)
+  egrm, vargrm, egrm_mu = varGRM_C(trees, log = None, rlim = rlim, alim = alim, map_func = gmap, var = run_var, sft = skip_first_tree)
 else:
-  egrm, vargrm, egrm_tl = varGRM(trees, log = None, rlim = rlim, alim = alim, map_func = gmap, var = run_var, sft = skip_first_tree)
+  egrm, vargrm, egrm_mu = varGRM(trees, log = None, rlim = rlim, alim = alim, map_func = gmap, var = run_var, sft = skip_first_tree)
 
 np.save(output + ".npy", egrm)
-np.save(output + "_tl.npy", egrm_tl)
+np.save(output + "_mu.npy", egrm_mu)
 if run_var == True:
   np.save(output + "_var.npy", vargrm)
