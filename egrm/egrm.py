@@ -26,7 +26,11 @@ def epsilon(x):
 
 
 ### main function
-def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), var = True, sft = False):
+def varGRM_C(trees, log = None, 
+             rlim = 0, alim = math.inf, 
+             left = None, right = None, 
+             map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), 
+             var = True, sft = False):
   if map_func == None: map_func = (lambda x:x)
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
@@ -37,7 +41,7 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
                    miniters = trees.num_trees // 100,
-                   file = file)
+                   file = log)
   
   trees_ = trees.trees()
   if sft: next(trees_)
@@ -49,13 +53,14 @@ def varGRM_C(trees, file = None, A = math.inf, B = 0, map_func = (lambda x:x), g
       descendants = list(tree.samples(c))
       n = len(descendants)
       if(n == 0 or n == N): continue
-      t = max(0, min(A, tree.time(tree.parent(c))) - max(B, tree.time(c)))
+      t = max(0, min(alim, tree.time(tree.parent(c))) - max(rlim, tree.time(c)))
       mu = l * t * 1e-8
       p = float(n/N)
       matrix.add_square(egrm_C, descendants, mu * g(p))
-      if var: matrix.add_square(egrm2_C, descendants, mu * np.power(g(p), 2) * np.power((1 - 2*p), 2))
-      if var: tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
-      if var: tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
+      if var:
+        matrix.add_square(egrm2_C, descendants, mu * np.power(g(p), 2) * np.power((1 - 2*p), 2))
+        tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
+        tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
     pbar.update(1)
   
