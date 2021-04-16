@@ -31,9 +31,8 @@ def varGRM_C(trees, log = None,
              left = 0, right = math.inf, 
              map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), 
              var = True, sft = False):
-  if map_func == None:
+  if map_func == None or map_func.mapped == False:
     map_func = (lambda x:x)
-  
   
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
@@ -85,8 +84,12 @@ def varGRM_C(trees, log = None,
   return egrm_final, vargrm_final, total_mu
 
 
-def mTMRCA_C(trees, file = None, map_func = (lambda x:x), sft = False):
-  if map_func == None: map_func = (lambda x:x)
+def mTMRCA_C(trees, log = None, 
+             left = 0, right = math.inf, 
+             map_func = (lambda x:x), sft = False):
+  if map_func == None or map_func.mapped == False:
+    map_func = (lambda x:x)
+  
   N = trees.num_samples
   mtmrca_C = matrix.new_matrix(N)
   tmp = 0
@@ -94,14 +97,16 @@ def mTMRCA_C(trees, file = None, map_func = (lambda x:x), sft = False):
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
                    miniters = trees.num_trees // 100,
-                   file = file)
+                   file = log)
   
   trees_ = trees.trees()
   if sft: next(trees_)
   
   for tree in trees_:
-    l = - map_func(tree.interval[0]) + map_func(tree.interval[1])
     if tree.total_branch_length == 0: continue
+    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    if l == 0: continue
+    
     height = 0
     for c in tree.nodes():
       descendants = list(tree.samples(c))
