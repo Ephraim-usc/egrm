@@ -49,6 +49,7 @@ def varGRM_C(trees, log = None,
   if sft: next(trees_)
   
   for tree in trees_:
+    pbar.update(1)
     if tree.total_branch_length == 0: continue
     l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
     if l <= 0: continue
@@ -66,7 +67,6 @@ def varGRM_C(trees, log = None,
         tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
         tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
-    pbar.update(1)
   
   egrm = mat_C_to_array(egrm_C, N)
   egrm2 = mat_C_to_array(egrm2_C, N)
@@ -103,6 +103,7 @@ def mTMRCA_C(trees, log = None,
   if sft: next(trees_)
   
   for tree in trees_:
+    pbar.update(1)
     if tree.total_branch_length == 0: continue
     l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
     if l <= 0: continue
@@ -117,7 +118,6 @@ def mTMRCA_C(trees, log = None,
       matrix.add_square(mtmrca_C, descendants, t * l)
     tmp += height * l
     total_l += l
-    pbar.update(1)
   
   mtmrca = mat_C_to_array(mtmrca_C, N)
   mtmrca = tmp - mtmrca
@@ -150,6 +150,7 @@ def varGRM(trees, log = None,
   if sft: next(trees_)
   
   for tree in trees_:
+    pbar.update(1)
     if tree.total_branch_length == 0: continue
     l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
     if l <= 0: continue
@@ -167,7 +168,6 @@ def varGRM(trees, log = None,
         tmp1[descendants] += mu * np.power(g(p), 2) * (np.power(p, 2) - 2 * np.power(p, 3))
         tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
-    pbar.update(1)
   
   egrm /= total_mu
   egrm2 /= total_mu
@@ -201,6 +201,7 @@ def mTMRCA(trees, log = None,
   if sft: next(trees_)
   
   for tree in trees_:
+    pbar.update(1)
     if tree.total_branch_length == 0: continue
     l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
     if l <= 0: continue
@@ -215,7 +216,6 @@ def mTMRCA(trees, log = None,
       mtmrca[np.ix_(descendants, descendants)] += t * l
     tmp += height * l
     total_l += l
-    pbar.update(1)
   
   mtmrca = tmp - mtmrca
   mtmrca /= total_l
