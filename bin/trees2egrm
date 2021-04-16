@@ -4,6 +4,7 @@
 import argparse
 import math
 import numpy as np
+import tskit
 
 ### importing egrm
 from egrm import varGRM, varGRM_C
@@ -59,7 +60,7 @@ if output == None:
   output = input + ".egrm"
 
 ### 
-trees = read_trees(input + ".trees")
+trees = tskit.load(input + ".trees")
 gmap = read_gmap(genetic_map)
 
 if c_extension == True:
