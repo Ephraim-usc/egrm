@@ -14,7 +14,7 @@ Install from PyPI (not available yet):
 
 Or download the package and install from local:
 
-    git clone https://github.com/Ephraim-usc/egrm.git
+    git clone https://github.com/Ephraim-usc/egrm.git \
     pip install ./egrm
 
 
