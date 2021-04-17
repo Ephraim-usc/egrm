@@ -58,8 +58,11 @@ This option is only for trees2egrm, not trees2mtmrca.
 RLIM and ALIM are the most recent and most ancient times (in generations) between which the eGRM is computed.
 
 The output of trees2egrm will be two (or three, if with --var option) files in numpy NPY format: 
+
 -   OUTPUT.npy, which contains the eGRM matrix;
+
 -   OUTPUT_mu.npy, which contains a single number of the measure of the tree sequence (i.e., the expected number of mutations on this tree sequence);
+
 -   OUTPUT_var.npy, which contains the varGRM matrix, if the --var option is selected.
 
 The output of trees2mtrmca will be two files in numpy NPY format: 
