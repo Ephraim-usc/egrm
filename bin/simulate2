@@ -132,7 +132,8 @@ def separation_index(true_labels, x, dmat = None):
 
 
 ### parse arguments ###
-parser=argparse.ArgumentParser()
+parser=argparse.ArgumentParser(description="""some help texts.""",
+                               epilog="""some help texts.""")
 
 # name of simulation
 parser.add_argument('--name', default = 'tmp', type = str, help='output file name')
