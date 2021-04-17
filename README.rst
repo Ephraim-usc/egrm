@@ -29,13 +29,17 @@ There are two command line tools:
     trees2mtmrca [--input INPUT] [--output OUTPUT]
 
 Where INPUT is the tree sequence file prefix (so that the full name should be "INPUT.trees").
+
 And OUTPUT is the output file prefix.
+
 Optional parameters:
 
     [--c_extension] or [--c]
 
 This specifies whether to use the C exntension model to accelerate the algorithm.
+
 Usually this makes it ~10 times faster.
+
 Recommended whenever the C environment is available.
 
 
