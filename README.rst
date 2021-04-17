@@ -72,7 +72,6 @@ The output of trees2mtrmca will be two files in numpy NPY format:
 -   OUTPUT_l.npy, which contains a single number of the number of base pairs of the tree sequence;
 
 
-
 Python Functions
 -----------------
 
@@ -89,6 +88,21 @@ See the source code for a complete explanation of its parameters.
 
 The C and non-C versions of the mTMRCA algorithm. The input is a tskit TreeSequence object.
 See the source code for a complete explanation of its parameters.
+
+
+Reproducing Results in the paper
+-----------------
+
+There is an additional commandline tool
+
+    simulate 
+
+which is included in the package, but not installed by default. You may manually run this script.
+
+A complete explanation of its parameters and output files can be found at
+
+    simulate -h
+
 
 Support
 -------
