@@ -28,20 +28,34 @@ There are two command line tools:
     
     trees2mtmrca [--input INPUT] [--output OUTPUT]
 
-Where INPUT is the tree sequence file prefix (so that the full name should be "INPUT.trees").
-
-And OUTPUT is the output file prefix.
+Where INPUT is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and OUTPUT is the output file prefix.
 
 Optional parameters:
 
     [--c_extension] or [--c]
 
 This specifies whether to use the C exntension model to accelerate the algorithm.
-
 Usually this makes it ~10 times faster.
-
 Recommended whenever the C environment is available.
 
+    [--skip_first_tree] or [--sft]
+
+This option skips the first tree in the tree sequence.
+This is often useful because RELATE and some other tools always output tree sequences from 0bp, even when the genotype data starts from within the chromosome.
+
+    [--run_var] or [--var]
+
+This option is only for trees2egrm, not trees2mtmrca.
+With this option turned on, the algorithm will output the varGRM in addition to eGRM, while roughly doubling the compuation time.
+
+    [--left LEFT] [--right RIGHT]
+
+The leftmost and rightmost positions (in bp) between which the eGRM or mTMRCA is computed.
+
+    [--rlim RLIM] [--alim ALIM]
+
+This option is only for trees2egrm, not trees2mtmrca.
+RLIM and ALIM are the most recent and most ancient times (in generations) between which the eGRM is computed.
 
 
 Python Functions
