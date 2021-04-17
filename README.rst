@@ -76,22 +76,19 @@ The output of trees2mtrmca will be two files in numpy NPY format:
 Python Functions
 -----------------
 
-    simulate( ... )
+    varGRM_C(trees)
+    
+    varGRM(trees)
 
-This will run the whole simulation process (of haplotypic data, of phenotypes and of observed SNPs) and 
-store all output data in a nested dictionary structure.
-It has many optional parameters to setup the simulation conditions.
+The C and non-C versions of the eGRM algorithm. The input is a tskit TreeSequence object.
+See the source code for a complete explanation of its parameters.
 
-    getEK(tree)
+    mTMRCA_C(trees)
+    
+    mTMRCA(trees)
 
-This will compute the expected GRM based on the tskit.Tree object.
-The output is a numpy matrix.
-
-    getEK_trees(trees)
-
-This will compute the expected GRM based on the tskit.TreeSequence object.
-It is just the weighted mean (by genomic interval length) of all outputs of getEK on each tree.
-The output is a numpy matrix.
+The C and non-C versions of the mTMRCA algorithm. The input is a tskit TreeSequence object.
+See the source code for a complete explanation of its parameters.
 
 Support
 -------
