@@ -24,23 +24,19 @@ Command Line Tools
 
 There are two command line tools:
 
-    trees2egrm [--input INPUT]
+    trees2egrm [--input INPUT] [--output OUTPUT]
+    
+    trees2mtmrca [--input INPUT] [--output OUTPUT]
 
-Where INPUT is the tree sequence filename which must end with '.trees'.
-It outputs the CRM matrix in a file with the same name but '.egrm' suffix.
+Where INPUT is the tree sequence file prefix (so that the full name should be "INPUT.trees").
+And OUTPUT is the output file prefix.
+Optional parameters:
 
-    workflow [--out OUT] [--name NAME] [--gcta] [--relate]
+    [--c_extension] or [--c]
 
-Where OUT is the output directory, and NAME is the prefix of all output files associated with this simulation.
-Results are written into OUT/NAME, Running log info is written into OUT/NAME.log.
-This workflow simulates the haplotypic and phenotypic data, and runs phenotype imputation based on several relationship matrices.
-Include --gcta to run the GCTA analysis.
-Include --relate to run relate tree reconstruction (which is required by Km_relate).
-Use 
-
-    workflow -h
-
-to see more parameters for the simulation.
+This specifies whether to use the C exntension model to accelerate the algorithm.
+Usually this makes it ~10 times faster.
+Recommended whenever the C environment is available.
 
 
 
