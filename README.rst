@@ -8,12 +8,13 @@ given the complete genealogical tree of a sample of individuals, derived under t
 Installation
 ------------
 
-Install from PyPI:
+Install from PyPI (not available yet):
 
     pip install egrm
 
 Or download the package and install from local:
 
+    git clone https://github.com/Ephraim-usc/egrm.git
     pip install ./egrm
 
 
