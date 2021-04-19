@@ -68,16 +68,24 @@ Number or rows in the grid of demes.
 
 Number or columns in the grid of demes.
 
-    --migration_rate
+    --migration_rate MIGRATION_RATE
 
 Migration rate between neighboring demes.
 
-    --pop_size
+    --pop_size POP_SIZE
 
 Population size of each deme. Only takes effect when "--demo constant"
 
+    --N, --n, --ns
 
+These three pameters specify the number of sample haplotypes in each deme. Only one of these three should be provided. 
+--N specifices the total number of study haplotypes.
+--n specifices the (same) number of study haplotypes in each deme.
+--ns specifices a list containing numbers of study haplotypes in each deme. List should be the same length as [nrow]*[ncol].
 
+    --ns_ref
+
+Specifies a list containing numbers of reference haplotypes in each deme.
 
 
 
