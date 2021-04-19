@@ -9,7 +9,10 @@ import numpy as np
 import matrix
 
 
-def mat_C_to_array(mat_C, N):
+# exports a matrix stored as a 1d C array [mat_C] into a 2d numpy array
+# mat_C: a matrix in C format initiated by matrix.new_matrix, only stores the upper triangle elements of a square matrix
+# N: the number of columns/rows
+def mat_C_to_array(mat_C, N): 
   buffer = matrix.export_matrix(mat_C)
   buffer = np.reshape(np.array(buffer), (N, N))
   buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
@@ -17,7 +20,7 @@ def mat_C_to_array(mat_C, N):
 
 
 ### centering function
-def center(x):
+def center(x): # centerize each column and each row of the matrix x
   N = x.shape[0]
   mean = x.mean()
   colmean = np.tile(x.mean(axis = 0), (N, 1))
@@ -26,6 +29,16 @@ def center(x):
 
 
 ### main functions
+
+# computes the eGRM (and varGRM if var == True) based on the tskit TreeSequence trees.
+# trees: tskit TreeSequence object.
+# log: tqdm log file path
+# rlim, alim: most recent and most ancient time limits (in unit of generation) between which the eGRM (varGRM) is computed.
+# left, right: leftmost and rightmost positions (in unit of base pair) between which the eGRM (varGRM) is computed.
+# map_func: a function that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
+# g: a scaling function of the allele frequency. Use the default for the standard GRM and eGRM definitions.
+# var: True/False variable indicating whether the varGRM is to be computed.
+# sft: True/False variable indicating whether the first tree is to be skipped. Not recommended to use together with [left] and [right] options.
 def varGRM_C(trees, log = None, 
              rlim = 0, alim = math.inf, 
              left = 0, right = math.inf, 
@@ -84,6 +97,12 @@ def varGRM_C(trees, log = None,
   return egrm_final, vargrm_final, total_mu
 
 
+# computes the mean TMRCA (mTMRCA) based on the tskit TreeSequence [trees].
+# trees: tskit TreeSequence object.
+# log: tqdm log file path
+# left, right: leftmost and rightmost positions (in unit of base pair) between which the mTMRCA is computed.
+# map_func: a function that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
+# sft: True/False variable indicating whether the first tree is to be skipped. Not recommended to use together with [left] and [right] options.
 def mTMRCA_C(trees, log = None, 
              left = 0, right = math.inf, 
              map_func = (lambda x:x), sft = False):
@@ -127,6 +146,8 @@ def mTMRCA_C(trees, log = None,
 
 
 ### without C extension
+
+# the non-C version of varGRM_C
 def varGRM(trees, log = None, 
              rlim = 0, alim = math.inf, 
              left = 0, right = math.inf, 
@@ -182,6 +203,7 @@ def varGRM(trees, log = None,
   return egrm_final, vargrm_final, total_mu
 
 
+# the non-C version of mTMRCA_C
 def mTMRCA(trees, log = None, 
              left = 0, right = math.inf, 
              map_func = (lambda x:x), sft = False):
