@@ -7,7 +7,7 @@ The output is a folder named as [name], including two files:
 
 -   results.p: a pickle file storing a python dict object containing results from this simulation
 
--   simulation.trees: a tskit tree sequence file containing the tree sequence of the study panel.
+-   simulation.trees: a tskit tree sequence file containing the tree sequence of the study panel
 
 Usage example:
 
