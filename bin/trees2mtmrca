@@ -8,7 +8,7 @@ import pandas as pd
 import tskit
 
 ### importing egrm
-from egrm import varGRM, varGRM_C
+from egrm import mTMRCA, mTMRCA_C
 
 ### read map file into gmap callable object
 class read_gmap:
