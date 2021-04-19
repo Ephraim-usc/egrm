@@ -1,22 +1,21 @@
-Expected Genetic Relationship Matrix
+Reproducing Results in the eGRM Manuscript
 ========
 
-Expected Genetic Relationship Matrix (EGRM) is the expected value of the Genetic Relationship Matrix (GRM) on unknown SNPs 
-given the complete genealogical tree of a sample of individuals, derived under the coalescent theory framework.
+This is a tutorial introducing how to reproduce simulation results in the eGRM manuscript, using the bin/simulate script.
 
+The output is a folder named as [name], including two files:
+-   results.p: a pickle file storing a python dict object containing results from this simulation
+-   simulation.trees: a tskit tree sequence file containing the tree sequence of the study panel.
 
-Installation
-------------
+Usage example:
 
-Install from PyPI (not available yet):
+    simulate --nrow simulate --name simulation01 --demo ooa --nrow 2 --ns 1000 0 --ns_ref 0 1000 --time_move 8000 
 
-    pip install egrm
-
-Or download the package and install from local:
-
-    git clone https://github.com/Ephraim-usc/egrm.git
-    
-    pip install ./egrm
+This will simulate a grid of 2 rows and 1 column of demes, 
+the population size history of each deme follows the pre-defined out-of-Africa demography.
+The two demes were splitted 8000 generations ago, from a single deme with the same demography.
+The first deme contains 1000 study panel haplotypes, and the second deme contains 1000 reference panel haplotypes.
+The reference panel only affects results related to the K_obs_imputed (standard GRM with imputation).
 
 
 Command Line Tools
