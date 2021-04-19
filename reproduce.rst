@@ -54,6 +54,33 @@ If included, the [mtmrca] matrix and related results will be computed.
 
 Including this option is equivalent to including --run_egrm, --run_relate, --run_tsinfer and --run_mtmrca at the same time.
 
+    --demo DEMO
+
+The demography to be used. Use "--demo ooa" to let each deme follow the out-of_Africa demography.
+Use "--demo constant" to let each deme to have a constant population size decided by [pop_size].
+Any other DEMO values will be treated as "constant".
+
+    --nrow NROW
+
+Number or rows in the grid of demes.
+
+    --ncol NCOL
+
+Number or columns in the grid of demes.
+
+    --migration_rate
+
+Migration rate between neighboring demes.
+
+    --pop_size
+
+Population size of each deme. Only takes effect when "--demo constant"
+
+
+
+
+
+
 
 Support
 -------
