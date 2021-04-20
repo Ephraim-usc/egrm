@@ -562,10 +562,6 @@ SI = pd.DataFrame(SI)
 ### output ###
 results = {"args":args, "fst":fst, "obss":obss, "Ks":Ks, "Ks_dip":Ks_dip, "corr":corr, "corr_spearman":corr_spearman, "corr_dip":corr_dip, "PCA":PCA, "SI":SI}
 
-for key in PCA.keys():
-  pc = PCA[key]
-  np.savetxt("pc_" + key + ".txt", pc, delimiter='\t')
-
 with open("results.p", 'wb') as f:
   pickle.dump(results, f)
 
