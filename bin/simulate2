@@ -550,7 +550,8 @@ for key in Ks_dip.keys():
   w, v = np.linalg.eig(K)
   idx = w.argsort()[::-1]
   w = w[idx]; v = v[:, idx]
-  pc = np.dot(v[:, :10], np.diag(np.power(w[:10], 0.5)))
+  ndim = min(10, (w >= 0).sum())
+  pc = np.dot(v[:, :ndim], np.diag(np.power(w[:ndim], 0.5)))
   PCA[key] = pc
 
 true_labels = np.repeat(np.arange(len(ns)), (np.array(ns)/2).astype(int))
