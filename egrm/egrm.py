@@ -27,6 +27,35 @@ def center(x): # centerize each column and each row of the matrix x
   rowmean = colmean.T
   return x + mean - colmean - rowmean
 
+### genetic map
+class Gmap:
+  def __init__(self, filename):
+    if filename is None:
+      self.mapped = False
+      return
+    self.table = pd.read_csv(filename, sep = None, engine = 'python')
+    self.pos = self.table.iloc[:, 0].astype(int)
+    self.gpos = self.table.iloc[:, 2].astype(float) * 1e6
+    self.max = self.table.shape[0]
+    self.i = 0
+    self.mapped = True
+  
+  def __call__(self, pos):
+    if self.mapped == False:
+      return pos
+    while (self.i > 0 and pos < self.pos[self.i - 1]):
+      self.i -= 1
+    while (self.i < self.max and pos > self.pos[self.i]):
+      self.i += 1
+    if self.i == 0:
+      return 0
+    if self.i >= self.max:
+      return self.gpos[self.max - 1]
+    A = pos - self.pos[self.i-1]
+    B = (self.gpos[self.i] - self.gpos[self.i-1])/(self.pos[self.i] - self.pos[self.i-1])
+    C = self.gpos[self.i-1]
+    return A * B + C
+
 
 ### main functions
 
@@ -35,17 +64,15 @@ def center(x): # centerize each column and each row of the matrix x
 # log: tqdm log file path
 # rlim, alim: most recent and most ancient time limits (in unit of generation) between which the eGRM (varGRM) is computed.
 # left, right: leftmost and rightmost positions (in unit of base pair) between which the eGRM (varGRM) is computed.
-# map_func: a function that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
+# gmap: Gmap object that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
 # g: a scaling function of the allele frequency. Use the default for the standard GRM and eGRM definitions.
 # var: True/False variable indicating whether the varGRM is to be computed.
 # sft: True/False variable indicating whether the first tree is to be skipped. Not recommended to use together with [left] and [right] options.
 def varGRM_C(trees, log = None, 
              rlim = 0, alim = math.inf, 
              left = 0, right = math.inf, 
-             map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), 
+             gmap = Gmap(None), g = (lambda x: 1/(x*(1-x))), 
              var = True, sft = False):
-  if map_func == None or map_func.mapped == False:
-    map_func = (lambda x:x)
   
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
@@ -64,7 +91,7 @@ def varGRM_C(trees, log = None,
   for tree in trees_:
     pbar.update(1)
     if tree.total_branch_length == 0: continue
-    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
     
     for c in tree.nodes():
@@ -101,13 +128,11 @@ def varGRM_C(trees, log = None,
 # trees: tskit TreeSequence object.
 # log: tqdm log file path
 # left, right: leftmost and rightmost positions (in unit of base pair) between which the mTMRCA is computed.
-# map_func: a function that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
+# gmap: Gmap object that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
 # sft: True/False variable indicating whether the first tree is to be skipped. Not recommended to use together with [left] and [right] options.
 def mTMRCA_C(trees, log = None, 
              left = 0, right = math.inf, 
-             map_func = (lambda x:x), sft = False):
-  if map_func == None or map_func.mapped == False:
-    map_func = (lambda x:x)
+             gmap = Gmap(None), sft = False):
   
   N = trees.num_samples
   mtmrca_C = matrix.new_matrix(N)
@@ -124,7 +149,7 @@ def mTMRCA_C(trees, log = None,
   for tree in trees_:
     pbar.update(1)
     if tree.total_branch_length == 0: continue
-    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
     
     height = 0
@@ -151,10 +176,8 @@ def mTMRCA_C(trees, log = None,
 def varGRM(trees, log = None, 
              rlim = 0, alim = math.inf, 
              left = 0, right = math.inf, 
-             map_func = (lambda x:x), g = (lambda x: 1/(x*(1-x))), 
+             gmap = Gmap(None), g = (lambda x: 1/(x*(1-x))), 
              var = True, sft = False):
-  if map_func == None or map_func.mapped == False:
-    map_func = (lambda x:x)
   
   N = trees.num_samples
   egrm = np.zeros([N, N])
@@ -173,7 +196,7 @@ def varGRM(trees, log = None,
   for tree in trees_:
     pbar.update(1)
     if tree.total_branch_length == 0: continue
-    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
     
     for c in tree.nodes():
@@ -206,9 +229,7 @@ def varGRM(trees, log = None,
 # the non-C version of mTMRCA_C
 def mTMRCA(trees, log = None, 
              left = 0, right = math.inf, 
-             map_func = (lambda x:x), sft = False):
-  if map_func == None or map_func.mapped == False:
-    map_func = (lambda x:x)
+             gmap = Gmap(None), sft = False):
   
   N = trees.num_samples
   mtmrca = np.zeros([N, N])
@@ -225,7 +246,7 @@ def mTMRCA(trees, log = None,
   for tree in trees_:
     pbar.update(1)
     if tree.total_branch_length == 0: continue
-    l = - map_func(max(left, tree.interval[0])) + map_func(min(right, tree.interval[1]))
+    l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
     
     height = 0
