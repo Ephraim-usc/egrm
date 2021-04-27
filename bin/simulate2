@@ -493,7 +493,10 @@ if run_tsinfer:
   os.system("~/bin/tsinfer infer " + name + ".samples -p -t 4")
   
   trees_tsinfer = tskit.load(name + ".trees")
+  trees_tsdate = tsdate.date(trees_tsinfer, Ne = 10000)
+  
   EK_tsinfer, _, EK_tsinfer_mu = varGRM_C(trees_tsinfer)
+  EK_tsdate, _, EK_tsdate_mu = varGRM_C(trees_tsdate)
   
   os.chdir("..")
 
@@ -506,6 +509,7 @@ if run_relate:
   Ks["EK_relate"] = EK_relate
 if run_tsinfer:
   Ks["EK_tsinfer"] = EK_tsinfer
+  Ks["EK_tsdate"] = EK_tsdate
 if run_mtmrca:
   Ks["mtmrca"] = mtmrca
 
