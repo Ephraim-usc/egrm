@@ -519,7 +519,7 @@ non_diags = np.where(~np.eye(int(N),dtype=bool))
 table = {}
 for key in Ks.keys():
   table[key] = Ks[key][non_diags].flatten()
-  
+
 table = pd.DataFrame(data=table)
 corr = table.corr(method ='pearson')
 corr_spearman = table.corr(method ='spearman')
