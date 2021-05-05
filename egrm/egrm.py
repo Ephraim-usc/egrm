@@ -77,9 +77,11 @@ def varGRM_C(trees, log = None,
   
   N = trees.num_samples
   egrm_C = matrix.new_matrix(N)
-  egrm2_C = matrix.new_matrix(N)
-  tmp1 = np.zeros(N)
-  tmp2 = 0
+  if var:
+    egrm2_C = matrix.new_matrix(N)
+    tmp1 = np.zeros(N)
+    tmp2 = 0
+  
   total_mu = 0
   pbar = tqdm.tqdm(total = trees.num_trees, 
                    bar_format = '{l_bar}{bar:30}{r_bar}{bar:-30b}',
@@ -110,16 +112,21 @@ def varGRM_C(trees, log = None,
       total_mu += mu
   
   egrm = mat_C_to_array(egrm_C, N)
-  egrm2 = mat_C_to_array(egrm2_C, N)
+  if var:
+    egrm2 = mat_C_to_array(egrm2_C, N)
   
   egrm /= total_mu
-  egrm2 /= total_mu
-  tmp1 /= total_mu
-  tmp2 /= total_mu
+  if var:
+    egrm2 /= total_mu
+    tmp1 /= total_mu
+    tmp2 /= total_mu
   
-  e = np.reciprocal(np.random.poisson(lam=total_mu, size=10000).astype("float")).mean()
   egrm_final = center(egrm)
-  vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
+  if var:
+    e = np.reciprocal(np.random.poisson(lam=total_mu, size=10000).astype("float")).mean()
+    vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
+  else:
+    vargrm_final = 0
   
   pbar.close()
   return egrm_final, vargrm_final, total_mu
