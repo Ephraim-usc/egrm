@@ -112,10 +112,10 @@ def varGRM_C(trees, log = None,
       total_mu += mu
   
   egrm = mat_C_to_array(egrm_C, N)
-  matrix.destroy_matrix(egrm_C)
+  matrix.destroy_matrix(egrm_C) #release C memory
   if var:
-    egrm2 = mat_C_to_array(egrm2_C, N)
-    matrix.destroy_matrix(egrm2_C)
+    egrm2 = mat_C_to_array(egrm2_C, N) 
+    matrix.destroy_matrix(egrm2_C) #release C memory
   
   egrm /= total_mu
   if var:
@@ -174,7 +174,7 @@ def mTMRCA_C(trees, log = None,
     total_l += l
   
   mtmrca = mat_C_to_array(mtmrca_C, N)
-  matrix.destroy_matrix(mtmrca_C)
+  matrix.destroy_matrix(mtmrca_C) #release C memory
   
   mtmrca = tmp - mtmrca
   mtmrca /= total_l
