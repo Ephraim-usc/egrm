@@ -20,14 +20,6 @@ def mat_C_to_array(mat_C, N):
   return buffer
 
 
-### centering function
-def center(x): # centerize each column and each row of the matrix x
-  N = x.shape[0]
-  mean = x.mean()
-  colmean = np.tile(x.mean(axis = 0), (N, 1))
-  rowmean = colmean.T
-  return x + mean - colmean - rowmean
-
 ### genetic map
 class Gmap:
   def __init__(self, filename):
@@ -123,7 +115,8 @@ def varGRM_C(trees, log = None,
     tmp1 /= total_mu
     tmp2 /= total_mu
   
-  egrm = center(egrm)
+  egrm -= egrm.mean(axis = 0)
+  egrm -= egrm.mean(axis = 1, keepdims=True)
   if var:
     e = np.reciprocal((lambda x:x[x!=0])(np.random.poisson(lam=total_mu, size=10000)).astype("float")).mean()
     vargrm = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm, 2))
@@ -233,7 +226,8 @@ def varGRM(trees, log = None,
     tmp1 /= total_mu
     tmp2 /= total_mu
   
-  egrm = center(egrm)
+  egrm -= egrm.mean(axis = 0)
+  egrm -= egrm.mean(axis = 1, keepdims=True)
   if var:
     e = np.reciprocal((lambda x:x[x!=0])(np.random.poisson(lam=total_mu, size=10000)).astype("float")).mean()
     vargrm = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm, 2))
