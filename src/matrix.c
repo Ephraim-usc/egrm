@@ -5,6 +5,8 @@
 #include <math.h>
 #include <stdint.h>
 
+#include numpy/arrayobject.h
+
 typedef double DTYPE;
 typedef unsigned long ITYPE;
 
@@ -206,7 +208,7 @@ static PyObject* py_print_matrix(PyObject* self, PyObject* args)
   Py_RETURN_NONE;
 }
 
-static PyObject* py_export_matrix(PyObject* self, PyObject* args)
+static PyObject* py_export_list(PyObject* self, PyObject* args)
 {
   PyObject* py_mat; 
   PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
@@ -223,6 +225,20 @@ static PyObject* py_export_matrix(PyObject* self, PyObject* args)
   return py_list;
 }
 
+static PyObject* py_export_ndarray(PyObject* self, PyObject* args)
+{
+  PyObject* py_mat; 
+  PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
+  matrix* mat = (matrix *)PyCapsule_GetPointer(py_mat, "matrix._matrix_C_API");
+  DTYPE* data = mat->data; ITYPE n = mat->n;
+  
+  ITYPE dims[2];
+  dims[0] = dims[1] = n;
+  PyObject *py_ndarray = PyArray_SimpleNewFromData(n*n, dims, NPY_INT64, data)
+  
+  return py_ndarray;
+}
+
 static PyMethodDef myMethods[] = 
 {
   {"new_matrix", py_new_matrix, METH_VARARGS, "new matrix"},
@@ -232,7 +248,8 @@ static PyMethodDef myMethods[] =
   {"add", py_add, METH_VARARGS, "add"},
   {"set_zeros", py_set_zeros, METH_VARARGS, "set_zeros"},
   {"destroy_matrix", py_destroy_matrix, METH_VARARGS, "destroy matrix"},
-  {"export_matrix", py_export_matrix, METH_VARARGS, "export matrix"},
+  {"export_list", py_export_list, METH_VARARGS, "export as list"},
+  {"export_ndarray", py_export_ndarray, METH_VARARGS, "export as ndarray"},
   {NULL, NULL, 0, NULL},
 };
 
