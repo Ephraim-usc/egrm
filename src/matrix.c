@@ -8,7 +8,7 @@
 #include </home1/caoqifan/project/anaconda3/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h>
 
 typedef double DTYPE;
-typedef int ITYPE;
+typedef long ITYPE;
 
 typedef struct matrix {
   ITYPE n;
