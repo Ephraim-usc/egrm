@@ -235,7 +235,7 @@ static PyObject* py_export_ndarray(PyObject* self, PyObject* args)
   import_array();
   ITYPE dims[2];
   dims[0] = dims[1] = n;
-  PyObject *py_ndarray = PyArray_SimpleNewFromData(2, dims, NPY_INT64, data);
+  PyObject *py_ndarray = PyArray_SimpleNewFromData(2, dims, NPY_FLOAT, data);
   
   return py_ndarray;
 }
