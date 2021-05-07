@@ -237,7 +237,7 @@ migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
 migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow + 1) ,1)), axis = 1)
 
-if demo = "ooa":
+if demo == "ooa":
   _initial_size = N_EU
   _growth_rate = r_EU
 else:
