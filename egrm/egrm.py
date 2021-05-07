@@ -10,8 +10,8 @@ import pandas as pd
 import matrix
 
 
-# exports a matrix stored as a 1d C array [mat_C] into a 2d numpy array
-# mat_C: a matrix in C format initiated by matrix.new_matrix, only stores the upper triangle elements of a square matrix
+# exports [matrix._matrix_C_API] object into a 2d numpy array
+# mat_C: [matrix._matrix_C_API] object initiated by matrix.new_matrix, only stores the upper triangle elements of a square matrix
 # N: the number of columns/rows
 def mat_C_to_ndarray(mat_C, N): 
   buffer = matrix.export_ndarray(mat_C)
