@@ -8,7 +8,7 @@
 #include </home1/caoqifan/project/anaconda3/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h>
 
 typedef double DTYPE;
-typedef long ITYPE;
+typedef unsigned long ITYPE;
 
 typedef struct matrix {
   ITYPE n;
@@ -235,7 +235,7 @@ static PyObject* py_export_ndarray(PyObject* self, PyObject* args)
   import_array();
   ITYPE dims[2];
   dims[0] = dims[1] = n;
-  PyObject *py_ndarray = PyArray_SimpleNewFromData(n*n, dims, NPY_INT64, data);
+  PyObject *py_ndarray = PyArray_SimpleNewFromData(2, dims, NPY_INT64, data);
   
   return py_ndarray;
 }
