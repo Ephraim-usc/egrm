@@ -237,14 +237,13 @@ migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axi
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow + 1) ,1)), axis = 1)
 
 if demo == "ooa":
-  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = N_EU, growth_rate = r_EU) for n, n_ref in zip(ns, ns_ref)]
-  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = N_EU, growth_rate = r_EU))
+  population_configurations = [msprime.PopulationConfiguration(sample_size = 0, initial_size = N_EU, growth_rate = r_EU) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = (n + n_ref) * ncol * nrow, initial_size = N_EU, growth_rate = r_EU))
 else:
-  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
-  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
+  population_configurations = [msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = (n + n_ref) * ncol * nrow, initial_size = pop_size))
 
-demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = 1.0) for i in range(ncol * nrow)]
-demo_events.append(msprime.MigrationRateChange(time = time_move, rate=0))
+demo_events=[msprime.MassMigration(time = time_move, source = ncol * nrow, destination = i, proportion = 1/(ncol * nrow)) for i in range(ncol * nrow)]
 
 if demo == "ooa":
   demo_events += [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
