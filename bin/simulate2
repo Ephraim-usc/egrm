@@ -246,7 +246,7 @@ else:
 
 if admixture:
   population_configurations = [msprime.PopulationConfiguration(sample_size = 0, initial_size = _initial_size, growth_rate = _growth_rate)] * (nrow * ncol)
-  population_configurations.append(msprime.PopulationConfiguration(sample_size = N + N_ref, initial_size = _initial_size, growth_rate = _growth_rat))
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = N + N_ref, initial_size = _initial_size, growth_rate = _growth_rate))
   demo_events=[msprime.MassMigration(time = time_move, source = i, destination = nrow * ncol, proportion = (ns[i] + ns_ref[i])/(N + N_ref)) for i in range(nrow * ncol)]
 else:
   population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = _initial_size, growth_rate = _growth_rate) for n, n_ref in zip(ns, ns_ref)]
