@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "numpy/arrayobject.h"
+#include "Numeric/arrayobject.h"
 
 typedef double DTYPE;
 typedef unsigned long ITYPE;
