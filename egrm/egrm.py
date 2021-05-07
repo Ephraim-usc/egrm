@@ -13,9 +13,8 @@ import matrix
 # exports a matrix stored as a 1d C array [mat_C] into a 2d numpy array
 # mat_C: a matrix in C format initiated by matrix.new_matrix, only stores the upper triangle elements of a square matrix
 # N: the number of columns/rows
-def mat_C_to_array(mat_C, N): 
-  buffer = matrix.export_matrix(mat_C)
-  buffer = np.reshape(np.array(buffer), (N, N))
+def mat_C_to_ndarray(mat_C, N): 
+  buffer = matrix.export_ndarray(mat_C)
   buffer = buffer + np.transpose(buffer) - np.diag(np.diag(buffer))
   return buffer
 
@@ -103,10 +102,10 @@ def varGRM_C(trees, log = None,
         tmp2 += mu * np.power(g(p), 2) * np.power(p, 4)
       total_mu += mu
   
-  egrm = mat_C_to_array(egrm_C, N)
+  egrm = mat_C_to_ndarray(egrm_C, N)
   matrix.destroy_matrix(egrm_C) #release C memory
   if var:
-    egrm2 = mat_C_to_array(egrm2_C, N) 
+    egrm2 = mat_C_to_ndarray(egrm2_C, N) 
     matrix.destroy_matrix(egrm2_C) #release C memory
   
   egrm /= total_mu
@@ -166,7 +165,7 @@ def mTMRCA_C(trees, log = None,
     tmp += height * l
     total_l += l
   
-  mtmrca = mat_C_to_array(mtmrca_C, N)
+  mtmrca = mat_C_to_ndarray(mtmrca_C, N)
   matrix.destroy_matrix(mtmrca_C) #release C memory
   
   mtmrca = tmp - mtmrca
