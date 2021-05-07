@@ -5,7 +5,7 @@
 #include <math.h>
 #include <stdint.h>
 
-#include "Numeric/arrayobject.h"
+#include "/home1/caoqifan/project/anaconda3/lib/python3.8/site-packages/numpy/core/include/arrayobject.h"
 
 typedef double DTYPE;
 typedef unsigned long ITYPE;
