@@ -1,5 +1,5 @@
 from setuptools import setup, Extension
-
+import numpy
 
 def readme():
     with open('README.rst') as f:
@@ -24,5 +24,5 @@ setup(name='egrm',
           'tskit', 'tqdm', 'msprime'
       ],
       scripts=['bin/trees2egrm', 'bin/trees2mtmrca', 'bin/simulate2'],
-      ext_modules=[Extension('matrix', ['src/matrix.c'])],
+      ext_modules=[Extension('matrix', ['src/matrix.c'], include_dirs=[np.get_include()])],
       zip_safe=False)
