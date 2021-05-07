@@ -123,15 +123,15 @@ def varGRM_C(trees, log = None,
     tmp1 /= total_mu
     tmp2 /= total_mu
   
-  egrm_final = center(egrm)
+  egrm = center(egrm)
   if var:
     e = np.reciprocal((lambda x:x[x!=0])(np.random.poisson(lam=total_mu, size=10000)).astype("float")).mean()
-    vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
+    vargrm = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm, 2))
   else:
-    vargrm_final = None
+    vargrm = None
   
   pbar.close()
-  return egrm_final, vargrm_final, total_mu
+  return egrm, vargrm, total_mu
 
 
 # computes the mean TMRCA (mTMRCA) based on the tskit TreeSequence [trees].
@@ -233,15 +233,15 @@ def varGRM(trees, log = None,
     tmp1 /= total_mu
     tmp2 /= total_mu
   
-  egrm_final = center(egrm)
+  egrm = center(egrm)
   if var:
     e = np.reciprocal((lambda x:x[x!=0])(np.random.poisson(lam=total_mu, size=10000)).astype("float")).mean()
-    vargrm_final = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm_final, 2))
+    vargrm = e * (egrm2 + np.tile(tmp1, (N, 1)) + np.tile(tmp1, (N, 1)).transpose() + tmp2 - np.power(egrm, 2))
   else:
-    vargrm_final = None
+    vargrm = None
   
   pbar.close()
-  return egrm_final, vargrm_final, total_mu
+  return egrm, vargrm, total_mu
 
 
 # the non-C version of mTMRCA_C
