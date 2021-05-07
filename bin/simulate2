@@ -148,6 +148,7 @@ parser.add_argument('--run_impute', '--impute', action='store_true', help='compu
 
 # demography and population structure
 parser.add_argument('--demo', type = str, default = 'ooa', help='demography model')
+parser.add_argument('--admixture', action='store_true', help='simulate admixture, otherwise split')
 parser.add_argument('--nrow', type = int, default = 1, help='number of rows of populations')
 parser.add_argument('--ncol', type = int, default = 1, help='number of columns of populations')
 parser.add_argument('--migration_rate', type = float, default = 0.01, help='migration rate')
@@ -236,15 +237,24 @@ migration_matrix = step_mig_mat(migration_rate, nrow, ncol)
 migration_matrix = np.append(migration_matrix, np.zeros( (1, ncol * nrow) ), axis = 0)
 migration_matrix = np.append(migration_matrix, np.zeros(( (ncol * nrow + 1) ,1)), axis = 1)
 
-if demo == "ooa":
-  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = N_EU, growth_rate = r_EU) for n, n_ref in zip(ns, ns_ref)]
-  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = N_EU, growth_rate = r_EU))
+if demo = "ooa":
+  _initial_size = N_EU
+  _growth_rate = r_EU
 else:
-  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = pop_size) for n, n_ref in zip(ns, ns_ref)]
-  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = pop_size))
+  _initial_size = pop_size
+  _growth_rate = 0
 
-demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = 1.0) for i in range(ncol * nrow)]
-demo_events.append(msprime.MigrationRateChange(time = time_move, rate=0))
+if admixture:
+  population_configurations = [msprime.PopulationConfiguration(sample_size = 0, initial_size = _initial_size, growth_rate = _growth_rate) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = (N + N_ref) * ncol * nrow, initial_size = pop_size))
+  
+  demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = (ns[i] + ns_ref[i])/(N + N_ref)) for i in range(ncol * nrow)]
+else:
+  population_configurations = [msprime.PopulationConfiguration(sample_size = n + n_ref, initial_size = _initial_size, growth_rate = _growth_rate) for n, n_ref in zip(ns, ns_ref)]
+  population_configurations.append(msprime.PopulationConfiguration(sample_size = 0, initial_size = _initial_size, growth_rate = _growth_rate))
+  
+  demo_events=[msprime.MassMigration(time = time_move, source = i, destination = ncol * nrow, proportion = 1.0) for i in range(ncol * nrow)]
+  demo_events.append(msprime.MigrationRateChange(time = time_move, rate=0))
 
 if demo == "ooa":
   demo_events += [msprime.PopulationParametersChange(time=T_EU_AS, initial_size = N_B, growth_rate=0),
