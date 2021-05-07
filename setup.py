@@ -1,5 +1,5 @@
 from setuptools import setup, Extension
-import numpy
+import numpy as np
 
 def readme():
     with open('README.rst') as f:
