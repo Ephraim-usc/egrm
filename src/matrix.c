@@ -208,7 +208,7 @@ static PyObject* py_print_matrix(PyObject* self, PyObject* args)
   Py_RETURN_NONE;
 }
 
-static PyObject* py_export_list(PyObject* self, PyObject* args)
+static PyObject* py_export_list(PyObject* self, PyObject* args) // export to python list, elements are copied. To release memory, you have to destroy the mat_C.
 {
   PyObject* py_mat; 
   PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
@@ -225,7 +225,7 @@ static PyObject* py_export_list(PyObject* self, PyObject* args)
   return py_list;
 }
 
-static PyObject* py_export_ndarray(PyObject* self, PyObject* args)
+static PyObject* py_export_ndarray(PyObject* self, PyObject* args) // export to numpy ndarray, elements are used in place. Do not destroy the mat_C.
 {
   PyObject* py_mat; 
   PyArg_UnpackTuple(args, NULL, 1, 1, &py_mat);
