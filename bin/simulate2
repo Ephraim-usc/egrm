@@ -185,6 +185,7 @@ if run_all:
   run_tsinfer = True
   run_mtmrca = True
   run_impute = True
+  run_prune = True
 
 
 ### processing samples sizes ###
@@ -359,15 +360,14 @@ if run_mtmrca:
   mtmrca, _ = mTMRCA_C(trees)
 
 ### running LD pruning ###
-
-name = "tmp"
-
 if run_prune:
   print("computing K_pruned")
   os.mkdir("prune")
   os.chdir("prune")
   
   from pyplink import PyPlink
+  from bed_reader import open_bed
+  
   samples = range(int(N/2))
   
   with PyPlink(name, "w") as bedfile:
@@ -395,6 +395,13 @@ if run_prune:
              "--bfile " + name + " --make-bed " + \
              "--extract LD.prune.in " + \
              "--out pruned")
+  
+  X_pruned = open_bed('pruned.bed').read()
+  Z_pruned = X_pruned
+  Z_pruned -= Z_pruned.mean(axis=0); Z_pruned /= Z_pruned.std(axis=0)
+  K_pruned = np.dot(Z_pruned, np.transpose(Z_pruned))
+  
+  os.chdir("..")
 
 ### running impute ###
 def X2gen(X):
@@ -580,6 +587,8 @@ for key in Ks.keys():
 
 if run_impute:
   Ks_dip['K_imputed'] = K_imputed
+if run_pruned:
+  Ks_dip['K_pruned'] = K_pruned
 
 diags = np.diag_indices(int(N/2))
 non_diags = np.where(~np.eye(int(N/2),dtype=bool))
