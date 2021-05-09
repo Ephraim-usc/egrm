@@ -369,6 +369,11 @@ if run_prune:
   from bed_reader import open_bed
   
   samples = range(int(N/2))
+  X_obs = getX(trees, obss)
+  maternals = np.array(range(0, N, 2))
+  paternals = np.array(range(1, N, 2))
+  X_obs_dip = X_obs[maternals] + X_obs[paternals]
+  loci = np.array([v.position for v in trees.variants()])
   
   with PyPlink(name, "w") as bedfile:
     for v in np.transpose(X_obs_dip):
