@@ -145,6 +145,7 @@ parser.add_argument('--run_relate', '--relate', action='store_true', help='run r
 parser.add_argument('--run_tsinfer', '--tsinfer', action='store_true', help='run tsinfer tree reconstruction')
 parser.add_argument('--run_mtmrca', '--mtmrca', action='store_true', help='compute mean TMRCA')
 parser.add_argument('--run_impute', '--impute', action='store_true', help='compute K_imputed')
+parser.add_argument('--run_prune', '--prune', action='store_true', help='compute K_pruned')
 
 # demography and population structure
 parser.add_argument('--demo', type = str, default = 'ooa', help='demography model')
@@ -357,6 +358,43 @@ if run_mtmrca:
   print("computing mTMRCA")
   mtmrca, _ = mTMRCA_C(trees)
 
+### running LD pruning ###
+
+name = "tmp"
+
+if run_prune:
+  print("computing K_pruned")
+  os.mkdir("prune")
+  os.chdir("prune")
+  
+  from pyplink import PyPlink
+  samples = range(int(N/2))
+  
+  with PyPlink(name, "w") as bedfile:
+    for v in np.transpose(X_obs_dip):
+      bedfile.write_genotypes(v)
+  
+  fam_file = open(name + ".fam", 'a')
+  for idx, sample in enumerate(samples):
+    string = "FID{}".format(sample+1) + " IID{}".format(sample+1) + " 0 0 0 0" + "\n"
+    bytes = fam_file.write(string)
+  fam_file.close()
+  
+  bim_file = open(name + ".bim", 'a')
+  for idx, obs in enumerate(obss):
+    string = "1 snp" + str(obs+1) + " 0 " + str(int(loci[obs])) + " A T\n"
+    bytes = bim_file.write(string)
+  bim_file.close()
+  
+  os.system("~/bin/plink2 " + \
+             "--bfile " + name + " " + \
+             "--indep-pairwise 50 5 0.1 " + \
+             "--out LD")
+  
+  os.system("~/bin/plink2 " + \
+             "--bfile " + name + " --make-bed " + \
+             "--extract LD.prune.in " + \
+             "--out pruned")
 
 ### running impute ###
 def X2gen(X):
