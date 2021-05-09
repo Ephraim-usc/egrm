@@ -592,7 +592,7 @@ for key in Ks.keys():
 
 if run_impute:
   Ks_dip['K_imputed'] = K_imputed
-if run_pruned:
+if run_prune:
   Ks_dip['K_pruned'] = K_pruned
 
 diags = np.diag_indices(int(N/2))
