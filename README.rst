@@ -103,9 +103,7 @@ There is an additional commandline tool
 
 which is included in the package, but not installed by default. You may manually run this script.
 
-A complete explanation of its parameters and output files can be found at
-
-    reproduce.rst
+A complete explanation of its parameters and output files can be found at [reproduce.rst].
 
 
 Support
