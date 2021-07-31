@@ -5,7 +5,7 @@ This is a tutorial introducing how to reproduce simulation results in the eGRM m
 
 The output is a folder named as [name], including two files:
 
--   results.p: a pickle file storing a python dict object containing results from this simulation
+-   results.p: a pickle file storing a python dict object containing statistical results from this simulation
 
 -   simulation.trees: a tskit tree sequence file containing the tree sequence of the study panel
 
@@ -41,10 +41,6 @@ If included, the [EK_relate] matrix and related results will be computed.
     --run_tsinfer
 
 If included, the [EK_tsinfer] matrix and related results will be computed.
-
-    --run_mtmrca
-
-If included, the [mtmrca] matrix and related results will be computed.
 
     --run_mtmrca
 
