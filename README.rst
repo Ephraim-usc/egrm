@@ -50,7 +50,7 @@ With this option turned on, the algorithm will output the varGRM in addition to 
 
     [--genetic_map] or [--map]
 
-A (comma/space/tab separated) three-column file with first column specifying the physical position in bp and the third column specifying the genetic position in cM. The second column is not used.
+A (comma/space/tab separated) three-column file with first column specifying the physical position in bp and the third column specifying the genetic position in cM. The second column is not used. The first line will always be ignored as the header.
 
     [--left LEFT] [--right RIGHT]
 
