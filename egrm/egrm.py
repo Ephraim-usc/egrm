@@ -19,7 +19,10 @@ def mat_C_to_ndarray(mat_C, N):
   return buffer
 
 
-### genetic map
+### defines [Gmap] object which maps the physical position (in bp) into genetic position (in unit of 10^-6 cM)
+### can be initiated by Gmap(filename), where filename is a (comma/space/tab separated) three-column file 
+### with first column specifying the physical position in bp and the third column specifying the genetic position in cM. 
+### The second column is not used. The first line will always be ignored as the header.
 class Gmap:
   def __init__(self, filename):
     if filename is None:
@@ -56,7 +59,7 @@ class Gmap:
 # log: tqdm log file path
 # rlim, alim: most recent and most ancient time limits (in unit of generation) between which the eGRM (varGRM) is computed.
 # left, right: leftmost and rightmost positions (in unit of base pair) between which the eGRM (varGRM) is computed.
-# gmap: Gmap object that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
+# gmap: [Gmap] object that maps the physical position (in unit of base pair) into genetic position (in unit of 10^-6 centimorgan).
 # g: a scaling function of the allele frequency. Use the default for the standard GRM and eGRM definitions.
 # var: True/False variable indicating whether the varGRM is to be computed.
 # sft: True/False variable indicating whether the first tree is to be skipped. Not recommended to use together with [left] and [right] options.
