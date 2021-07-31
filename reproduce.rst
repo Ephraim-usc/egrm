@@ -22,8 +22,11 @@ The reference panel only affects results related to the K_obs_imputed (standard 
 To run the [bin/simulate] script, make sure you have the following commands ready:
 
     ~/bin/plink2    if --run_prune
+    
     ~/bin/impute2    if --run_impute
+    
     ~/bin/relate    if --run_relate
+    
     ~/bin/tsinfer and ~/bin/tsdate    if --run_tsinfer
 
 To reproduce results published in the manuscript, please submit a series of [simulate] jobs with appropriate parameters,
