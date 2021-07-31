@@ -25,7 +25,7 @@ To run the [bin/simulate] script, make sure you have the following commands read
     
     ~/bin/impute2    if --run_impute
     
-    ~/bin/relate    if --run_relate
+    ~/bin/relate and ~/bin/RelateFileFormats    if --run_relate
     
     ~/bin/tsinfer and ~/bin/tsdate    if --run_tsinfer
 
