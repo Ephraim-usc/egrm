@@ -19,6 +19,13 @@ The two demes were splitted 8000 generations ago, from a single deme with the sa
 The first deme contains 1000 study panel haplotypes, and the second deme contains 1000 reference panel haplotypes.
 The reference panel only affects results related to the K_obs_imputed (standard GRM with imputation).
 
+To run the [bin/simulate] script, make sure you have the following commands ready:
+
+    ~/bin/plink2    if --run_prune
+    ~/bin/impute2    if --run_impute
+    ~/bin/relate    if --run_relate
+    ~/bin/tsinfer and ~/bin/tsdate    if --run_tsinfer
+
 To reproduce results published in the manuscript, please submit a series of [simulate] jobs with appropriate parameters,
 and collect results in the [results.p] file in each output directory.
 
