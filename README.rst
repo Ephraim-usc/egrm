@@ -105,7 +105,7 @@ which is included in the package, but not installed by default. You may manually
 
 A complete explanation of its parameters and output files can be found at
 
-    simulate -h
+    reproduce.rst
 
 
 Support
