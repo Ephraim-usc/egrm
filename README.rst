@@ -48,6 +48,10 @@ This is often useful because RELATE and some other tools always output tree sequ
 This option is only for trees2egrm, not trees2mtmrca.
 With this option turned on, the algorithm will output the varGRM in addition to eGRM, while roughly doubling the compuation time.
 
+    [--genetic_map] or [--map]
+
+A (comma/space/tab separated) three-column file with first column specifying the physical position in bp and the third column specifying the genetic position in cM. The second column is not used.
+
     [--left LEFT] [--right RIGHT]
 
 The leftmost and rightmost positions (in bp) between which the eGRM or mTMRCA is computed.
