@@ -20,15 +20,41 @@ Or download the package and install from local:
 
 
 Command Line Tools
------------------
+------------------
+The software to compute the eGRM from tskit tree sequence output is handled by `trees2egrm`. Its usage is given by,
 
-There are two command line tools:
-
-    trees2egrm [--input INPUT] [--output OUTPUT]
+    usage: trees2egrm [-h] [--output OUTPUT] [--c_extension] [--skip_first_tree] [--run_var] [--genetic_map GENETIC_MAP] [--left LEFT] [--right RIGHT] [--rlim RLIM]
+                      [--alim ALIM] [--output-format {gcta,numpy}]
+                      input
     
-    trees2mtmrca [--input INPUT] [--output OUTPUT]
+    Construct eGRM matrix from tree sequence data
+    
+    positional arguments:
+      input                 Path to ts-kit tree sequence file
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      --output OUTPUT, --o OUTPUT
+                            output file prefix
+      --c_extension, --c    acceleration by C extension
+      --skip_first_tree, --sft
+                            discard the first tree in the tree sequence
+      --run_var, --var      compute varGRM instead of eGRM
+      --genetic_map GENETIC_MAP, --map GENETIC_MAP
+                            map file fullname
+      --left LEFT, --l LEFT
+                            leftmost genomic position to be included
+      --right RIGHT, --r RIGHT
+                            rightmost genomic position to be included
+      --rlim RLIM           most recent time limit
+      --alim ALIM           most ancient time limit
+      --output-format {gcta,numpy}
+                            Output format of eGRM
+        trees2egrm [--input INPUT] [--output OUTPUT]
+        
+        trees2mtmrca [--input INPUT] [--output OUTPUT]
 
-Where INPUT is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and OUTPUT is the output file prefix.
+Where `input` is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and `OUTPUT` is the output file prefix.
 
 Optional parameters:
 
