@@ -1,28 +1,44 @@
-from setuptools import setup, Extension
+from setuptools import dist, setup, Extension
+
+# bootstrap numpy; can we workaround this?
+dist.Distribution().fetch_build_eggs(["numpy>=1.14.5"])
+
+# should be fine now
 import numpy as np
 
+
 def readme():
-    with open('README.rst') as f:
+    with open("README.rst") as f:
         return f.read()
 
-setup(name='egrm',
-      version='0.1',
-      description='Expected Genetic Relationship Matrix',
-      #long_description=readme(),
-      classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Programming Language :: Python :: 3.7',
-        'Topic :: Scientific/Engineering :: Bio-Informatics', 
-      ],
-      keywords='genetics genome SNP coalescence',
-      url='https://github.com/Ephraim-usc/egrm.git',
-      author='Caoqi Fan',
-      author_email='caoqifan@usc.edu',
-      license='USC',
-      packages=['egrm'],
-      install_requires=[
-          'tskit', 'tqdm', 'msprime'
-      ],
-      scripts=['bin/trees2egrm', 'bin/trees2mtmrca', 'bin/simulate2'],
-      ext_modules=[Extension('matrix', ['src/matrix.c'], include_dirs=[np.get_include()])],
-      zip_safe=False)
+
+setup(
+    name="egrm",
+    version="0.1",
+    author="Caoqi Fan",
+    author_email="caoqifan@usc.edu",
+    description="Expected Genetic Relationship Matrix",
+    long_description=readme(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/Ephraim-usc/egrm.git",
+    packages=["egrm"],
+    python_requires=">=3",
+    install_requires=[
+        "numpy>=1.14.5",
+        "pandas>=1.2.0",
+        "tskit",
+        "tqdm",
+    ],
+    scripts=[
+        "bin/trees2egrm",
+    ],
+    ext_modules=[
+        Extension("matrix", ["src/matrix.c"], include_dirs=[np.get_include()]),
+    ],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Programming Language :: Python :: 3.7",
+        "Topic :: Scientific/Engineering :: Bio-Informatics",
+    ],
+    keywords="genetics genome SNP coalescence",
+)
