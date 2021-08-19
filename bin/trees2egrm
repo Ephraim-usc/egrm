@@ -13,12 +13,12 @@ import tskit
 from egrm import varGRM, varGRM_C, Gmap
 
 
-def to_gcta_format(K, mu, prefix_path):
+def write_gcta(K, mu, output):
     # todo: write out 3 files in GCTA format
     # K = prefix_path.grm.bin; relatedness diagonal + lower diagonal
     # mu = prefix_path.grm.N.bin; number of shared mutations between individuals on diagonal + lower diagonal
     # samples = prefix_path.grm.id; 2 column text = family_id individual_id
-    pass
+    
 
 
 def main(args):
@@ -69,14 +69,14 @@ def main(args):
         default="numpy",
         help="Output format of eGRM",
     )
-
+    
     args = parser.parse_args(args)
 
     if args.output is None:
         output = "egrm"
     else:
         output = args.output
-
+    
     ###
     trees = tskit.load(args.input + ".trees")
     gmap = Gmap(args.genetic_map)
@@ -85,7 +85,7 @@ def main(args):
         construct = varGRM_C
     else:
         construct = varGRM
-
+    
     egrm, vargrm, egrm_mu = construct(
         trees,
         log=None,
@@ -97,16 +97,15 @@ def main(args):
         var=args.run_var,
         sft=args.skip_first_tree,
     )
-
+    
     if args.output_format == "numpy":
         np.save(output + ".npy", egrm)
         np.save(output + "_mu.npy", egrm_mu)
         if args.run_var:
             np.save(output + "_var.npy", vargrm)
     elif args.output_format == "gcta":
-        # todo: update to output in GCTA grm format
-        pass
-
+        write_gcta(egrm, egrm_mu, output)
+    
     return 0
 
 
