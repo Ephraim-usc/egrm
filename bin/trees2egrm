@@ -200,6 +200,8 @@ def main(args):
         # TODO: we need a robust way to map to IDs
         ids = [f"id_{idx}" for idx in range(egrm.shape[0])]
         write_gcta_bin(egrm, egrm_mu, ids, args.output)
+        if args.run_var:
+            write_gcta_bin(egrm, egrm_mu, ids, args.output + "_var")
     log.info("Finished export of eGRM")
     log.info("Finished! :D")
 
