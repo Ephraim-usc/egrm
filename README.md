@@ -50,9 +50,6 @@ The software to compute the eGRM from tskit tree sequence output is handled by `
       --alim ALIM           most ancient time limit
       --output-format {gcta,numpy}
                             Output format of eGRM
-        trees2egrm [--input INPUT] [--output OUTPUT]
-        
-        trees2mtmrca [--input INPUT] [--output OUTPUT]
 
 Where `input` is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and `OUTPUT` is the output file prefix.
 
@@ -87,7 +84,9 @@ The leftmost and rightmost positions (in bp) between which the eGRM or mTMRCA is
 This option is only for trees2egrm, not trees2mtmrca.
 RLIM and ALIM are the most recent and most ancient times (in generations) between which the eGRM is computed.
 
-The output of trees2egrm will be two (or three, if with --var option) files in numpy NPY format: 
+If output-format is set to `gcta`, the eGRM will be output into GCTA format (.grm.bin, .grm.N.bin and .grm.id files).
+
+If If output-format is set to `numpy`, he output will be two (or three, if with --var option) files in numpy NPY format: 
 
 -   OUTPUT.npy, which contains the eGRM matrix;
 
