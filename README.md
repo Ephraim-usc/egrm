@@ -23,8 +23,10 @@ Command Line Tools
 ------------------
 The software to compute the eGRM from tskit tree sequence output is handled by `trees2egrm`. Its usage is given by,
 
-    usage: trees2egrm [-h] [--output OUTPUT] [--c_extension] [--skip_first_tree] [--run_var] [--genetic_map GENETIC_MAP] [--left LEFT] [--right RIGHT] [--rlim RLIM]
-                      [--alim ALIM] [--output-format {gcta,numpy}]
+    usage: trees2egrm [-h] [--output OUTPUT] [--c_extension] [--skip_first_tree] [--run_var] [--genetic_map GENETIC_MAP] 
+                      [--left LEFT] [--right RIGHT]
+                      [--rlim RLIM] [--alim ALIM] 
+                      [--output-format {gcta,numpy}]
                       input
     
     Construct eGRM matrix from tree sequence data
@@ -68,7 +70,6 @@ This is often useful because RELATE and some other tools always output tree sequ
 
     [--run_var] or [--var]
 
-This option is only for trees2egrm, not trees2mtmrca.
 With this option turned on, the algorithm will output the varGRM in addition to eGRM, while roughly doubling the compuation time.
 
     [--genetic_map] or [--map]
@@ -77,28 +78,21 @@ A (comma/space/tab separated) three-column file with first column specifying the
 
     [--left LEFT] [--right RIGHT]
 
-The leftmost and rightmost positions (in bp) between which the eGRM or mTMRCA is computed.
+The leftmost and rightmost positions (in bp) between which the eGRM is computed.
 
     [--rlim RLIM] [--alim ALIM]
 
-This option is only for trees2egrm, not trees2mtmrca.
 RLIM and ALIM are the most recent and most ancient times (in generations) between which the eGRM is computed.
 
 If output-format is set to `gcta`, the eGRM will be output into GCTA format (.grm.bin, .grm.N.bin and .grm.id files).
 
-If If output-format is set to `numpy`, he output will be two (or three, if with --var option) files in numpy NPY format: 
+If If output-format is set to `numpy`, he output will be two (or three, if using --var option) files in numpy NPY format: 
 
 -   OUTPUT.npy, which contains the eGRM matrix;
 
 -   OUTPUT_mu.npy, which contains a single number of the measure of the tree sequence (i.e., the expected number of mutations on this tree sequence);
 
 -   OUTPUT_var.npy, which contains the varGRM matrix, if the --var option is selected.
-
-The output of trees2mtrmca will be two files in numpy NPY format: 
-
--   OUTPUT.npy, which contains the mTMRCA matrix;
-
--   OUTPUT_l.npy, which contains a single number of the number of base pairs of the tree sequence;
 
 
 Python Functions
