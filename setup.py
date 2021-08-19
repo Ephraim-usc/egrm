@@ -1,6 +1,6 @@
 from setuptools import dist, setup, Extension
 
-# bootstrap numpy; can we workaround this?
+# bootstrap numpy; can we workaround this? 
 dist.Distribution().fetch_build_eggs(["numpy>=1.14.5"])
 
 # should be fine now
@@ -36,8 +36,8 @@ setup(
         Extension("matrix", ["src/matrix.c"], include_dirs=[np.get_include()]),
     ],
     classifiers=[
-        "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3.7",
+        "License :: OSI Approved :: MIT License",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     keywords="genetics genome SNP coalescence",
