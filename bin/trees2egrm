@@ -80,7 +80,7 @@ def main(args):
     ###
     trees = tskit.load(args.input + ".trees")
     gmap = Gmap(args.genetic_map)
-
+    
     if args.c_extension:
         construct = varGRM_C
     else:
