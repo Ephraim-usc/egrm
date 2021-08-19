@@ -69,7 +69,7 @@ def write_gcta_bin(K, mu, ids, output):
         for idx in range(n):
             fid = 0
             iid = ids[idx]
-            grmfile.write("\t".join([fid, iid]) + os.linesep)
+            grmfile.write("\t".join([str(fid), str(iid)]) + os.linesep)
 
     return
 
