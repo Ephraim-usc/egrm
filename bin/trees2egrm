@@ -197,7 +197,7 @@ def main(args):
         np.save(args.output + "_mu.npy", egrm_mu)
         if args.run_var:
             np.save(args.output + "_var.npy", vargrm)
-    elif args.output_format == "gcta_bin":
+    elif args.output_format == "gcta":
         # TODO: we need a robust way to map to IDs
         ids = [f"id_{idx}" for idx in range(egrm.shape[0])]
         write_gcta_bin(egrm, egrm_mu, ids, args.output)
