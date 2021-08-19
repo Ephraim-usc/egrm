@@ -151,9 +151,9 @@ def main(args):
         log.setLevel(logging.INFO)
 
     # load tree sequence data
-    tree_input = f"{args.input}.trees"
+    tree_input = f"{args.input.name}"
     log.info(f"Beginning importing tree sequence at {tree_input}")
-    trees = tskit.load(tree_input)
+    trees = tskit.load(args.input)
     log.info(f"Finished importing tree sequence at {tree_input}")
 
     log.info("Constructing genetic map")
@@ -161,8 +161,10 @@ def main(args):
 
     # determine which backend to use
     if args.c_extension:
+        log.debug("Using C-extension to estimate eGRM")
         construct = varGRM_C
     else:
+        log.debug("Using native Python to estimate eGRM")
         construct = varGRM
 
     # eGRM!!!
