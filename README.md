@@ -86,6 +86,14 @@ RLIM and ALIM are the most recent and most ancient times (in generations) betwee
 
 If output-format is set to `gcta`, the eGRM will be output into GCTA format (.grm.bin, .grm.N.bin and .grm.id files).
 
+-   OUTPUT.grm.bin, which contains the eGRM matrix;
+
+-   OUTPUT.grm.N.bin, which contains all the same number of the measure of the tree sequence (i.e., the expected number of mutations on this tree sequence);
+
+-   OUTPUT.grm.id, which contains dummy ids for the samples.
+
+-   OUTPUT_var(.grm.bin/.grm.N.bin/.grm.id), for the varGRM matrix, if the --var option is selected.
+
 If If output-format is set to `numpy`, he output will be two (or three, if using --var option) files in numpy NPY format: 
 
 -   OUTPUT.npy, which contains the eGRM matrix;
