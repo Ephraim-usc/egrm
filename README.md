@@ -84,7 +84,7 @@ The leftmost and rightmost positions (in bp) between which the eGRM is computed.
 
 RLIM and ALIM are the most recent and most ancient times (in generations) between which the eGRM is computed.
 
-If output-format is set to `gcta`, the eGRM will be output into GCTA format (.grm.bin, .grm.N.bin and .grm.id files).
+If output-format is set to `gcta`, the eGRM will be output into GCTA format (.grm.bin, .grm.N.bin and .grm.id files):
 
 -   OUTPUT.grm.bin, which contains the eGRM matrix;
 
