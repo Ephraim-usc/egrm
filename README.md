@@ -50,7 +50,7 @@ The software to compute the eGRM from tskit tree sequence output is handled by `
                             rightmost genomic position to be included
       --rlim RLIM           most recent time limit
       --alim ALIM           most ancient time limit
-      --output-format {gcta,numpy}
+      --output-format, --f {gcta,numpy}
                             Output format of eGRM
 
 Where `input` is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and `OUTPUT` is the output file prefix.
