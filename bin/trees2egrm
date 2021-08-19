@@ -183,8 +183,11 @@ def main(args):
     log.info("Finished eGRM estimation")
 
     if not args.haploid:
-        # TODO: we need to convert to diploid/genotype GRM here
-        pass
+        N = egrm.shape[0]
+        maternals = np.array(range(0, N, 2))
+        paternals = np.array(range(1, N, 2))
+        egrm = 0.5 * (egrm[maternals, :][:, maternals] + egrm[maternals, :][:, paternals] + \
+                      egrm[paternals, :][:, maternals] + egrm[paternals, :][:, paternals])
 
     # output/save our eGRM
     log.info("Beginning export of eGRM")
