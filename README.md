@@ -4,6 +4,10 @@ Expected Genetic Relationship Matrix
 Expected Genetic Relationship Matrix (EGRM) is the expected value of the Genetic Relationship Matrix (GRM) on unknown SNPs 
 given the complete genealogical tree of a sample of individuals, derived under the coalescent theory framework.
 
+This method is described in the following [paper](https://www.biorxiv.org/content/10.1101/2021.08.18.456747v1.abstract):
+Fan, Caoqi, Nicholas Mancuso, and Charleston WK Chiang. "A genealogical estimate of genetic relationships." bioRxiv (2021).
+Please cite our paper if you use our method.
+
 
 Installation
 ------------
@@ -24,6 +28,7 @@ Command Line Tools
 The software to compute the eGRM from tskit tree sequence output is handled by `trees2egrm`. Its usage is given by,
 
     usage: trees2egrm [-h] [--output OUTPUT] [--c_extension] [--skip_first_tree] [--run_var] [--genetic_map GENETIC_MAP] 
+                      [--left LEFT]
                       [--left LEFT] [--right RIGHT]
                       [--rlim RLIM] [--alim ALIM] 
                       [--output-format {gcta,numpy}]
