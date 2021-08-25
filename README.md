@@ -27,36 +27,35 @@ Command Line Tools
 ------------------
 The software to compute the eGRM from tskit tree sequence output is handled by `trees2egrm`. Its usage is given by,
 
-    usage: trees2egrm [-h] [--output OUTPUT] [--c_extension] [--skip_first_tree] [--run_var] [--genetic_map GENETIC_MAP] 
-                      [--left LEFT]
-                      [--left LEFT] [--right RIGHT]
-                      [--rlim RLIM] [--alim ALIM] 
-                      [--output-format {gcta,numpy}]
+    usage: trees2egrm [-h] [--output OUTPUT] [--c-extension] [--skip-first-tree] [--run-var] [--genetic-map GENETIC_MAP] [--left LEFT]
+                      [--right RIGHT] [--rlim RLIM] [--alim ALIM] [--verbose] [--haploid] [--output-format {gcta,numpy}]
                       input
-    
+
     Construct eGRM matrix from tree sequence data
-    
+
     positional arguments:
       input                 Path to ts-kit tree sequence file
-    
+
     optional arguments:
       -h, --help            show this help message and exit
       --output OUTPUT, --o OUTPUT
-                            output file prefix
-      --c_extension, --c    acceleration by C extension
-      --skip_first_tree, --sft
-                            discard the first tree in the tree sequence
-      --run_var, --var      compute varGRM instead of eGRM
-      --genetic_map GENETIC_MAP, --map GENETIC_MAP
-                            map file fullname
+                            output file prefix (default: egrm)
+      --c-extension, --c    acceleration by C extension (default: False)
+      --skip-first-tree, --sft
+                            discard the first tree in the tree sequence (default: False)
+      --run-var, --var      compute varGRM in addition to eGRM (default: False)
+      --genetic-map GENETIC_MAP, --map GENETIC_MAP
+                            map file fullname (default: None)
       --left LEFT, --l LEFT
-                            leftmost genomic position to be included
+                            leftmost genomic position to be included (default: 0)
       --right RIGHT, --r RIGHT
-                            rightmost genomic position to be included
-      --rlim RLIM           most recent time limit
-      --alim ALIM           most ancient time limit
-      --output-format, --f {gcta,numpy}
-                            Output format of eGRM
+                            rightmost genomic position to be included (default: inf)
+      --rlim RLIM           most recent time limit (default: 0)
+      --alim ALIM           most ancient time limit (default: inf)
+      --verbose             Verbose logging. Includes debug info. (default: False)
+      --haploid             Output eGRM over haploids. Default is diploid/genotype eGRM. (default: False)
+      --output-format {gcta,numpy}, --f {gcta,numpy}
+                            Output format of eGRM (default: gcta)
 
 Where `input` is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and `OUTPUT` is the output file prefix.
 
