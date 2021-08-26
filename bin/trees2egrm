@@ -82,7 +82,7 @@ def main(args):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "input", type=argparse.FileType("r"), help="Path to ts-kit tree sequence file"
+        "input", type=argparse.FileType("r"), help="path to ts-kit tree sequence file"
     )
     parser.add_argument(
         "--output", "--o", default="egrm", type=str, help="output file prefix"
@@ -128,20 +128,20 @@ def main(args):
         "--verbose",
         default=False,
         action="store_true",
-        help="Verbose logging. Includes debug info.",
+        help="verbose logging. Includes debug info.",
     )
     parser.add_argument(
         "--haploid",
         default=False,
         action="store_true",
-        help="Output eGRM over haploids. Default is diploid/genotype eGRM.",
+        help="output eGRM over haploids. Default is diploid/genotype eGRM.",
     )
     parser.add_argument(
         "--output-format",
         "--f",
         choices=["gcta", "numpy"],
         default="gcta",
-        help="Output format of eGRM",
+        help="output format of eGRM",
     )
 
     # parse command line
