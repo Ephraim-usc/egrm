@@ -34,7 +34,7 @@ The software to compute the eGRM from tskit tree sequence output is handled by `
     Construct eGRM matrix from tree sequence data
 
     positional arguments:
-      input                 Path to ts-kit tree sequence file
+      input                 path to ts-kit tree sequence file
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -52,10 +52,10 @@ The software to compute the eGRM from tskit tree sequence output is handled by `
                             rightmost genomic position to be included (default: inf)
       --rlim RLIM           most recent time limit (default: 0)
       --alim ALIM           most ancient time limit (default: inf)
-      --verbose             Verbose logging. Includes debug info. (default: False)
-      --haploid             Output eGRM over haploids. Default is diploid/genotype eGRM. (default: False)
+      --verbose             verbose logging. Includes debug info. (default: False)
+      --haploid             output eGRM over haploids. Default is diploid/genotype eGRM. (default: False)
       --output-format {gcta,numpy}, --f {gcta,numpy}
-                            Output format of eGRM (default: gcta)
+                            output format of eGRM (default: gcta)
 
 Where `input` is the tree sequence file prefix (so that the full name should be "INPUT.trees"), and `OUTPUT` is the output file prefix.
 
