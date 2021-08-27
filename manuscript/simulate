@@ -667,7 +667,7 @@ if run_relate:
     # os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map " + name)
     os.system("rm -r -f " + name)
     os.system(
-        "~/bin/relate --mode All -m 1.25e-8 -N 30000 --memory 20 --haps "
+        "~/bin/Relate --mode All -m 1.25e-8 -N 30000 --memory 20 --haps "
         + name
         + ".haps.gz --sample "
         + name
