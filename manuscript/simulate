@@ -680,7 +680,7 @@ if run_relate:
         "~/bin/RelateFileFormats --mode ConvertToTreeSequence "
         + "-i "
         + name
-        + "-o "
+        + " -o "
         + name
     )
 
