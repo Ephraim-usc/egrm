@@ -21,7 +21,7 @@ from egrm import varGRM_C, mTMRCA_C
 def step_mig_mat(m, nrow, ncol):
     pmat = np.arange(0, nrow * ncol).reshape(nrow, ncol)
     mmat = np.zeros(shape=[nrow * ncol, nrow * ncol])
-
+    
     def contain(ix, max_ix):
         if ix < 0:
             return 0
@@ -29,14 +29,14 @@ def step_mig_mat(m, nrow, ncol):
             return max_ix - 1
         else:
             return ix
-
+    
     for ii in range(nrow * ncol):
         center_ix = np.where(pmat == ii)
         top_ix = pmat[contain(center_ix[0] - 1, nrow), contain(center_ix[1], ncol)]
         bottom_ix = pmat[contain(center_ix[0] + 1, nrow), contain(center_ix[1], ncol)]
         left_ix = pmat[contain(center_ix[0], nrow), contain(center_ix[1] - 1, ncol)]
         right_ix = pmat[contain(center_ix[0], nrow), contain(center_ix[1] + 1, ncol)]
-
+        
         mmat[ii, top_ix] = mmat[ii, bottom_ix] = mmat[ii, left_ix] = mmat[
             ii, right_ix
         ] = m
@@ -66,7 +66,7 @@ def Fst(trees, ns):
 def Fst2(trees, study_ids, reference_ids):
     n1 = study_ids.shape[0]
     n2 = reference_ids.shape[0]
-
+    
     buffer = []
     for v in trees.variants():
         genotypes = v.genotypes
@@ -80,7 +80,7 @@ def Fst2(trees, study_ids, reference_ids):
         q2 = p2 * (1 - p2)
         fst = (q - (q1 * n1 + q2 * n2) / (n1 + n2)) / q
         buffer.append(fst)
-
+        
     return np.array(buffer).mean()
 
 
@@ -143,7 +143,7 @@ def separation_index(true_labels, x, dmat=None):
     if dmat is None:
         dmat = distance_matrix(x, x)
     omat = dmat.argsort(axis=1)
-
+    
     scores = []
     for i in np.arange(true_labels.shape[0]):
         fellows = np.where(true_labels == true_labels[i])[0]
@@ -151,7 +151,7 @@ def separation_index(true_labels, x, dmat=None):
         intersects = np.intersect1d(neighbors, fellows)
         score = intersects.shape[0] / fellows.shape[0]
         scores.append(score)
-
+    
     scores = np.array(scores)
     return scores
 
@@ -474,21 +474,21 @@ if run_prune:
     print("computing K_pruned")
     os.mkdir("prune")
     os.chdir("prune")
-
+    
     from pyplink import PyPlink
     from bed_reader import open_bed
-
+    
     samples = range(int(N / 2))
     X_obs = getX(trees, obss)
     maternals = np.array(range(0, N, 2))
     paternals = np.array(range(1, N, 2))
     X_obs_dip = X_obs[maternals] + X_obs[paternals]
     loci = np.array([v.position for v in trees.variants()])
-
+    
     with PyPlink(name, "w") as bedfile:
         for v in np.transpose(X_obs_dip):
             bedfile.write_genotypes(v)
-
+    
     fam_file = open(name + ".fam", "a")
     for idx, sample in enumerate(samples):
         string = (
@@ -496,13 +496,13 @@ if run_prune:
         )
         bytes = fam_file.write(string)
     fam_file.close()
-
+    
     bim_file = open(name + ".bim", "a")
     for idx, obs in enumerate(obss):
         string = "1 snp" + str(obs + 1) + " 0 " + str(int(loci[obs])) + " A T\n"
         bytes = bim_file.write(string)
     bim_file.close()
-
+    
     os.system(
         "~/bin/plink2 "
         + "--bfile "
@@ -511,7 +511,7 @@ if run_prune:
         + "--indep-pairwise 50 5 0.1 "
         + "--out LD"
     )
-
+    
     os.system(
         "~/bin/plink2 "
         + "--bfile "
@@ -520,13 +520,13 @@ if run_prune:
         + "--extract LD.prune.in "
         + "--out pruned"
     )
-
+    
     X_pruned = open_bed("pruned.bed").read()
     Z_pruned = X_pruned
     Z_pruned -= Z_pruned.mean(axis=0)
     Z_pruned /= Z_pruned.std(axis=0)
     K_pruned = np.dot(Z_pruned, np.transpose(Z_pruned))
-
+    
     os.chdir("..")
 
 ### running impute ###
@@ -535,11 +535,11 @@ def X2gen(X):
     maternals = np.array(range(0, n, 2))
     paternals = np.array(range(1, n, 2))
     X_dip = X[maternals, :] + X[paternals, :]
-
+    
     tmp1 = (X_dip == 2).astype(int)
     tmp2 = (X_dip == 1).astype(int)
     tmp3 = (X_dip == 0).astype(int)
-
+    
     n_gen = int(n * 3 / 2)
     buffer = np.zeros([n_gen, m]).astype(int)
     buffer[np.arange(0, n_gen, 3), :] = tmp1
@@ -560,11 +560,11 @@ if run_impute:
     print("computing K_imputed")
     os.mkdir("impute")
     os.chdir("impute")
-
+    
     X_obs = getX(trees, obss)
     gen_obs = X2gen(X_obs)
     loci_obs = np.ceil(loci[obss]).astype(int)
-
+    
     haps_file = open(name + ".gen", "a")
     i = 0
     for idx, obs in enumerate(obss):
@@ -573,12 +573,12 @@ if run_impute:
         bytes = haps_file.write(string)
         i += 1
     haps_file.close()
-
+    
     X_ref = getX(trees_ref, np.arange(trees_ref.num_mutations))
     gen_ref = X2gen(X_ref)
     loci_ref = np.array([v.position for v in trees_ref.variants()])
     loci_ref = np.ceil(loci_ref).astype(int)
-
+    
     haps_file = open(name + "_ref.gen", "a")
     i = 0
     for idx, obs in enumerate(np.arange(trees_ref.num_mutations)):
@@ -587,7 +587,7 @@ if run_impute:
         bytes = haps_file.write(string)
         i += 1
     haps_file.close()
-
+    
     map_file = open(name + ".map", "a")
     map_file.write("pos COMBINED_rate Genetic_Map\n")
     for idx, obs in enumerate(obss):
@@ -595,7 +595,7 @@ if run_impute:
         string = string + str(loci_obs[idx] / 1000000) + "\n"
         bytes = map_file.write(string)
     map_file.close()
-
+    
     os.system(
         "~/bin/impute2 "
         + "-g_ref "
@@ -612,19 +612,19 @@ if run_impute:
         + " -allow_large_regions "
         + "-o out.gen"
     )
-
+    
     gen_imputed = pd.read_table("out.gen", sep=" ", header=None).iloc[:, 5:]
     gen_imputed = np.transpose(gen_imputed.values)
     X_imputed = gen2X(gen_imputed)
-
+    
     keep = np.logical_and(X_imputed.mean(axis=0) > 0, X_imputed.mean(axis=0) < 1)
     X_imputed = X_imputed[:, keep]
-
+    
     Z_imputed = X_imputed
     Z_imputed -= Z_imputed.mean(axis=0)
     Z_imputed /= Z_imputed.std(axis=0)
     K_imputed = np.dot(Z_imputed, np.transpose(Z_imputed))
-
+    
     os.chdir("..")
 
 
@@ -633,10 +633,10 @@ if run_relate:
     print("computing EK_relate")
     os.mkdir("relate")
     os.chdir("relate")
-
+    
     X_obs = getX(trees, obss)
     loci_obs = np.ceil(loci[obss]).astype(int)
-
+    
     haps_file = open(name + ".haps", "a")
     i = 0
     for idx, obs in enumerate(obss):
@@ -648,14 +648,14 @@ if run_relate:
     os.system(
         "gzip -f " + name + ".haps > " + name + ".haps.gz && rm -f " + name + ".haps"
     )
-
+    
     sample_file = open(name + ".sample", "a")
     sample_file.write("ID_1 ID_2 missing\n0 0 0\n")
     for idx in range(int(N)):
         string = "UNR" + str(idx + 1) + " NA" + " 0\n"
         bytes = sample_file.write(string)
     sample_file.close()
-
+    
     map_file = open(name + ".relate.map", "a")
     map_file.write("pos COMBINED_rate Genetic_Map\n")
     for idx, obs in enumerate(obss):
@@ -663,7 +663,7 @@ if run_relate:
         string = string + str(loci_obs[idx] / 1000000) + "\n"
         bytes = map_file.write(string)
     map_file.close()
-
+    
     # os.system("~/bin/relate.sh " + name + ".haps.gz " + name + ".sample " + name + ".relate.map " + name)
     os.system("rm -r -f " + name)
     os.system(
@@ -683,10 +683,10 @@ if run_relate:
         + " -o "
         + name
     )
-
+    
     trees_relate = tskit.load(name + ".trees")
     EK_relate, _, EK_relate_mu = varGRM_C(trees_relate)
-
+    
     os.chdir("..")
 
 
@@ -695,22 +695,22 @@ if run_tsinfer:
     print("computing EK_tsinfer")
     os.mkdir("tsinfer")
     os.chdir("tsinfer")
-
+    
     X_obs = getX(trees, obss)
     loci_obs = np.ceil(loci[obss]).astype(int)
     with tsinfer.SampleData(path=name + ".samples", sequence_length=l) as sample_data:
         for idx, obs in enumerate(obss):
             sample_data.add_site(loci_obs[idx], X_obs[:, idx])
-
+    
     os.system("~/bin/tsinfer infer " + name + ".samples -p -t 4")
-
+    
     trees_tsinfer = tskit.load(name + ".trees")
     trees_tsinfer_simplified = trees_tsinfer.simplify(filter_populations = False, filter_individuals = False, filter_sites = False, keep_unary = False)
     trees_tsdate = tsdate.date(trees_tsinfer_simplified, Ne=10000, mutation_rate = 1e-8)
-
+    
     EK_tsinfer, _, EK_tsinfer_mu = varGRM_C(trees_tsinfer_simplified)
     EK_tsdate, _, EK_tsdate_mu = varGRM_C(trees_tsdate)
-
+    
     os.chdir("..")
 
 
