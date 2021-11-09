@@ -219,7 +219,7 @@ parser.add_argument(
     "--ns", type=int, nargs="*", help="list of sample sizes in each population"
 )
 parser.add_argument(
-    "--ns_ref", type=int, nargs="*", help="list of sample sizes in each population"
+    "--ns_ref", type=int, nargs="*", help="list of reference panel sample sizes in each population"
 )
 
 # genetics
