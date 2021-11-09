@@ -705,9 +705,10 @@ if run_tsinfer:
     os.system("~/bin/tsinfer infer " + name + ".samples -p -t 4")
 
     trees_tsinfer = tskit.load(name + ".trees")
-    trees_tsdate = tsdate.date(trees_tsinfer, Ne=10000, mutation_rate = 1e-8)
+    trees_tsinfer_simplified = trees_tsinfer.simplify(filter_populations = False, filter_individuals = False, filter_sites = False, keep_unary = False)
+    trees_tsdate = tsdate.date(trees_tsinfer_simplified, Ne=10000, mutation_rate = 1e-8)
 
-    EK_tsinfer, _, EK_tsinfer_mu = varGRM_C(trees_tsinfer)
+    EK_tsinfer, _, EK_tsinfer_mu = varGRM_C(trees_tsinfer_simplified)
     EK_tsdate, _, EK_tsdate_mu = varGRM_C(trees_tsdate)
 
     os.chdir("..")
