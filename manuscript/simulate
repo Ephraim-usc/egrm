@@ -714,6 +714,43 @@ if run_tsinfer:
     os.chdir("..")
 
 
+### running chromopainter
+if run_tsinfer:
+    print("computing K_chromopainter")
+    os.mkdir("chromopainter")
+    os.chdir("chromopainter")
+    
+    idfile = pd.DataFrame({"ind":["Ind" + str(i+1) for i in np.arange(int(N/2))]})
+    idfile.to_csv(name + ".ids", sep = ",", header = False, index = False)
+    
+    loci = np.array([v.position for v in trees.variants()])
+    loci_obs = np.ceil(loci[obss]).astype(int)
+    recombfile = pd.DataFrame({"start.pos":loci_obs, "recom.rate.perbp":loci_obs * 1e-8})
+    recombfile.to_csv(name + ".rec", sep = " ", header = True, index = False)
+    
+    phasefile = open(name + ".phase", "w")
+    phasefile.write(str(N) + "\n")
+    phasefile.write(str(M) + "\n")
+    phasefile.write("P " + " ".join(loci_obs.astype(str)) + "\n")
+    for x in X_obs:
+        bytes = phasefile.write("".join(x.astype(str)) + "\n")
+    phasefile.close()
+    
+    os.system(
+        "fs output.cp \
+        -idfile test.ids \
+        -phasefiles test.phase \
+        -recombfiles test.rec \
+        -go"
+    )
+    
+    chunkcounts = pd.read_csv("output_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
+    np.fill_diagonal(chunkcounts, chunkcounts.sum(axis = 1) / (chunkcounts.shape[0] - 1))
+    chunkcounts -= chunkcounts.mean(axis = 1)
+    K_chromopainter = np.dot(chunkcounts, np.transpose(chunkcounts))
+    
+    os.chdir("..")
+
 ### collect Ks and compute correlation ###
 Ks = {
     "K_all": K_all,
