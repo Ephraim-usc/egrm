@@ -718,7 +718,7 @@ if run_tsinfer:
 
 
 ### running chromopainter
-if run_tsinfer:
+if run_chromopainter:
     print("computing K_chromopainter")
     os.mkdir("chromopainter")
     os.chdir("chromopainter")
@@ -728,7 +728,7 @@ if run_tsinfer:
     
     loci = np.array([v.position for v in trees.variants()])
     loci_obs = np.ceil(loci[obss]).astype(int)
-    recombfile = pd.DataFrame({"start.pos":loci_obs, "recom.rate.perbp":loci_obs * 1e-8})
+    recombfile = pd.DataFrame({"start.pos":loci_obs, "recom.rate.perbp":0.0000001})
     recombfile.to_csv(name + ".rec", sep = " ", header = True, index = False)
     
     phasefile = open(name + ".phase", "w")
@@ -747,7 +747,7 @@ if run_tsinfer:
         "-go"
     )
     
-    chunkcounts = pd.read_csv("output_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
+    chunkcounts = pd.read_csv(name + "_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
     np.fill_diagonal(chunkcounts, chunkcounts.sum(axis = 1) / (chunkcounts.shape[0] - 1))
     chunkcounts -= chunkcounts.mean(axis = 1)
     K_chromopainter = np.dot(chunkcounts, np.transpose(chunkcounts))
