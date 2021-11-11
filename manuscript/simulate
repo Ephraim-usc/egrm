@@ -799,6 +799,8 @@ if run_impute:
     Ks_dip["K_imputed"] = K_imputed
 if run_prune:
     Ks_dip["K_pruned"] = K_pruned
+if run_chromopainter:
+    Ks_dip["K_chromopainter"] = K_chromopainter
 
 diags = np.diag_indices(int(N / 2))
 non_diags = np.where(~np.eye(int(N / 2), dtype=bool))
