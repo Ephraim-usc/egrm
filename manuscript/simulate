@@ -729,7 +729,7 @@ if run_chromopainter:
     loci = np.array([v.position for v in trees.variants()])
     loci_obs = np.ceil(loci[obss]).astype(int)
     recombfile = pd.DataFrame({"start.pos":loci_obs, "recom.rate.perbp":0.0000001})
-    recombfile.to_csv(name + ".rec", sep = " ", header = True, index = False, float_format='{:f}'.format)
+    recombfile.to_csv(name + ".rec", sep = " ", header = True, index = False, float_format = '%.15f')
     
     phasefile = open(name + ".phase", "w")
     phasefile.write(str(N) + "\n")
