@@ -193,6 +193,9 @@ parser.add_argument(
 parser.add_argument(
     "--run_prune", "--prune", action="store_true", help="compute K_pruned"
 )
+parser.add_argument(
+    "--run_chromopainter", "--chromopainter", action="store_true", help="compute K_chromopainter"
+)
 
 # demography and population structure
 parser.add_argument("--demo", type=str, default="ooa", help="demography model")
@@ -737,11 +740,11 @@ if run_tsinfer:
     phasefile.close()
     
     os.system(
-        "fs output.cp \
-        -idfile test.ids \
-        -phasefiles test.phase \
-        -recombfiles test.rec \
-        -go"
+        "fs " + name + ".cp " +
+        "-idfile " + name + ".ids " +
+        "-phasefiles " + name + ".phase " +
+        "-recombfiles " + name + ".rec " +
+        "-go"
     )
     
     chunkcounts = pd.read_csv("output_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
