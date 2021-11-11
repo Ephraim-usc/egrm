@@ -733,7 +733,7 @@ if run_chromopainter:
     
     phasefile = open(name + ".phase", "w")
     phasefile.write(str(N) + "\n")
-    phasefile.write(str(M) + "\n")
+    phasefile.write(str(M_obs) + "\n")
     phasefile.write("P " + " ".join(loci_obs.astype(str)) + "\n")
     for x in X_obs:
         bytes = phasefile.write("".join(x.astype(str)) + "\n")
