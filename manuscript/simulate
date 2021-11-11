@@ -291,7 +291,7 @@ N_ref = sum(ns_ref)
 del n
 
 ### simulate genotypes ###
-print("simulating genotypes")
+print("simulating genotypes", flush = True)
 
 N_B = 2100
 N_EU0 = 1000
@@ -376,7 +376,7 @@ trees = msprime.simulate(
 
 
 ### compute Fst and then split study and reference
-print("computing FST")
+print("computing FST", flush = True)
 
 study_ids = []
 reference_ids = []
@@ -456,7 +456,7 @@ y = G + e
 
 
 ### compute Ks ###
-print("computing Ks")
+print("computing Ks", flush = True)
 
 K_all = getK(trees, np.arange(M))
 K_common = getK(trees, commons)
@@ -465,16 +465,16 @@ K_obs = getK(trees, obss)
 K_cas = getK(trees, cass)
 
 if run_egrm:
-    print("computing EK")
+    print("computing EK", flush = True)
     EK, _, EK_mu = varGRM_C(trees, var=False)
 
 if run_mtmrca:
-    print("computing mTMRCA")
+    print("computing mTMRCA", flush = True)
     mtmrca, _ = mTMRCA_C(trees)
 
 ### running LD pruning ###
 if run_prune:
-    print("computing K_pruned")
+    print("computing K_pruned", flush = True)
     os.mkdir("prune")
     os.chdir("prune")
     
@@ -560,7 +560,7 @@ def gen2X(gen):
 
 
 if run_impute:
-    print("computing K_imputed")
+    print("computing K_imputed", flush = True)
     os.mkdir("impute")
     os.chdir("impute")
     
@@ -633,7 +633,7 @@ if run_impute:
 
 ### running relate ###
 if run_relate:
-    print("computing EK_relate")
+    print("computing EK_relate", flush = True)
     os.mkdir("relate")
     os.chdir("relate")
     
@@ -695,7 +695,7 @@ if run_relate:
 
 ### running tsinfer
 if run_tsinfer:
-    print("computing EK_tsinfer")
+    print("computing EK_tsinfer", flush = True)
     os.mkdir("tsinfer")
     os.chdir("tsinfer")
     
@@ -719,7 +719,7 @@ if run_tsinfer:
 
 ### running chromopainter
 if run_chromopainter:
-    print("computing K_chromopainter")
+    print("computing K_chromopainter", flush = True)
     os.mkdir("chromopainter")
     os.chdir("chromopainter")
     
@@ -813,7 +813,7 @@ corr_dip = table_dip.corr(method="pearson")
 
 
 ### PCA and SI ###
-print("computing PCA and SI")
+print("computing PCA and SI", flush = True)
 
 PCA = {}
 for key in Ks_dip.keys():
