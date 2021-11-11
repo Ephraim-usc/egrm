@@ -754,6 +754,50 @@ if run_chromopainter:
     
     os.chdir("..")
 
+### running germline
+if run_germline:
+    print("computing K_germline", flush = True)
+    os.mkdir("germline")
+    os.chdir("germline")
+    
+    from pyplink import PyPlink
+    from bed_reader import open_bed
+    
+    X_obs = getX(trees, obss)
+    maternals = np.array(range(0, N, 2))
+    paternals = np.array(range(1, N, 2))
+    X_obs_dip = X_obs[maternals] + X_obs[paternals]
+    loci = np.array([v.position for v in trees.variants()])
+    loci_obs = np.ceil(loci[obss]).astype(int)
+    
+    with PyPlink(name, "w") as bedfile:
+        for v in np.transpose(X_obs_dip):
+            bedfile.write_genotypes(v)
+    os.system() # convert ped into bed
+    
+    map_file = open(name + ".map", "a")
+    map_file.write("pos COMBINED_rate Genetic_Map\n")
+    for idx, obs in enumerate(obss):
+        string = str(loci_obs[idx]) + " " + str(1) + " "
+        string = string + str(loci_obs[idx] / 1000000) + "\n"
+        bytes = map_file.write(string)
+    map_file.close()
+    
+    os.system(
+        "fs " + name + ".cp " +
+        "-idfile " + name + ".ids " +
+        "-phasefiles " + name + ".phase " +
+        "-recombfiles " + name + ".rec " +
+        "-go"
+    )
+    
+    chunkcounts = pd.read_csv(name + "_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
+    np.fill_diagonal(chunkcounts, chunkcounts.sum(axis = 1) / (chunkcounts.shape[0] - 1))
+    chunkcounts -= chunkcounts.mean(axis = 1)
+    K_chromopainter = np.dot(chunkcounts, np.transpose(chunkcounts))
+    
+    os.chdir("..")
+
 ### collect Ks and compute correlation ###
 Ks = {
     "K_all": K_all,
