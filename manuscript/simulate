@@ -760,9 +760,6 @@ if run_germline:
     os.mkdir("germline")
     os.chdir("germline")
     
-    from pyplink import PyPlink
-    from bed_reader import open_bed
-    
     X_obs = getX(trees, obss)
     maternals = np.array(range(0, N, 2))
     paternals = np.array(range(1, N, 2))
@@ -770,18 +767,17 @@ if run_germline:
     loci = np.array([v.position for v in trees.variants()])
     loci_obs = np.ceil(loci[obss]).astype(int)
     
-    with PyPlink(name, "w") as bedfile:
-        for v in np.transpose(X_obs_dip):
-            bedfile.write_genotypes(v)
-    os.system() # convert ped into bed
+    pedfile = open(name + ".ped", "w")
+    for idx, x in enumerate(X_obs):
+        string = "FAM " + str(idx) + " 0 0 0 0 " + " ".join(np.array(['A', 'T'])[x])
+        bytes = pedfile.write(string + "\n")
+    pedfile.close()
     
-    map_file = open(name + ".map", "a")
-    map_file.write("pos COMBINED_rate Genetic_Map\n")
-    for idx, obs in enumerate(obss):
-        string = str(loci_obs[idx]) + " " + str(1) + " "
-        string = string + str(loci_obs[idx] / 1000000) + "\n"
-        bytes = map_file.write(string)
-    map_file.close()
+    mapfile = open(name + ".map", "a")
+    for idx, locus in enumerate(loci_obs):
+        string = "0 snp" + str(idx) + " " + '{0:.8f}'.format(locus/1e8).rstrip("0") + " " + str(locus)
+        bytes = mapfile.write(string)
+    mapfile.close()
     
     os.system(
         "fs " + name + ".cp " +
