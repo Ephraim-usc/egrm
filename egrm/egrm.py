@@ -87,9 +87,9 @@ def varGRM_C(trees, log = None,
   
   for tree in trees_:
     pbar.update(1)
-    if tree.total_branch_length == 0: continue
     l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
+    if tree.total_branch_length == 0: continue
     
     for c in tree.nodes():
       descendants = list(tree.samples(c))
@@ -151,9 +151,9 @@ def mTMRCA_C(trees, log = None,
   
   for tree in trees_:
     pbar.update(1)
-    if tree.total_branch_length == 0: continue
     l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
+    if tree.total_branch_length == 0: continue
     
     height = 0
     for c in tree.nodes():
@@ -200,9 +200,9 @@ def varGRM(trees, log = None,
   
   for tree in trees_:
     pbar.update(1)
-    if tree.total_branch_length == 0: continue
     l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
+    if tree.total_branch_length == 0: continue
     
     for c in tree.nodes():
       descendants = list(tree.samples(c))
@@ -255,9 +255,9 @@ def mTMRCA(trees, log = None,
   
   for tree in trees_:
     pbar.update(1)
-    if tree.total_branch_length == 0: continue
     l = - gmap(max(left, tree.interval[0])) + gmap(min(right, tree.interval[1]))
     if l <= 0: continue
+    if tree.total_branch_length == 0: continue
     
     height = 0
     for c in tree.nodes():
