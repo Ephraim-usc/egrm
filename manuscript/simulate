@@ -689,6 +689,7 @@ if run_relate:
     
     trees_relate = tskit.load(name + ".trees")
     EK_relate, _, EK_relate_mu = varGRM_C(trees_relate)
+    EK_relate_partial, _, EK_relate_partial_mu = varGRM_C(trees_relate, rlim = 0, alim = 100)
     
     os.chdir("..")
 
@@ -808,6 +809,7 @@ if run_egrm:
     Ks["EK"] = EK
 if run_relate:
     Ks["EK_relate"] = EK_relate
+    Ks["EK_relate_partial"] = EK_relate_partial
 if run_tsinfer:
     Ks["EK_tsinfer"] = EK_tsinfer
     Ks["EK_tsdate"] = EK_tsdate
