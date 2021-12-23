@@ -755,47 +755,6 @@ if run_chromopainter:
     
     os.chdir("..")
 
-### running germline
-if run_germline:
-    print("computing K_germline", flush = True)
-    os.mkdir("germline")
-    os.chdir("germline")
-    
-    X_obs = getX(trees, obss)
-    maternals = np.array(range(0, N, 2))
-    paternals = np.array(range(1, N, 2))
-    A = X_obs[maternals]
-    B = X_obs[paternals]
-    X_obs_reshaped = np.stack((A,B),2).reshape(A.shape[0],-1)
-    loci = np.array([v.position for v in trees.variants()])
-    loci_obs = np.ceil(loci[obss]).astype(int)
-    
-    pedfile = open(name + ".ped", "w")
-    for idx, x in enumerate(X_obs_reshaped):
-        string = str(idx + 1) + " 1 0 0 0 0 " + " ".join(np.array(['A', 'T'])[x])
-        bytes = pedfile.write(string + "\n")
-    pedfile.close()
-    
-    mapfile = open(name + ".map", "a")
-    for idx, locus in enumerate(loci_obs):
-        string = "1 snp" + str(idx) + " " + '{0:.8f}'.format(locus/1e8).rstrip("0") + " " + str(locus)
-        bytes = mapfile.write(string + "\n")
-    mapfile.close()
-    
-    os.system(
-        "fs " + name + ".cp " +
-        "-idfile " + name + ".ids " +
-        "-phasefiles " + name + ".phase " +
-        "-recombfiles " + name + ".rec " +
-        "-go"
-    )
-    
-    chunkcounts = pd.read_csv(name + "_linked.chunkcounts.out", sep = " ", skiprows = 1, index_col = 0).values
-    np.fill_diagonal(chunkcounts, chunkcounts.sum(axis = 1) / (chunkcounts.shape[0] - 1))
-    chunkcounts -= chunkcounts.mean(axis = 1)
-    K_chromopainter = np.dot(chunkcounts, np.transpose(chunkcounts))
-    
-    os.chdir("..")
 
 ### collect Ks and compute correlation ###
 Ks = {
