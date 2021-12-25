@@ -736,6 +736,7 @@ if run_chromopainter:
     phasefile.write(str(N) + "\n")
     phasefile.write(str(M_obs) + "\n")
     phasefile.write("P " + " ".join(loci_obs.astype(str)) + "\n")
+    X_obs = getX(trees, obss)
     for x in X_obs:
         bytes = phasefile.write("".join(x.astype(str)) + "\n")
     phasefile.close()
