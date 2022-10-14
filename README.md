@@ -4,8 +4,8 @@ Expected Genetic Relationship Matrix
 Expected Genetic Relationship Matrix (EGRM) is the expected value of the Genetic Relationship Matrix (GRM) on unknown SNPs 
 given the complete genealogical tree of a sample of individuals, derived under the coalescent theory framework.
 
-This method is described in the following [paper](https://www.biorxiv.org/content/10.1101/2021.08.18.456747v1.abstract):
-Fan, Caoqi, Nicholas Mancuso, and Charleston WK Chiang. "A genealogical estimate of genetic relationships." bioRxiv (2021).
+This method is described in the following [paper](https://www.cell.com/ajhg/fulltext/S0002-9297(22)00112-4): 
+Fan, Caoqi, Nicholas Mancuso, and Charleston WK Chiang. "A genealogical estimate of genetic relationships." The American Journal of Human Genetics 109.5 (2022): 812-824.
 Please cite our paper if you use our method.
 
 
@@ -96,9 +96,9 @@ If output-format is set to `gcta`, the eGRM will be output into GCTA format (.gr
 
 -   OUTPUT.grm.id, which contains dummy ids for the samples.
 
--   OUTPUT_var(.grm.bin/.grm.N.bin/.grm.id), for the varGRM matrix, if the --var option is selected.
+-   OUTPUT_var(.grm.bin/.grm.N.bin/.grm.id), for the varGRM matrix, if the --var option is selected;
 
-If If output-format is set to `numpy`, he output will be two (or three, if using --var option) files in numpy NPY format: 
+If If output-format is set to `numpy`, the output will be two (or three, if using --var option) files in numpy NPY format: 
 
 -   OUTPUT.npy, which contains the eGRM matrix;
 
